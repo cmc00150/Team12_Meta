@@ -36,13 +36,26 @@ git push origin main
 > ```
 > git switch -c nombre_rama
 > ```
+
 > Moverse entre ramas
 > ```
 > git switch nombre_rama
 >```
+
 > Conectar rama
 >  _(Nos movemos al main y conectamos la otra rama desde ahi)_ >
 > ```
 > git switch main
 > git merge nombre_rama
 >```
+
+> Sincronizarse con el contenido de GitHub
+> ```
+> git pull
+> ```
+
+> Ver en que commit estás
+> _(esto devolverá un sha256 corto que podemos comparar con el id del commit)_
+> ```
+> git rev-parse --short HEAD
+> ```
