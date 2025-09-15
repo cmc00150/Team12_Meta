@@ -1,0 +1,5 @@
+DATA = Prueba
+ALG = greedy
+SEED = 
+ARG1 = 10
+ARG2 = 50
