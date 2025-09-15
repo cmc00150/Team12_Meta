@@ -3,7 +3,7 @@ from modulos.heuristicas import *
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 
-if len(sys.argv) != 2: 
+if len(sys.argv) != 2:
     print("Seleccione un archivo para abrir")
     exit(1)
 
