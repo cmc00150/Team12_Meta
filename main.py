@@ -2,7 +2,7 @@ import sys
 from modulos.heuristicas import *
 from clases.extractor import extractor
 
-if len(sys.argv) < 2 or len(sys.argv) > 3: 
+if len(sys.argv) != 2: 
     print("Seleccione un archivo para abrir")
     exit(1)
 
