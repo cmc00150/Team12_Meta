@@ -28,7 +28,6 @@ class Configurador:
 
                 campo=contenido.pop(0) # Miro en qué campo tengo que guardar los datos
                 contenido.pop(0) # Elimino '='
-                print(campo)
                 match campo: # Guardo los datos según el campo al que pertenezcan
                     case 'DATA':
                         self.__data=contenido
