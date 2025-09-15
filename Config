@@ -1,0 +1,3 @@
+DATA = ./Prueba
+COSO = 2
+ALG = greedy
