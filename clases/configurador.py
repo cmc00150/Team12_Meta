@@ -42,7 +42,7 @@ class Configurador:
             if not self.__data :
                 print('[!] Error - La lista de ficheros de datos NO puede estar vacía')
                 exit(1)
-            if not self.__alg[0]:
+            if not self.__alg:
                 print('[!] Error - Debe indicar al menos un algoritmo para usar')
                 exit(1)
 
