@@ -2,7 +2,7 @@
 ## Práctica 1
 - [x] Sacar matrices
 - [x] Greedy
-- [ ] Leer configuracion
+- [x] Leer configuracion
 - [ ] Ejecutar con los ford01.dat... y apuntar resultados
 ## Práctica 2
 > Ahora el greedy no cogera el mejor sino que elegira entre los x mejores (segun el parametro en config, ALEAT) aleatoriamente.

@@ -16,17 +16,19 @@ class Configurador:
                     '\n\t\t\tArgumentos extra (opcional)')
                 exit(1)
 
-            self.__data=[0] # Inicializo valores para comprobar errores después
-            self.__alg=[0]
-            self.__seed=[0]
-            self.__extra=[]
+            self.__data: list[str]  = [] # Inicializo valores para comprobar errores después
+            self.__alg: str         = ""
+            self.__seed: list[str]  = []
+            self.__extra: list[str] = []
 
             for linea in texto: # Recorro las líneas del archivo de configuración
                 contenido=linea.split() # Guardo una lista con el contenido de la línea
+                if len(contenido) < 3: # Si no hay al menos 3 carácteres (nombre, '=', valor) nos lo saltamos
+                    continue
+
                 campo=contenido.pop(0) # Miro en qué campo tengo que guardar los datos
                 contenido.pop(0) # Elimino '='
-                if len(contenido) < 1:
-                    continue
+                print(campo)
                 match campo: # Guardo los datos según el campo al que pertenezcan
                     case 'DATA':
                         self.__data=contenido
@@ -38,12 +40,25 @@ class Configurador:
                         self.__extra.append(contenido)
 
             # Compruebo que hay datos y algoritmo para trabajar
-            if self.__data[0]==0:
+            if not self.__data :
                 print('[!] Error - La lista de ficheros de datos NO puede estar vacía')
                 exit(1)
-            if self.__alg[0]==0:
+            if not self.__alg[0]:
                 print('[!] Error - Debe indicar al menos un algoritmo para usar')
                 exit(1)
+
+    @property
+    def data(self):
+        return self.__data.copy()
+    @property
+    def alg(self):
+        return self.__alg
+    @property
+    def seed(self):
+        return self.__seed.copy()
+    @property
+    def extra(self):
+        return self.__extra.copy()
 
     def mostrarInfo(self): # Función para verificar que se han añadido los datos correctamente
         print('Archivos de datos: ',self.__data,
