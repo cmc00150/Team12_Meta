@@ -23,9 +23,9 @@ class extractor:
                         matriz.append(row)
 
         except (ValueError, TypeError) as e:
-            print("Se ha introducido alguna letra en vez de número.", e)
+            print("[!] Error - Se ha introducido alguna letra en vez de número.", e)
         except OSError: 
-            print("Error al abrir el archivo.")
+            print("[!] Error - El archivo no se puede leer.")
         except Exception as e:
-            print(e)
+            print("[!] Error - ",e)
             exit(1)  
