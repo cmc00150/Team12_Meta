@@ -14,8 +14,7 @@ class extractor:
                 if self.dimension <= 0: 
                     raise Exception("La dimensión debe ser mayor que 0")
                 if (len(numeros)) != pow(self.dimension, 2) * 2: # Comprobamos que todos los caracteres que hay es lo mismo que hacer dos matrices de dimensionXdimension
-                    raise Exception("No se han encontrado dos matrices de ", self.dimension, "x", self.dimension)
-
+                    raise Exception("No se han encontrado dos matrices de " + self.dimension + "x" + self.dimension)
                 iterador = iter(numeros)
                 for matriz in (self.flujos, self.distancias):
                     for _ in range(self.dimension): # Vamos de la fila 0 hasta la dimensión
@@ -24,8 +23,10 @@ class extractor:
 
         except (ValueError, TypeError) as e:
             print("[!] Error - Se ha introducido alguna letra en vez de número.", e)
+            exit(1)
         except OSError: 
             print("[!] Error - El archivo no se puede leer.")
+            exit(1)
         except Exception as e:
             print("[!] Error -",e)
             exit(1)  
