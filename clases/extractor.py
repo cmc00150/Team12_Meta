@@ -1,54 +1,31 @@
+from itertools import islice
+
 class extractor:
     def __init__(self, archivo):
-        self.flujos: list = []
-        self.distancias: list = []
+        self.flujos: list[list[int]] = []
+        self.distancias: list[list[int]] = []
         self.dimension: int = 0
 
         try: 
             with open(archivo, mode="r") as fichero:
-                lines = fichero.readlines()
-                try:
-                    self.dimension = int(lines.pop(0)) # Cogemos la dimensión
-                    if self.dimension < 0: 
-                        raise Exception()
-                except:
-                    print("Error en la dimensión del archivo")
-                    exit(1)
-                lines.pop(0) # Quitamos el espacio en blanco
+                numeros = list(map(int, fichero.read().split())) # 1. Sacamos y separamos todos los caracteres en un vector. 2. Map recorre cada elemento del vector y aplica la funcin int (int("2")). 3. Lo comvertimos a lista otra vez
+                
+                self.dimension = numeros.pop(0) # Cogemos la dimensión
+                if self.dimension <= 0: 
+                    raise Exception("La dimensión debe ser mayor que 0")
+                if (len(numeros)) != pow(self.dimension, 2) * 2: # Comprobamos que todos los caracteres que hay es lo mismo que hacer dos matrices de dimensionXdimension
+                    raise Exception("No se han encontrado dos matrices de ", self.dimension, "x", self.dimension)
 
-                seccion = 1 # Para saber en que matriz nos encontramos, 1.Flujos 2.Distancias
-                rows = 0
-                for line in lines:
-                    if line == "\n": # Cambiamos de seccion
-                        seccion += 1
-                        rows=0
-                        continue # Saltamos a la siguiente linea
+                iterador = iter(numeros)
+                for matriz in (self.flujos, self.dimension):
+                    for _ in range(self.dimension): # Vamos de la fila 0 hasta la dimensión
+                        row = list(islice(iterador, self.dimension)) # islice() coge desde el valor que apunta el iterador hasta self.dimension, en la proxima iteración el iterador continuará por donde estaba
+                        matriz.append(row)
 
-                    cols = 0
-                    try:
-                        row = [int(n) for n in line.split()]
-                        cols = len(row)
-                    except Exception as e:
-                        print("Las matrices solo deben contener números [", e, "]")
-                        exit(1)
-
-                    if cols != self.dimension: 
-                        print("No se ha cumplido la dimensión establecida, ", cols, " columnas y una dimensión de ", self.dimension)
-                        exit(1)
-
-                    if seccion == 1:
-                        self.flujos.append(row)
-                    elif seccion == 2:
-                        self.distancias.append(row)
-                    rows += 1
-                if rows != self.dimension:
-                    print("No se ha cumplido la dimensión establecida, ", rows, " filas y una dimensión de ", self.dimension)
-                    exit(1)
-                        
-            if seccion != 2:
-                print("Debe haber dos matrices")
-                exit(1)
-
+        except (ValueError, TypeError) as e:
+            print("Se ha introducido alguna letra en vez de número.", e)
+        except OSError: 
+            print("Error al abrir el archivo.")
         except Exception as e:
-            print("Error con el archivo pasado", e)
+            print(e)
             exit(1)  
