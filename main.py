@@ -9,7 +9,6 @@ if len(sys.argv) < 2 or len(sys.argv) > 3:
 data = extractor(sys.argv[1])
 result = greedy(data.flujos, data.distancias, data.dimension)
 
-print(result[0])
 print([elem+1 for elem in result[0] ], "Costo: ", result[1])
 
 # Cuando tenemos dos o más tuplas con la misma distancia, deberiamos asignar todas las posibilidades a la permutación.

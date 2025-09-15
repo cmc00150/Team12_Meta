@@ -17,7 +17,7 @@ class extractor:
                     raise Exception("No se han encontrado dos matrices de ", self.dimension, "x", self.dimension)
 
                 iterador = iter(numeros)
-                for matriz in (self.flujos, self.dimension):
+                for matriz in (self.flujos, self.distancias):
                     for _ in range(self.dimension): # Vamos de la fila 0 hasta la dimensión
                         row = list(islice(iterador, self.dimension)) # islice() coge desde el valor que apunta el iterador hasta self.dimension, en la proxima iteración el iterador continuará por donde estaba
                         matriz.append(row)
@@ -27,5 +27,5 @@ class extractor:
         except OSError: 
             print("[!] Error - El archivo no se puede leer.")
         except Exception as e:
-            print("[!] Error - ",e)
+            print("[!] Error -",e)
             exit(1)  
