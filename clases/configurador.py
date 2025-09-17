@@ -60,7 +60,9 @@ class Configurador:
         return self.__extra.copy()
 
     def mostrarInfo(self): # Función para verificar que se han añadido los datos correctamente
-        print('Archivos de datos: ',self.__data,
-              '\nAlgoritmos a usar: ',self.__alg,
-              '\nSemillas: ',self.__seed,
-              '\nArgumentos extra: ',self.__extra)
+        print(' CONFIGURACIÓN APLICADA: '.center(100,'X'),
+              '\n  Archivos de datos: ',self.__data,
+              '\n  Algoritmos a usar: ',self.__alg,
+              '\n  Semillas: ',self.__seed,
+              '\n  Argumentos extra: ',self.__extra,'\n',
+              'X'*100,'\n')

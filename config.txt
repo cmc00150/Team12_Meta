@@ -1,5 +1,3 @@
-DATA = Prueba
+DATA = ./datos/_ejemplo.txt ./datos/ford01.dat ./datos/ford02.dat ./datos/ford03.dat ./datos/ford04.dat 
 ALG = greedy
-SEED = 
-ARG1 = 10
-ARG2 = 50
+SEED =
