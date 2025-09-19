@@ -1,4 +1,4 @@
-def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int) -> tuple[list[int], int]:
+def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int):
     # Obtenemos los vectores
     v_flujos = [(i, sum(row)) for i, row in enumerate(flujos)]
     v_distancias = [(i, sum(row)) for i, row in enumerate(distancias)]
@@ -10,7 +10,9 @@ def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int
     permutacion = [0] * candidatos
     for _ in range(candidatos):
         permutacion[sorted_flujos.pop(0)[0]] = sorted_distancias.pop(0)[0]
-
+    return permutacion
+    
+def costo(permutacion):
     costo = 0
     for i, main in enumerate(permutacion):
         aux = 0
@@ -19,4 +21,4 @@ def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int
             it = permutacion[j]
             aux += flujos[i][j] * distancias[main][it] * 2 # Sabiendo que es simetrica
         costo += aux
-    return (permutacion, costo)
+    return costo

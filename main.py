@@ -6,8 +6,8 @@ from clases.configurador import Configurador
 def mostrarResultados(config, result):
     for r, archivo in zip(result, config.data):
         print("  Archivo:", archivo,
-            "\n  Asignacion:", [elem+1 for elem in r[0] ], 
-            "\n  Costo:", r[1],"\n")
+            "\n  Asignacion:", [elem+1 for elem in r], 
+            "\n  Costo:", costo(r),"\n")
 
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
     print("Seleccione un archivo para abrir")
