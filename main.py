@@ -3,11 +3,13 @@ from modulos.heuristicas import *
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 
-def mostrarResultados(config, result):
-    for r, archivo in zip(result, config.data):
-        print("  Archivo:", archivo,
-            "\n  Asignacion:", [elem+1 for elem in r], 
-            "\n  Costo:", costo(r),"\n")
+def mostrarResultados(config, dataset, result):
+    for r, archivo, instancia in zip(result, config.data, dataset):
+            tiempo = f"{r[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en ms aproximando al 4to        
+            print("  Archivo:", archivo,
+            "\n  Asignacion:", [elem+1 for elem in r[0]], 
+            "\n  Costo:", costo(r[0],instancia.flujos, instancia.distancias),
+            "\n  Tiempo de ejecucion:",tiempo,"ms\n")
 
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
     print("Seleccione un archivo para abrir")
@@ -23,7 +25,7 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
         case 'greedy':
             result = [greedy(data.flujos, data.distancias, data.dimension) for data in dataset]
             print(' RESULTADOS ALGORITMO GREEDY '.center(50,'-'),'\n')
-            mostrarResultados(config,result)
+            mostrarResultados(config, dataset, result)
         case _:
             print('[!] Error - El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 
