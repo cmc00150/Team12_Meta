@@ -1,4 +1,5 @@
 from itertools import islice
+from modulos.logs import error
 import copy
 
 class Extractor:
@@ -23,13 +24,14 @@ class Extractor:
                         matriz.append(row)
 
         except (ValueError, TypeError) as e:
-            print("[!] Error - Se ha introducido alguna letra en vez de número.", e)
+            error('Se ha introducido alguna letra en vez de número.')
+            print(e)
             exit(1)
         except OSError: 
-            print("[!] Error - El archivo no se puede leer.")
+            error('Algún archivo no se puede leer o no existe.')
             exit(1)
         except Exception as e:
-            print("[!] Error -",e)
+            error(e)
             exit(1)  
 
     @property

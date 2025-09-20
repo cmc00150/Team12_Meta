@@ -1,18 +1,12 @@
 import sys 
 from modulos.heuristicas import *
+from modulos.logs import *
+
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 
-def mostrarResultados(config, dataset, result):
-    for r, archivo, instancia in zip(result, config.data, dataset):
-            tiempo = f"{r[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en ms aproximando al 4to        
-            print("  Archivo:", archivo,
-            "\n  Asignacion:", [elem+1 for elem in r[0]], 
-            "\n  Costo:", costo(r[0],instancia.flujos, instancia.distancias),
-            "\n  Tiempo de ejecucion:",tiempo,"ms\n")
-
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
-    print("Seleccione un archivo para abrir")
+    error("Seleccione un archivo para abrir")
     exit(1)
 
 config = Configurador(sys.argv[1]) # Guardamos la información de configuración
@@ -24,10 +18,14 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
     match algoritmo:
         case 'greedy':
             result = [greedy(data.flujos, data.distancias, data.dimension) for data in dataset]
-            print(' RESULTADOS ALGORITMO GREEDY '.center(50,'-'),'\n')
-            mostrarResultados(config, dataset, result)
+            mostrarResultados(config, dataset, algoritmo, result)
+        case 'greedy_aleatorizado':
+              if len(config.seed) == 0 or len(config.extra == 0):
+                   error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio)')
+                   continue
+
         case _:
-            print('[!] Error - El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
+            error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 
 
 
