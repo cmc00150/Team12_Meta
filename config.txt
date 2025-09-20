@@ -1,3 +1,4 @@
-DATA = ./datos/_ejemplo.txt ./datos/ford01.dat ./datos/ford02.dat ./datos/ford03.dat ./datos/ford04.dat 
-ALG = greedy
-SEED =
+DATA = ./datos/_ejemplo.txt ./datos/ford01.dat ./datos/ford02.dat ./datos/ford03.dat ./datos/ford04.dat
+ALG = greedy greedy_aleatorizado
+SEED = 15522133
+K = 5

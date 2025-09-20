@@ -19,15 +19,21 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
         case 'greedy':
             result = [greedy(data.flujos, data.distancias, data.dimension) for data in dataset]
             mostrarResultados(config, dataset, algoritmo, result)
+
         case 'greedy_aleatorizado':
-              if len(config.seed) == 0 or len(config.extra == 0):
-                   error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio)')
-                   continue
+            if len(config.seed) == 0 or len(config.extra) == 0:
+                error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
+                continue
+
+            for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
+                for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
+                    random.seed(semilla)  # Actualizo la semilla
+                    for i in range (0,5): # Ejecuto 5 veces porque es un algorito que depende de aleatoriedad
+                        result = [greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k)) for data in dataset]
+                        mostrarResultados(config, dataset, algoritmo, result, int(semilla), i, int(k))
 
         case _:
             error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
-
-
 
 # Cuando tenemos dos o más tuplas con la misma distancia, deberiamos asignar todas las posibilidades a la permutación.
 # Por ejemplo, si tenemos [(2, 19), (5, 19), (6,20)...], ahora la permutación pondrá primero el 2, luego el 5, etc. 
