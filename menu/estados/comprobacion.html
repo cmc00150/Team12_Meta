@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <section id="alg">
+    <h2>Algoritmo</h2>
+  </section>
+  <section id="mat" class="mat-style">
+    <h2 style="grid-column: span 2; justify-self: start;">Matrices</h2>
+  </section>
+  <script>
+    async function mostrarConfiguracion() {
+      const sec_alg = document.getElementById("alg")
+      const sec_mat = document.getElementById("mat")
+      const data = pywebview.api.mostrar_configuracion()
+
+      const textAlg = document.createElement("p")
+      textAlg.innerHTML += data.algoritmo
+
+      const matrix = data.matrices.map(matriz => {
+        let table = '<table>'
+          for (fila in matriz) {
+            table += '<tr>'
+            for (columna in matriz) {
+              table += `<tr>${columna}</tr>`
+            }
+            table += '</tr>'
+          }
+          table += '</table>'
+          return table
+      })
+
+      sec_alg.appendChild(textAlg)
+      matrix.forEach(mat => sec_mat.innerHTML += mat)
+    }
+
+    // Usar el evento 'pywebviewready' como en el ejemplo
+    window.addEventListener('pywebviewready', function () {
+      mostrarConfiguracion()
+    })
+
+    async function continuar(params) {
+      await pywebview.api.siguiente_estado()
+    }
+  </script>
+</body>
+</html>

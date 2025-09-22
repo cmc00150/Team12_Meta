@@ -1,0 +1,21 @@
+body {
+  margin: 0
+}
+
+.mat-style {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: min-content;
+  table-layout: auto;
+}
+
+td {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #333;
+}
