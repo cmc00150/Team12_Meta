@@ -1,4 +1,5 @@
 import os
+from modulos.logs import error
 
 def limpiar_terminal(): # Limpia la terminal en cada ejecución
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -9,7 +10,7 @@ class Configurador:
             texto=archivo.read().splitlines() # Abro el archivo y obtengo sus líneas
 
             if len(texto) < 2:
-                print('El fichero de configuración debe recibir al menos dos argumentos:',
+                error('El fichero de configuración debe recibir al menos dos argumentos:',
                     '\n[!] OBLIGATORIO [!] \tDATA = {ejemplo.txt} (Datos para trabajar)',
                     '\n[!] OBLIGATORIO [!] \tALG = {greedy}  (Algoritmos con los que ejecutar)',
                     '\n\t\t\tSEED = {0} (Semillas para generar aleatoriedad)',
@@ -40,10 +41,10 @@ class Configurador:
 
             # Compruebo que hay datos y algoritmo para trabajar
             if not self.__data :
-                print('[!] Error - La lista de ficheros de datos NO puede estar vacía')
+                error('La lista de ficheros de datos NO puede estar vacía')
                 exit(1)
             if not self.__alg:
-                print('[!] Error - Debe indicar al menos un algoritmo para usar')
+                error('Debe indicar al menos un algoritmo para usar')
                 exit(1)
 
     @property

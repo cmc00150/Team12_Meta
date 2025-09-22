@@ -1,18 +1,12 @@
 import sys 
 from modulos.heuristicas import *
+from modulos.logs import *
+
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 
-def mostrarResultados(config, dataset, result):
-    for r, archivo, instancia in zip(result, config.data, dataset):
-            tiempo = f"{r[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en ms aproximando al 4to        
-            print("  Archivo:", archivo,
-            "\n  Asignacion:", [elem+1 for elem in r[0]], 
-            "\n  Costo:", costo(r[0],instancia.flujos, instancia.distancias),
-            "\n  Tiempo de ejecucion:",tiempo,"ms\n")
-
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
-    print("Seleccione un archivo para abrir")
+    error("Seleccione un archivo para abrir")
     exit(1)
 
 config = Configurador(sys.argv[1]) # Guardamos la información de configuración
@@ -24,12 +18,23 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
     match algoritmo:
         case 'greedy':
             result = [greedy(data.flujos, data.distancias, data.dimension) for data in dataset]
-            print(' RESULTADOS ALGORITMO GREEDY '.center(50,'-'),'\n')
-            mostrarResultados(config, dataset, result)
+            mostrarResultados(config, dataset, algoritmo, result)
+
+        case 'greedy_aleatorizado':
+            if len(config.seed) == 0 or len(config.extra) == 0:
+                error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
+                continue
+
+            for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
+                for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
+                    random.seed(semilla)  # Actualizo la semilla
+                    result = [greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k)) for data in dataset]
+                    mostrarResultados(config, dataset, algoritmo, result, int(semilla), int(k))
+
         case _:
-            print('[!] Error - El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
+            error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 
-
+finPrograma()
 
 # Cuando tenemos dos o más tuplas con la misma distancia, deberiamos asignar todas las posibilidades a la permutación.
 # Por ejemplo, si tenemos [(2, 19), (5, 19), (6,20)...], ahora la permutación pondrá primero el 2, luego el 5, etc. 
@@ -41,3 +46,13 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
 # Es lo mismo solo que hacer un pop(x), del numero que salga en vez de 0 y asi.
 
 # Hacer la suma teniendo en cuenta que sea simetrica, hacemos que el primer for vaya de 0 a tam y el segundo for vaya de i a tam.
+
+# INFORME:
+    # Descripción del problema (1-2 páginas)
+    # Análisis del algoritmo
+    # Explicación de cómo se ha implementado (NO METER CAPTURAS DE PANTALLA, pero sí hay que poner código)
+    # Incluir gráficas para comparar algoritmos, así como para comparar un solo algoritmo con el mejor resultado que nos dan
+
+# Dont look bits
+# Vector inicializado a 0. Se para la búsqueda cuando todo el vector está a 1
+# Si la unidad 1 se compara con todas y ninguna mejora la situación, es porque la 1 es la mejor, así que le ponemos un 1 (ver código platea)
