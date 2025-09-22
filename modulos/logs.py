@@ -15,21 +15,25 @@ Parámetros
   * i: Parámetro opcional, [Default: -1]. Indica el número de iteración en la que se ha obtenido el resultado. Se utiliza en algoritmos que tengan que ejecutarse más de una vez
   * k: Parámetro opcional, [Default: -1]. Establece el rango para aplicar la aleatoriedad dentro del greedy_aleatorio
 """
-def mostrarResultados(config, dataset, algoritmo, result, semilla=-1, i=-1, k=-1):
+def mostrarResultados(config, dataset, algoritmo, result, semilla=-1, k=-1):
     print(f" RESULTADOS ALGORITMO {algoritmo.upper()} ".center(50, '-'))
-    if i>=0:
-          print(f" ITERACION NUMERO {i+1} ".center(50, '-'), '\n')
+    if semilla>0:
+          print(f" SEMILLA {semilla} ".center(50, '-'), '\n')
 
     for r, archivo, instancia in zip(result, config.data, dataset):
-            tiempo = f"{r[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en ms aproximando al 4to        
-            print("  Archivo:", archivo)
-
-            if semilla > 0:
-                  print("  Semilla:",semilla)
+      tiempo = f"{r[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en ms aproximando al 4to        
+      print("  Archivo:", archivo)
+      
+      if k > 0:
+            print("  k:",k)
             
-            if k > 0:
-                  print("  k:",k)
-                  
-            print("  Asignacion:", [elem+1 for elem in r[0]], 
-                  "\n  Costo:", costo(r[0],instancia.flujos, instancia.distancias),
-                  "\n  Tiempo de ejecucion:",tiempo,"ms\n")
+      print("  Asignacion:", [elem+1 for elem in r[0]], 
+            "\n  Costo:", costo(r[0],instancia.flujos, instancia.distancias),
+            "\n  Tiempo de ejecucion:",tiempo,"ms\n")
+
+def finPrograma():
+      print(' o'*50,
+            '\n',
+            f" FIN DEL PROGRAMA ".center(100, " "),
+            '\n',
+            ' o'*50)
