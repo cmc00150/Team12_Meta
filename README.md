@@ -41,10 +41,18 @@
 >
 > - La función de factorización se ha convertido de cuadrática a linear. Lo que hace es comprobar como influye el cambio de dos unidades con respecto al resto de unidades, mirando como ha variado el valor (diferencia de distancias). Entiendo que se han ahorrado la segunda iteración sumando lo que les sale en el resultado alterior más la nueva combinación posible.
 > - Logs:
->   - Al inico, parametros asociados, nombre del algoritmo, numero de iteraciones, semilla.
->   - Hay que empezar con la solucion inicial.
->   - Luego el cambio que hemos hecho, con el coste generado y la solucion que me ha dado (las soluciones rechazadas no se muestran).
->   - Al final, hay que poner la solución encontrada, la semilla, lo que ha tardado y el coste.
+>   ```
+>   PARÁMETROS (Alg, parámetros de ejecución del alg (iteraciones, semilla...)
+>   Solución inicial y su coste
+>   ----
+>   Por cada cambio un registro en el log:
+>   - Qué posiciones se han intercambiado.
+>   - Solución nueva generada y su coste.
+>   - Solución global encontrada hasta ahora y su coste.
+>   --
+>   Final
+>   - Solucion final, su coste y el tiempo de ejecución.
+>   ```
 
 > [!IMPORTANT]
 > Los limites de iteracion estan mal, si se ha intercambiado una posicion, i debe empezar en 'v' en vez de en 1. Donde 'v' es la posicion donde se quedo + 1 (la siguiente), porque si no se genera un bucle infinito.
