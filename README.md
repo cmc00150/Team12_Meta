@@ -3,16 +3,66 @@
 - [x] Sacar matrices
 - [x] Greedy
 - [x] Leer configuracion
-- [ ] Ejecutar con los ford01.dat... y apuntar resultados
+- [x] Ejecutar con los ford01.dat... y apuntar resultados
 ## Práctica 2
 > Ahora el greedy no cogera el mejor sino que elegira entre los x mejores (segun el parametro en config, ALEAT) aleatoriamente.
-
-- [ ] Modificar greedy
-- [ ] Ejecutar y apuntar
 
 > [!IMPORTANT]
 > - Por cada experimento debe haber una **única** semilla
 > - Solo es copiar el greedy modificando el `pop(x)` para que coja uno de los x valores en vez de el primero siempre
+> - **COMPROBAR LOS MINIMOS GLOBALES Y LOCALES CON LOS ARCHIVOS SLC Y NO EL EXCEL QUE TIENE ERRORES**
+
+- [X] Modificar greedy
+- [X] Comprobar que funcione
+- [ ] Apuntar los resultados en el excel
+
+# Práctica 3
+> [!IMPORTANT]
+> **LA SEMANA QUE VIENE VA A PREGUNTAR**
+
+> - CheckMove comprueba si el cambio mejora.
+>   ApplyMove lo que hace es aplicar el cambio.
+>   No paso a la siguiente iteración hasta que haya intercambiado dos operaciones.
+>   Hasta que iteraciones o DLB = 1 (porque todas las posiciones que están en 1 se suponen que están bien posicionadas).
+>
+> Si el resultado de la factorización sale igual que la función de evaluación completa es que esta bien. Es por dos porque es simétrica
+>
+> ```
+> Repetir
+> 	Repetir
+> 		Generar Vecino
+> 	Hasta entorno completo
+> 
+> 	Interaciones ++ // Que no siempre lo ahcemos
+> 	Hasta iteraciones o DLB = 1
+>
+> Devuelve Mejor_solucion
+> ```
+>
+> - La función de factorización se ha convertido de cuadrática a linear. Lo que hace es comprobar como influye el cambio de dos unidades con respecto al resto de unidades, mirando como ha variado el valor (diferencia de distancias). Entiendo que se han ahorrado la segunda iteración sumando lo que les sale en el resultado alterior más la nueva combinación posible.
+> - Logs:
+>   - Al inico, parametros asociados, nombre del algoritmo, numero de iteraciones, semilla.
+>   - Hay que empezar con la solucion inicial.
+>   - Luego el cambio que hemos hecho, con el coste generado y la solucion que me ha dado (las soluciones rechazadas no se muestran).
+>   - Al final, hay que poner la solución encontrada, la semilla, lo que ha tardado y el coste.
+
+> [!IMPORTANT]
+> Los limites de iteracion estan mal, si se ha intercambiado una posicion, i debe empezar en 'v' en vez de en 1. Donde 'v' es la posicion donde se quedo + 1 (la siguiente), porque si no se genera un bucle infinito.
+
+- [ ] Crear el DLB (dos loop bit)
+- [ ] Crear la función de factorización
+- [ ] Probarla con el greedy
+- [ ] Hacer logs
+- [ ] Hacer pruebas y apuntar (supongo)
+
+# Documento
+- ✳️ Le gusta que despues de la tabla
+- ✳️ Desviacion tipica, media, tiempo.
+- ⚠️ **No hacemos una tabla por cada semilla**, baja un monton la nota.
+- ⚠️ **NO GRAFICAS DE LA DESVIACION TIPICA**
+- ❌ No cortar las graficas
+- ✅ Informe corto 15 paginas
+- Tabla final con todos los problemas, por cada uno hacemos la desviacion tipica y el tiempo
 
 # ℹ️ Comandos
 ## Iniciar repositorio 
