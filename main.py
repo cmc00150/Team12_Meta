@@ -37,9 +37,16 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                         logGreedyAleatorizado.registrarSolucion(result,costo(result[0],data.flujos,data.distancias))
                         logGreedyAleatorizado.generaLogs()
                         #mostrarResultados(config, dataset, algoritmo, result, int(semilla), int(k))
-
             case _:
-                    error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
+                    #error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
+                if len(config.seed) == 0 or len(config.extra) == 0:
+                    error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
+                    continue
+
+                for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
+                    for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
+                        random.seed(semilla)  # Actualizo la semilla
+                        busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k))
 
 finPrograma()
 # generaLogs('prueba',134,'datos01')
