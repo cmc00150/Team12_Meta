@@ -1,5 +1,5 @@
 import os
-from modulos.logs import error
+from modulos.prints import error
 
 def limpiar_terminal(): # Limpia la terminal en cada ejecución
     os.system('cls' if os.name == 'nt' else 'clear')
