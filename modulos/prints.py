@@ -12,7 +12,6 @@ Parámetros
   - algoritmo: Algoritmo utilizado para resolver el problema
   - result: Conjunto de resultados obtenidos tras aplicar el algoritmo a los diferentes ficheros de datos indicados en configuración
   * semilla: Parámetro opcional, [Default: -1]. Se utiliza para indicar qué semilla utilizamos en aquellos algoritmos que dependan de la aleatoriedad
-  * i: Parámetro opcional, [Default: -1]. Indica el número de iteración en la que se ha obtenido el resultado. Se utiliza en algoritmos que tengan que ejecutarse más de una vez
   * k: Parámetro opcional, [Default: -1]. Establece el rango para aplicar la aleatoriedad dentro del greedy_aleatorio
 """
 def mostrarResultados(config, dataset, algoritmo, result, semilla=-1, k=-1):
@@ -34,6 +33,6 @@ def mostrarResultados(config, dataset, algoritmo, result, semilla=-1, k=-1):
 def finPrograma():
       print(' o'*50,
             '\n',
-            f" FIN DEL PROGRAMA ".center(100, " "),
+            f" FIN DEL PROGRAMA, CONSULTE LOS LOGS PARA OBTENER LOS RESULTADOS ".center(100, " "),
             '\n',
             ' o'*50)

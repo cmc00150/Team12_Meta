@@ -1,9 +1,10 @@
 import sys 
 from modulos.heuristicas import *
-from modulos.logs import *
+from modulos.prints import *
 
 from clases.extractor import Extractor
 from clases.configurador import Configurador
+from clases.logs import *
 
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
     error("Seleccione un archivo para abrir")
@@ -15,26 +16,33 @@ config.mostrarInfo()
 dataset = [Extractor(archivo) for archivo in config.data] # Obtenemos los datos de cada problema
 
 for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de configuración
-    match algoritmo:
-        case 'greedy':
-            result = [greedy(data.flujos, data.distancias, data.dimension) for data in dataset]
-            mostrarResultados(config, dataset, algoritmo, result)
+    for archivoDatos, data in zip(config.data, dataset):
+        match algoritmo:
+            case 'greedy':
+                logGreedy=Log(algoritmo,archivoDatos)
+                result = greedy(data.flujos, data.distancias, data.dimension)
+                logGreedy.registrarSolucion(result, costo(result[0],data.flujos, data.distancias))
+                logGreedy.generaLogs()
 
-        case 'greedy_aleatorizado':
-            if len(config.seed) == 0 or len(config.extra) == 0:
-                error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
-                continue
+            case 'greedy_aleatorizado':
+                if len(config.seed) == 0 or len(config.extra) == 0:
+                    error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
+                    continue
 
-            for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
-                for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
-                    random.seed(semilla)  # Actualizo la semilla
-                    result = [greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k)) for data in dataset]
-                    mostrarResultados(config, dataset, algoritmo, result, int(semilla), int(k))
+                for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
+                    for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
+                        logGreedyAleatorizado=Log(algoritmo,archivoDatos,semilla,k)
+                        random.seed(semilla)  # Actualizo la semilla
+                        result = greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k))
+                        logGreedyAleatorizado.registrarSolucion(result,costo(result[0],data.flujos,data.distancias))
+                        logGreedyAleatorizado.generaLogs()
+                        #mostrarResultados(config, dataset, algoritmo, result, int(semilla), int(k))
 
-        case _:
-            error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
+            case _:
+                    error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 
 finPrograma()
+# generaLogs('prueba',134,'datos01')
 
 # Cuando tenemos dos o más tuplas con la misma distancia, deberiamos asignar todas las posibilidades a la permutación.
 # Por ejemplo, si tenemos [(2, 19), (5, 19), (6,20)...], ahora la permutación pondrá primero el 2, luego el 5, etc. 
@@ -55,4 +63,4 @@ finPrograma()
 
 # Dont look bits
 # Vector inicializado a 0. Se para la búsqueda cuando todo el vector está a 1
-# Si la unidad 1 se compara con todas y ninguna mejora la situación, es porque la 1 es la mejor, así que le ponemos un 1 (ver código platea)
+# Si la unidad 1 se compara con todas y ninguna mejora la situación, es porque la 1 es la mejor, así que le ponemos un 1 (ver código platea,)
