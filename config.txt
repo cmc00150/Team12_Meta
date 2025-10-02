@@ -1,4 +1,4 @@
-DATA = ./datos/_ejemplo.txt
-ALG = busqueda_local_dlb
+DATA = ./datos/ford01.dat
+ALG = greedy_aleatorizado
 SEED = 15533122
 K = 5

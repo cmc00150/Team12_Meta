@@ -46,4 +46,4 @@ class Log:
         tiempo = f"{nuevaSolucion[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en ms aproximando al 4to  
         self.__texto+=f' Asignación: {[elem+1 for elem in nuevaSolucion[0]]}'      
         self.__texto+=f'\n Costo: {costo}'
-        self.__texto+=f'\n Tiempo de ejecución: {tiempo}ms'
+        self.__texto+=f'\n Tiempo de ejecución: {tiempo}s'
