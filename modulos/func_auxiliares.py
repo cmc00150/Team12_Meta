@@ -8,16 +8,22 @@ def fact(i, j, perm, f, d):
 
 
 
-def DLB(sol: list, flujos, distancias):
-    factible = [0 for u in list]
-    mejor_actual = 0
+def DBL(sol: list, factible:list, flujos, distancias): # Encontrar 
+    mejor_actual = (0, 0, 0)
     improve_flag 
 
-    for i in range(len(sol)):
-        if factible[i] == 0:
-            improve_flag = False
-            for j in range(i+1, len(sol)):
-                efic = fact(i, j, sol, flujos, distancias)
-                if efic > mejor_actual:
-                    mejor_actual = efic
-                    factible[i] = factible[j] = 0
+    for i in range(len(sol)): # Miramos cada elemento
+        if factible[i] == 0: # Si hay posibilidad de mejor entro
+            improve_flag = False # Lo ponemos a falso
+            for j in range(i+1, len(sol)): # Opt-2, revisamos las posibles convinaciones
+                efic = fact(i, j, sol, flujos, distancias) # Miramos si mejora esta convinacion
+                if efic > mejor_actual: # Si mejora:
+                    mejor_actual = (i, j, efic) # Escogemos este vecino (guardamos las posiciones que se cambian)
+                    factible[i] = factible[j] = 0 # Indicamos que por estas dos unidades se puede seguir buscando
+                    improve_flag = True # Indicamos que se ha encontrado
+            if not improve_flag: # Si no se ha encontrado ninguna que mejore, vetamos esta posición poniendo un 1
+                factible[i] = 1
+            
+    aux = sol(mejor_actual[0])
+    sol(mejor_actual[0]) = sol(mejor_actual[1])
+    sol(mejor_actual[1]) = aux
