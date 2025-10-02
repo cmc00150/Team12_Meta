@@ -57,10 +57,10 @@
 > [!IMPORTANT]
 > Los limites de iteracion estan mal, si se ha intercambiado una posicion, i debe empezar en 'v' en vez de en 1. Donde 'v' es la posicion donde se quedo + 1 (la siguiente), porque si no se genera un bucle infinito.
 
-- [ ] Crear el DLB (dos loop bit)
-- [ ] Crear la función de factorización
-- [ ] Probarla con el greedy
-- [ ] Hacer logs
+- [X] Crear el DLB (dos loop bit)
+- [X] Crear la función de factorización
+- [X] Probarla con el greedy
+- [X] Hacer logs
 - [ ] Hacer pruebas y apuntar (supongo)
 
 # Documento

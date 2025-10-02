@@ -57,9 +57,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], can
     inicio = time.time()
 
     solucion_1 = greedy_aleatorizado(flujos, distancias, candidatos, k)[0]
-    print(solucion_1, costo(solucion_1, flujos, distancias))
     DLB(solucion_1, flujos, distancias, 5000)
-    print(solucion_1, costo(solucion_1, flujos, distancias))
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado

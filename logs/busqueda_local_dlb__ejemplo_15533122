@@ -1,0 +1,8 @@
+--------------------------------- LOGS ALGORITMO BUSQUEDA_LOCAL_DLB---------------------------------
+                                ARCHIVO DE DATOS: datos/_ejemplo.txt                                
+                                          SEMILLA: 15533122                                         
+                                                K: 5                                                
+----------------------------------------------------------------------------------------------------
+ Asignación: [4, 2, 1, 3]
+ Costo: 310
+ Tiempo de ejecución: 0.0718ms
