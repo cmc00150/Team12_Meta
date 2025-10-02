@@ -1,5 +1,6 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
 import random
+from func_auxiliares import *
 
 def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int) -> tuple [list[int], float]:
     inicio = time.time() # Inicio el contador del tiempo
@@ -51,3 +52,7 @@ def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # 
             aux += flujos[i][j] * distancias[main][it] * 2 # Sabiendo que es simetrica
         costo += aux
     return costo
+
+def primero_mejor(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> tuple [list[int], float]:
+    solucion_1 = greedy_aleatorizado(flujos, distancias, candidatos, k)
+    return DLB(solucion_1, flujos, distancias, 5000)
