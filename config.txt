@@ -1,4 +1,4 @@
 DATA = ./datos/ford01.dat
-ALG = greedy_aleatorizado
+ALG = busqueda_local_dlb
 SEED = 15533122
 K = 5

@@ -46,7 +46,7 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                     for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
                         logBusqueda = Log(algoritmo, archivoDatos, semilla, k)
                         random.seed(semilla)  # Actualizo la semilla
-                        result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k))
+                        result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k), logBusqueda)
                         logBusqueda.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                         logBusqueda.generaLogs()
             case _:

@@ -1,8 +1,8 @@
 -------------------------------- LOGS ALGORITMO GREEDY_ALEATORIZADO---------------------------------
-                                 ARCHIVO DE DATOS: datos/ford01.dat                                 
+                                 ARCHIVO DE DATOS: datos\ford01.dat                                 
                                           SEMILLA: 15533122                                         
                                                 K: 5                                                
 ----------------------------------------------------------------------------------------------------
  Asignación: [6, 8, 7, 5, 14, 18, 10, 1, 19, 9, 17, 13, 2, 16, 15, 4, 20, 11, 12, 3]
  Costo: 3844
- Tiempo de ejecución: 0.0646ms
+ Tiempo de ejecución: 0.0489s

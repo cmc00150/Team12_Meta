@@ -1,6 +1,7 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
 import random
 from modulos.func_auxiliares import *
+from clases.logs import Log
 
 def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int) -> tuple [list[int], float]:
     inicio = time.time() # Inicio el contador del tiempo
@@ -53,10 +54,11 @@ def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # 
         costo += aux
     return costo
 
-def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> tuple [list[int], float]:
+def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
-
     solucion_1 = greedy_aleatorizado(flujos, distancias, candidatos, k)[0]
+    logBusqueda.registrarSolucionInicial(solucion_1,costo(solucion_1,flujos,distancias))
+    
     DLB(solucion_1, flujos, distancias, 5000)
 
     fin=time.time() # Fin del contador del tiempo
