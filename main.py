@@ -4,7 +4,7 @@ from modulos.prints import *
 
 from clases.extractor import Extractor
 from clases.configurador import Configurador
-from clases.logs import *
+from clases.logs import Log
 
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
     error("Seleccione un archivo para abrir")
@@ -38,17 +38,18 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                         logGreedyAleatorizado.generaLogs()
 
             case 'busqueda_local_dlb':
-                if len(config.seed) == 0 or len(config.extra) == 0:
+                if len(config.seed) == 0 or len(config.extra) != 2:
                     error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
                     continue
 
                 for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
                     for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
-                        logBusqueda = Log(algoritmo, archivoDatos, semilla, k)
-                        random.seed(semilla)  # Actualizo la semilla
-                        result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k), logBusqueda)
-                        logBusqueda.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
-                        logBusqueda.generaLogs()
+                        for maxIteraciones in config.extra[1]:
+                            logBusqueda = Log(algoritmo, archivoDatos, semilla, k)
+                            random.seed(semilla)  # Actualizo la semilla
+                            result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k), int(maxIteraciones), logBusqueda)
+                            logBusqueda.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
+                            logBusqueda.generaLogs()
             case _:
                 error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 

@@ -1,0 +1,103 @@
+--------------------------------- LOGS ALGORITMO BUSQUEDA_LOCAL_DLB---------------------------------
+                                 ARCHIVO DE DATOS: datos\ford02.dat                                 
+                                          SEMILLA: 13355122                                         
+                                                K: 5                                                
+----------------------------------------------------------------------------------------------------
+ Asignación Inicial: [7, 11, 9, 3, 6, 2, 8, 12, 14, 16, 1, 10, 4, 20, 18, 19, 15, 13, 17, 5]
+ Costo Inicial: 33450
+
+	Iteración 1: cambia el par (16,7)
+	Asignación: [16, 11, 9, 3, 6, 2, 8, 12, 14, 7, 1, 10, 4, 20, 18, 19, 15, 13, 17, 5]
+	Costo: 33264
+
+	Iteración 2: cambia el par (9,11)
+	Asignación: [16, 9, 11, 3, 6, 2, 8, 12, 14, 7, 1, 10, 4, 20, 18, 19, 15, 13, 17, 5]
+	Costo: 33262
+
+	Iteración 3: cambia el par (19,11)
+	Asignación: [16, 9, 19, 3, 6, 2, 8, 12, 14, 7, 1, 10, 4, 20, 18, 11, 15, 13, 17, 5]
+	Costo: 33092
+
+	Iteración 4: cambia el par (18,3)
+	Asignación: [16, 9, 19, 18, 6, 2, 8, 12, 14, 7, 1, 10, 4, 20, 3, 11, 15, 13, 17, 5]
+	Costo: 33010
+
+	Iteración 5: cambia el par (20,6)
+	Asignación: [16, 9, 19, 18, 20, 2, 8, 12, 14, 7, 1, 10, 4, 6, 3, 11, 15, 13, 17, 5]
+	Costo: 32952
+
+	Iteración 6: cambia el par (15,8)
+	Asignación: [16, 9, 19, 18, 20, 2, 15, 12, 14, 7, 1, 10, 4, 6, 3, 11, 8, 13, 17, 5]
+	Costo: 32918
+
+	Iteración 7: cambia el par (19,12)
+	Asignación: [16, 9, 12, 18, 20, 2, 15, 19, 14, 7, 1, 10, 4, 6, 3, 11, 8, 13, 17, 5]
+	Costo: 32672
+
+	Iteración 8: cambia el par (18,14)
+	Asignación: [16, 9, 12, 14, 20, 2, 15, 19, 18, 7, 1, 10, 4, 6, 3, 11, 8, 13, 17, 5]
+	Costo: 32624
+
+	Iteración 9: cambia el par (13,10)
+	Asignación: [16, 9, 12, 14, 20, 2, 15, 19, 18, 7, 1, 13, 4, 6, 3, 11, 8, 10, 17, 5]
+	Costo: 32596
+
+	Iteración 10: cambia el par (8,3)
+	Asignación: [16, 9, 12, 14, 20, 2, 15, 19, 18, 7, 1, 13, 4, 6, 8, 11, 3, 10, 17, 5]
+	Costo: 32566
+
+	Iteración 11: cambia el par (5,3)
+	Asignación: [16, 9, 12, 14, 20, 2, 15, 19, 18, 7, 1, 13, 4, 6, 8, 11, 5, 10, 17, 3]
+	Costo: 32488
+
+	Iteración 12: cambia el par (12,17)
+	Asignación: [16, 9, 17, 14, 20, 2, 15, 19, 18, 7, 1, 13, 4, 6, 8, 11, 5, 10, 12, 3]
+	Costo: 32372
+
+	Iteración 13: cambia el par (1,3)
+	Asignación: [16, 9, 17, 14, 20, 2, 15, 19, 18, 7, 3, 13, 4, 6, 8, 11, 5, 10, 12, 1]
+	Costo: 32340
+
+	Iteración 14: cambia el par (9,16)
+	Asignación: [9, 16, 17, 14, 20, 2, 15, 19, 18, 7, 3, 13, 4, 6, 8, 11, 5, 10, 12, 1]
+	Costo: 32228
+
+	Iteración 15: cambia el par (2,16)
+	Asignación: [9, 2, 17, 14, 20, 16, 15, 19, 18, 7, 3, 13, 4, 6, 8, 11, 5, 10, 12, 1]
+	Costo: 32202
+
+	Iteración 16: cambia el par (16,17)
+	Asignación: [9, 2, 16, 14, 20, 17, 15, 19, 18, 7, 3, 13, 4, 6, 8, 11, 5, 10, 12, 1]
+	Costo: 32106
+
+	Iteración 17: cambia el par (1,17)
+	Asignación: [9, 2, 16, 14, 20, 1, 15, 19, 18, 7, 3, 13, 4, 6, 8, 11, 5, 10, 12, 17]
+	Costo: 32066
+
+	Iteración 18: cambia el par (7,15)
+	Asignación: [9, 2, 16, 14, 20, 1, 7, 19, 18, 15, 3, 13, 4, 6, 8, 11, 5, 10, 12, 17]
+	Costo: 31974
+
+	Iteración 19: cambia el par (5,15)
+	Asignación: [9, 2, 16, 14, 20, 1, 7, 19, 18, 5, 3, 13, 4, 6, 8, 11, 15, 10, 12, 17]
+	Costo: 31812
+
+	Iteración 20: cambia el par (16,3)
+	Asignación: [9, 2, 3, 14, 20, 1, 7, 19, 18, 5, 16, 13, 4, 6, 8, 11, 15, 10, 12, 17]
+	Costo: 31794
+
+	Iteración 21: cambia el par (14,13)
+	Asignación: [9, 2, 3, 13, 20, 1, 7, 19, 18, 5, 16, 14, 4, 6, 8, 11, 15, 10, 12, 17]
+	Costo: 31722
+
+	Iteración 22: cambia el par (12,15)
+	Asignación: [9, 2, 3, 13, 20, 1, 7, 19, 18, 5, 16, 14, 4, 6, 8, 11, 12, 10, 15, 17]
+	Costo: 31638
+
+	Iteración 23: cambia el par (19,15)
+	Asignación: [9, 2, 3, 13, 20, 1, 7, 15, 18, 5, 16, 14, 4, 6, 8, 11, 12, 10, 19, 17]
+	Costo: 31472
+
+ Asignación: [9, 2, 3, 13, 20, 1, 7, 15, 18, 5, 16, 14, 4, 6, 8, 11, 12, 10, 19, 17]
+ Costo: 31472
+ Tiempo de ejecución: 3.9532s

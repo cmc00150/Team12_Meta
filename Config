@@ -1,3 +1,0 @@
-DATA = ./datos/_ejemplo.txt ./datos/ford01.dat
-COSO = 2
-ALG = greedy

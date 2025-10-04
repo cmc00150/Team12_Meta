@@ -1,4 +1,5 @@
 import sys
+from clases.logs import Log
 
 def fact(i, j, perm, f, d):
     total = 0
@@ -8,7 +9,7 @@ def fact(i, j, perm, f, d):
         total += f[i][k]*(d[perm[j]][elem] - d[perm[i]][elem])*2 + f[j][k]*(d[perm[i]][elem] - d[perm[j]][elem])*2
     return total
 
-def DLB(sol: list, flujos, distancias, max_iteraciones): # Encontrar 
+def DLB(sol: list, costo, flujos, distancias, max_iteraciones, log: Log): # Encontrar 
     factible = [0 for e in sol]
     it = 0
     n_factibles = len(sol)
@@ -21,11 +22,13 @@ def DLB(sol: list, flujos, distancias, max_iteraciones): # Encontrar
 
             if factible[i] == 0: # Si hay posibilidad de mejor entro
                 improve = False # Lo ponemos a falso
-                for j in range(i+1, len(sol)+i): # Opt-2, revisamos las posibles convinaciones
+                for j in range(i+1, len(sol)+i): # Opt-2, revisamos las posibles combinaciones
                     j = j % len(sol) # Hacemos el modulo para que no se pase
-                    efic = fact(i, j, sol, flujos, distancias) # Miramos si mejora esta convinacion
+                    efic = fact(i, j, sol, flujos, distancias) # Miramos si mejora esta combinacion
+                    costoAux=costo # Hago una copia del costo hasta el momento para comparar sin perder su valor
 
                     if efic + menor_actual < menor_actual: # Si el delta es negativo (mejora):
+                        costoAux+=efic+menor_actual # Se guarda el nuevo costo para poder mostrarlo en logs
                         # Hacemos el intercambio
                         aux = sol[i]
                         sol[i] = sol[j]
@@ -36,12 +39,24 @@ def DLB(sol: list, flujos, distancias, max_iteraciones): # Encontrar
                         factible[i] = factible[j] = 0 # Indicamos que por estas dos unidades se puede seguir buscando
 
                         it += 1
+
+                        log.registraCambioBLocal(i,j,sol,costoAux,it)
+
                         menor_actual = efic # Escogemos este vecino (guardamos las posiciones que se cambian)
                         improve = True # Indicamos que se ha encontrado
                         break  # Salir del bucle j una vez que encontramos una mejora
+
+                costo=costoAux # Tras pasar por todas las opciones, actualizo el costo para quedarme con el mejor
 
                 if not improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
                     factible[i] = 1
                     n_factibles -= 1
                     if n_factibles == 0:
                         break
+
+                if(it==max_iteraciones):
+                    break
+                
+        if(it==max_iteraciones):
+            break
+        

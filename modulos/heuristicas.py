@@ -54,12 +54,13 @@ def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # 
         costo += aux
     return costo
 
-def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int, logBusqueda: Log) -> tuple [list[int], float]:
+def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
     solucion_1 = greedy_aleatorizado(flujos, distancias, candidatos, k)[0]
-    logBusqueda.registrarSolucionInicial(solucion_1,costo(solucion_1,flujos,distancias))
+    costoSol1=costo(solucion_1,flujos,distancias)
+    logBusqueda.registrarSolucionInicial(solucion_1,costoSol1)
     
-    DLB(solucion_1, flujos, distancias, 5000)
+    DLB(solucion_1,costoSol1, flujos, distancias, maxIteraciones, logBusqueda)
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado

@@ -1,0 +1,107 @@
+--------------------------------- LOGS ALGORITMO BUSQUEDA_LOCAL_DLB---------------------------------
+                                 ARCHIVO DE DATOS: datos\ford01.dat                                 
+                                          SEMILLA: 12255133                                         
+                                                K: 5                                                
+----------------------------------------------------------------------------------------------------
+ Asignación Inicial: [13, 4, 12, 3, 20, 8, 7, 9, 6, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+ Costo Inicial: 3926
+
+	Iteración 1: cambia el par (12,13)
+	Asignación: [12, 4, 13, 3, 20, 8, 7, 9, 6, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3922
+
+	Iteración 2: cambia el par (13,4)
+	Asignación: [12, 13, 4, 3, 20, 8, 7, 9, 6, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3916
+
+	Iteración 3: cambia el par (3,4)
+	Asignación: [12, 13, 3, 4, 20, 8, 7, 9, 6, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3878
+
+	Iteración 4: cambia el par (7,4)
+	Asignación: [12, 13, 3, 7, 20, 8, 4, 9, 6, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3872
+
+	Iteración 5: cambia el par (6,20)
+	Asignación: [12, 13, 3, 7, 6, 8, 4, 9, 20, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3848
+
+	Iteración 6: cambia el par (9,8)
+	Asignación: [12, 13, 3, 7, 6, 9, 4, 8, 20, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3844
+
+	Iteración 7: cambia el par (8,4)
+	Asignación: [12, 13, 3, 7, 6, 9, 8, 4, 20, 14, 17, 5, 19, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3832
+
+	Iteración 8: cambia el par (19,4)
+	Asignación: [12, 13, 3, 7, 6, 9, 8, 19, 20, 14, 17, 5, 4, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3828
+
+	Iteración 9: cambia el par (14,20)
+	Asignación: [12, 13, 3, 7, 6, 9, 8, 19, 14, 20, 17, 5, 4, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3818
+
+	Iteración 10: cambia el par (17,20)
+	Asignación: [12, 13, 3, 7, 6, 9, 8, 19, 14, 17, 20, 5, 4, 16, 15, 2, 11, 10, 1, 18]
+	Costo: 3810
+
+	Iteración 11: cambia el par (15,20)
+	Asignación: [12, 13, 3, 7, 6, 9, 8, 19, 14, 17, 15, 5, 4, 16, 20, 2, 11, 10, 1, 18]
+	Costo: 3772
+
+	Iteración 12: cambia el par (6,5)
+	Asignación: [12, 13, 3, 7, 5, 9, 8, 19, 14, 17, 15, 6, 4, 16, 20, 2, 11, 10, 1, 18]
+	Costo: 3770
+
+	Iteración 13: cambia el par (11,4)
+	Asignación: [12, 13, 3, 7, 5, 9, 8, 19, 14, 17, 15, 6, 11, 16, 20, 2, 4, 10, 1, 18]
+	Costo: 3766
+
+	Iteración 14: cambia el par (1,16)
+	Asignación: [12, 13, 3, 7, 5, 9, 8, 19, 14, 17, 15, 6, 11, 1, 20, 2, 4, 10, 16, 18]
+	Costo: 3748
+
+	Iteración 15: cambia el par (7,20)
+	Asignación: [12, 13, 3, 20, 5, 9, 8, 19, 14, 17, 15, 6, 11, 1, 7, 2, 4, 10, 16, 18]
+	Costo: 3742
+
+	Iteración 16: cambia el par (16,4)
+	Asignación: [12, 13, 3, 20, 5, 9, 8, 19, 14, 17, 15, 6, 11, 1, 7, 2, 16, 10, 4, 18]
+	Costo: 3738
+
+	Iteración 17: cambia el par (8,10)
+	Asignación: [12, 13, 3, 20, 5, 9, 10, 19, 14, 17, 15, 6, 11, 1, 7, 2, 16, 8, 4, 18]
+	Costo: 3696
+
+	Iteración 18: cambia el par (18,4)
+	Asignación: [12, 13, 3, 20, 5, 9, 10, 19, 14, 17, 15, 6, 11, 1, 7, 2, 16, 8, 18, 4]
+	Costo: 3690
+
+	Iteración 19: cambia el par (11,4)
+	Asignación: [12, 13, 3, 20, 5, 9, 10, 19, 14, 17, 15, 6, 4, 1, 7, 2, 16, 8, 18, 11]
+	Costo: 3674
+
+	Iteración 20: cambia el par (8,12)
+	Asignación: [8, 13, 3, 20, 5, 9, 10, 19, 14, 17, 15, 6, 4, 1, 7, 2, 16, 12, 18, 11]
+	Costo: 3672
+
+	Iteración 21: cambia el par (15,3)
+	Asignación: [8, 13, 15, 20, 5, 9, 10, 19, 14, 17, 3, 6, 4, 1, 7, 2, 16, 12, 18, 11]
+	Costo: 3664
+
+	Iteración 22: cambia el par (12,19)
+	Asignación: [8, 13, 15, 20, 5, 9, 10, 12, 14, 17, 3, 6, 4, 1, 7, 2, 16, 19, 18, 11]
+	Costo: 3658
+
+	Iteración 23: cambia el par (12,11)
+	Asignación: [8, 13, 15, 20, 5, 9, 10, 11, 14, 17, 3, 6, 4, 1, 7, 2, 16, 19, 18, 12]
+	Costo: 3638
+
+	Iteración 24: cambia el par (15,8)
+	Asignación: [15, 13, 8, 20, 5, 9, 10, 11, 14, 17, 3, 6, 4, 1, 7, 2, 16, 19, 18, 12]
+	Costo: 3620
+
+ Asignación: [15, 13, 8, 20, 5, 9, 10, 11, 14, 17, 3, 6, 4, 1, 7, 2, 16, 19, 18, 12]
+ Costo: 3620
+ Tiempo de ejecución: 3.6333s

@@ -1,4 +1,5 @@
-DATA = ./datos/ford01.dat
+DATA = ./datos/ford01.dat ./datos/ford02.dat ./datos/ford03.dat ./datos/ford04.dat
 ALG = busqueda_local_dlb
-SEED = 15533122
+SEED = 12255133
 K = 5
+max_iteraciones = 5000
