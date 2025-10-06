@@ -63,6 +63,10 @@
 - [X] Hacer logs
 - [ ] Hacer pruebas y apuntar (supongo)
 
+# Práctica 4
+> Memoria a corto plazo: una lista con un contador para indicar por que posición va (hacer modulo len(lista))
+> Memoria a largo plazo: una matriz de nxn (n es el número de unidades)
+
 # Documento
 - ✳️ Le gusta que despues de la tabla
 - ✳️ Desviacion tipica, media, tiempo.
