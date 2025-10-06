@@ -63,6 +63,13 @@
 - [X] Hacer logs
 - [ ] Hacer pruebas y apuntar (supongo)
 
+## Práctica 4
+> ### Orden
+> 1. Empeoramiento
+> 2. Corto plazo
+> 3. Largo plazo
+> 4. Oscilacion
+
 # Documento
 - ✳️ Le gusta que despues de la tabla
 - ✳️ Desviacion tipica, media, tiempo.
