@@ -1,4 +1,4 @@
-DATA = ./datos/ford01.dat ./datos/ford02.dat ./datos/ford03.dat ./datos/ford04.dat
+DATA = ./datos/ford04.dat
 ALG = busqueda_local_dlb
 SEED = 12255133
 K = 5
