@@ -63,7 +63,9 @@
 - [X] Hacer logs
 - [ ] Hacer pruebas y apuntar (supongo)
 
-## Práctica 4
+# Práctica 4
+> Memoria a corto plazo: una lista con un contador para indicar por que posición va (hacer modulo len(lista))
+> Memoria a largo plazo: una matriz de nxn (n es el número de unidades)
 > ### Orden
 > 1. Empeoramiento
 > 2. Corto plazo
