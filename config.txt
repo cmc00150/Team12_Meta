@@ -3,3 +3,6 @@ ALG = busqueda_local_dlb
 SEED = 12255133
 K = 5
 max_iteraciones = 5000
+tenencia = 3
+oscilacion = 0.5
+estancamiento = 0.05

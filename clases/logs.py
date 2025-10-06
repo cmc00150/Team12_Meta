@@ -13,16 +13,25 @@ class Log:
         datos: Nombre del fichero de datos con el que se ejecutará [x]
         semilla: Semilla a utilizar en caso de emplear aleatoriedad [x][o] (Se inicializa a -1)
         k: Parámetro extra para utilizar en algoritmo greedy_aleatorizado [o] (Se inicializa a -1)
+        maxIteraciones: Número máximo de iteraciones permitidas para un algoritmo [o] (Se inicializa a -1)
+        tenencia: Tenencia para utilizar en algoritmo busqueda_tabu [o] (Se inicializa a -1)
+        oscilacion: Oscilacion para utilizar en algoritmo busqueda_tabu [o] (Se inicializa a -1)
+        estancamiento: Estancamiento para utilizar en algoritmo busqueda_tabu [o] (Se inicializa a -1)
 
     NOTA: Los parámetros clasificados con [x] serán incluidos para generar el nombre del archivo
           Los parámetros clasificados con [o] son opcionales y podrán omitirse en caso necesario
     """
-    def __init__(self, algoritmo, datos, semilla=-1, k=-1):
+    def __init__(self, algoritmo, datos, semilla=-1, k=-1, maxIteraciones=-1, tenencia=-1, oscilacion=-1, estancamiento=-1):
         self.__algoritmo=algoritmo
         self.__datos=Path(datos)
         self.__texto=''
         self.__semilla=int(semilla)
         self.__k=int(k)
+        self.__maxIteraciones=int(maxIteraciones)
+        self.__tenencia=int(tenencia)
+        self.__oscilacion=float(oscilacion)
+        self.__estancamiento=float(estancamiento)
+
 
         self.__texto+=f' LOGS ALGORITMO {self.__algoritmo.upper()}' .center(100, '-')
         self.__texto+='\n'
@@ -35,6 +44,22 @@ class Log:
 
         if self.__k > 0:
             self.__texto+=f' K: {k}'.center(100,' ')
+            self.__texto+='\n'
+
+        if self.__maxIteraciones > 0:
+            self.__texto+=f' maxIteraciones: {maxIteraciones}'.center(100,' ')
+            self.__texto+='\n'
+
+        if self.__tenencia > 0:
+            self.__texto+=f' Tenencia: {tenencia}'.center(100,' ')
+            self.__texto+='\n'
+
+        if self.__oscilacion > 0:
+            self.__texto+=f' Oscilacion: {oscilacion}'.center(100,' ')
+            self.__texto+='\n'
+
+        if self.__estancamiento > 0:
+            self.__texto+=f' Estancamiento: {estancamiento}'.center(100,' ')
             self.__texto+='\n'
         
         self.__texto+=f'-'.center(100,'-')
