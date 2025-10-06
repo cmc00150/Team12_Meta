@@ -60,7 +60,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], can
     costoSol1=costo(solucion_1,flujos,distancias)
     logBusqueda.registrarSolucionInicial(solucion_1,costoSol1)
     
-    DLB(solucion_1,costoSol1, flujos, distancias, maxIteraciones, logBusqueda)
+    DLB_Blocal(solucion_1,costoSol1, flujos, distancias, maxIteraciones, logBusqueda)
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado

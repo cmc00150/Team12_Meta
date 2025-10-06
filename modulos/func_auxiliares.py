@@ -9,7 +9,7 @@ def fact(i, j, perm, f, d):
         total += f[i][k]*(d[perm[j]][elem] - d[perm[i]][elem])*2 + f[j][k]*(d[perm[i]][elem] - d[perm[j]][elem])*2
     return total
 
-def DLB(sol: list, costo, flujos, distancias, max_iteraciones, log: Log): # Encontrar 
+def DLB_Blocal(sol: list, costo, flujos, distancias, max_iteraciones, log: Log): # Encontrar 
     factible = [0 for e in sol]
     it = 0
     n_factibles = len(sol)
