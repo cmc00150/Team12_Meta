@@ -1,5 +1,15 @@
 import sys
 from clases.logs import Log
+    
+def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
+    costo = 0
+    for i, main in enumerate(permutacion):
+        aux = 0
+        for j in range(i+1, len(permutacion)): # Para no repetir valores, vamos de i hasta el final
+            it = permutacion[j]
+            aux += flujos[i][j] * distancias[main][it] * 2 # Sabiendo que es simetrica
+        costo += aux
+    return costo
 
 def fact(i, j, perm, f, d):
     total = 0

@@ -43,16 +43,6 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado
     return (permutacion, tiempo) # Permutación solución + tiempo de ejecución
-    
-def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
-    costo = 0
-    for i, main in enumerate(permutacion):
-        aux = 0
-        for j in range(i+1, len(permutacion)): # Para no repetir valores, vamos de i hasta el final
-            it = permutacion[j]
-            aux += flujos[i][j] * distancias[main][it] * 2 # Sabiendo que es simetrica
-        costo += aux
-    return costo
 
 def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
