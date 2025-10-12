@@ -38,7 +38,7 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                         logGreedyAleatorizado.generaLogs()
 
             case 'busqueda_local_dlb':
-                if len(config.seed) == 0 or len(config.extra) != 2:
+                if len(config.seed) == 0 or len(config.extra) < 2:
                     error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y dos argumentos extra (rango en el que aplicar el aleatorio, k, número máximo de iteraciones)')
                     continue
 
@@ -52,7 +52,7 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                             logBusqueda.generaLogs()
             
             case 'busqueda_tabu':
-                if len(config.seed) == 0 or len(config.extra) != 5:
+                if len(config.seed) == 0 or len(config.extra) < 5:
                     error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y dos argumentos extra (rango en el que aplicar el aleatorio, k, número máximo de iteraciones, tenencia, oscilación, estancamiento)')
                     continue
                 for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
