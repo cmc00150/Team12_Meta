@@ -62,8 +62,14 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                                 for oscilacion in config.extra[3]:
                                     for estancamiento in config.extra[4]:
                                         logTabu = Log(algoritmo, archivoDatos, semilla, k,maxIteraciones,tenencia,oscilacion,estancamiento)
+
                                         random.seed(semilla)  # Actualizo la semilla
-                                        # result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k), int(maxIteraciones), logBusqueda)
+                                        solInicial = greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k))[0]
+                                        costoInicial = costo(solInicial,data.flujos,data.distancias)
+                                        logTabu.registrarSolucionInicial(solInicial,costoInicial)
+
+                                        result = busqueda_tabu(data.flujos, data.distancias, solInicial, costoInicial, int(maxIteraciones), tenencia, oscilacion, estancamiento, logTabu)
+
                                         logTabu.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                                         logTabu.generaLogs()
             case _:
