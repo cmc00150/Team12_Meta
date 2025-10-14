@@ -56,7 +56,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
 def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, oscilacion: float, estancamiento: float, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
     
-    DLB_Blocal(solInicial,costoInicial, flujos, distancias, maxIteraciones, logBusqueda)
+    DLB_BTabu(solInicial,costoInicial, flujos, distancias, maxIteraciones, tenencia, oscilacion, estancamiento, logBusqueda)
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado
