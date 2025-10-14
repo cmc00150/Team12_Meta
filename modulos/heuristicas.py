@@ -44,17 +44,14 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado
     return (permutacion, tiempo) # Permutación solución + tiempo de ejecución
 
-def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
+def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
-    solucion_1 = greedy_aleatorizado(flujos, distancias, candidatos, k)[0]
-    costoSol1=costo(solucion_1,flujos,distancias)
-    logBusqueda.registrarSolucionInicial(solucion_1,costoSol1)
     
-    DLB_Blocal(solucion_1,costoSol1, flujos, distancias, maxIteraciones, logBusqueda)
+    DLB_Blocal(solInicial,costoInicial, flujos, distancias, maxIteraciones, logBusqueda)
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado
-    return (solucion_1, tiempo) # Permutación solución + tiempo de ejecución
+    return (solInicial, tiempo) # Permutación solución + tiempo de ejecución
 
 def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, oscilacion: float, estancamiento: float, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()

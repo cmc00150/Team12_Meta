@@ -46,8 +46,14 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                     for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
                         for maxIteraciones in config.extra[1]:
                             logBusqueda = Log(algoritmo, archivoDatos, semilla, k,maxIteraciones)
+
                             random.seed(semilla)  # Actualizo la semilla
-                            result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k), int(maxIteraciones), logBusqueda)
+                            solInicial = greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k))[0]
+                            costoInicial = costo(solInicial,data.flujos,data.distancias)
+                            logBusqueda.registrarSolucionInicial(solInicial,costoInicial)
+
+                            result = busqueda_local_dlb(data.flujos, data.distancias, solInicial, costoInicial, int(maxIteraciones), logBusqueda)
+
                             logBusqueda.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                             logBusqueda.generaLogs()
             
