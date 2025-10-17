@@ -38,18 +38,46 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                         logGreedyAleatorizado.generaLogs()
 
             case 'busqueda_local_dlb':
-                if len(config.seed) == 0 or len(config.extra) != 2:
-                    error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y argumento extra (rango en el que aplicar el aleatorio, k)')
+                if len(config.seed) == 0 or len(config.extra) < 2:
+                    error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y dos argumentos extra (rango en el que aplicar el aleatorio, k, número máximo de iteraciones)')
                     continue
 
                 for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
                     for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
                         for maxIteraciones in config.extra[1]:
-                            logBusqueda = Log(algoritmo, archivoDatos, semilla, k)
+                            logBusqueda = Log(algoritmo, archivoDatos, semilla, k,maxIteraciones)
+
                             random.seed(semilla)  # Actualizo la semilla
-                            result = busqueda_local_dlb(data.flujos, data.distancias, data.dimension, int(k), int(maxIteraciones), logBusqueda)
+                            solInicial = greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k))[0]
+                            costoInicial = costo(solInicial,data.flujos,data.distancias)
+                            logBusqueda.registrarSolucionInicial(solInicial,costoInicial)
+
+                            result = busqueda_local_dlb(data.flujos, data.distancias, solInicial, costoInicial, int(maxIteraciones), logBusqueda)
+
                             logBusqueda.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                             logBusqueda.generaLogs()
+            
+            case 'busqueda_tabu':
+                if len(config.seed) == 0 or len(config.extra) < 5:
+                    error(f'Para utilizar el algoritmo {algoritmo.upper()} debe incluir al menos una semilla y dos argumentos extra (rango en el que aplicar el aleatorio, k, número máximo de iteraciones, tenencia, oscilación, estancamiento)')
+                    continue
+                for k in config.extra[0]: # Bucle de ejecución dependiendo del número de k que haya en config
+                    for semilla in config.seed: # Bucle de ejecución dependiendo del número de semillas que haya en config
+                        for maxIteraciones in config.extra[1]:
+                            for tenencia in config.extra[2]:
+                                for oscilacion in config.extra[3]:
+                                    for estancamiento in config.extra[4]:
+                                        logTabu = Log(algoritmo, archivoDatos, semilla, k,maxIteraciones,tenencia,oscilacion,estancamiento)
+
+                                        random.seed(semilla)  # Actualizo la semilla
+                                        solInicial = greedy_aleatorizado(data.flujos, data.distancias, data.dimension, int(k))[0]
+                                        costoInicial = costo(solInicial,data.flujos,data.distancias)
+                                        logTabu.registrarSolucionInicial(solInicial,costoInicial)
+
+                                        result = busqueda_tabu(data.flujos, data.distancias, solInicial, costoInicial, int(maxIteraciones), tenencia, oscilacion, estancamiento, logTabu)
+
+                                        logTabu.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
+                                        logTabu.generaLogs()
             case _:
                 error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 
