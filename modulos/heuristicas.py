@@ -47,7 +47,22 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
 def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
     
-    DLB_Blocal(solInicial,costoInicial, flujos, distancias, maxIteraciones, logBusqueda)
+    modf = Modificables(improve=False, n_factibles=len(solInicial), menor_actual=0, it=0, costo=costoInicial)
+    i = 0
+    factible = [0 for _ in solInicial]
+
+    while modf.it <= maxIteraciones and modf.n_factibles > 0:
+        modf.improve = False
+        if factible[i] == 0: # Si hay posibilidad de mejor entro
+            dlb_primer_mejor(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
+
+        if not modf.improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
+            factible[i] = 1
+            modf.n_factibles -= 1
+            if modf.n_factibles == 0:
+                break
+
+        i=(i+1)%len(solInicial) # Pasamos al siguiente elemento
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado
@@ -56,7 +71,26 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
 def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, oscilacion: float, estancamiento: float, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
     
-    DLB_BTabu(solInicial,costoInicial, flujos, distancias, maxIteraciones, tenencia, oscilacion, estancamiento, logBusqueda)
+    modf = Modificables(improve=False, n_factibles=len(solInicial), menor_actual=0, it=0, costo=costoInicial)
+    cortoPlazo=[0,0,0]
+    posCortoPlazo=0
+    largoPlazo=[[0 for _ in len(sol)] for _ in len(sol)]
+
+    menorGlobal=solInicial
+    menorCosteGlobal=costo
+    
+    while modf.it <= maxIteraciones and modf.n_factibles > 0:
+        modf.improve = False
+        if factible[i] == 0: # Si hay posibilidad de mejor entro
+            dlb_tabu(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
+
+        if not modf.improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
+            factible[i] = 1
+            modf.n_factibles -= 1
+            if modf.n_factibles == 0:
+                break
+
+        i=(i+1)%len(solInicial) # Pasamos al siguiente elemento
 
     fin=time.time() # Fin del contador del tiempo
     tiempo=fin-inicio # Tiempo empleado en obtener el resultado
