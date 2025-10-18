@@ -1,6 +1,6 @@
-DATA = .\datos\ford01.dat
-ALG = busqueda_local_dlb
-SEED = 12255133
+DATA = .\datos\ford01.dat .\datos\ford02.dat .\datos\ford03.dat .\datos\ford04.dat
+ALG = greedy greedy_aleatorizado busqueda_local_dlb
+SEED = 15522133 12255133 55133122 26959126 95926126
 K = 5
 max_iteraciones = 5000
 tenencia = 3

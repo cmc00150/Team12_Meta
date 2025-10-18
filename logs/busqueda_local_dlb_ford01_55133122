@@ -1,0 +1,36 @@
+--------------------------------- LOGS ALGORITMO BUSQUEDA_LOCAL_DLB---------------------------------
+                                 ARCHIVO DE DATOS: datos\ford01.dat                                 
+                                          SEMILLA: 55133122                                         
+                                                K: 5                                                
+                                        maxIteraciones: 5000                                        
+----------------------------------------------------------------------------------------------------
+ Asignación Inicial: [11, 8, 20, 6, 5, 2, 10, 18, 1, 12, 14, 15, 19, 17, 4, 13, 7, 3, 9, 16]
+ Costo Inicial: 3914
+
+	Iteración 1: cambia el par (8,11)
+	Asignación: [8, 11, 20, 6, 5, 2, 10, 18, 1, 12, 14, 15, 19, 17, 4, 13, 7, 3, 9, 16]
+	Costo: 3910
+
+	Iteración 2: cambia el par (20,11)
+	Asignación: [8, 20, 11, 6, 5, 2, 10, 18, 1, 12, 14, 15, 19, 17, 4, 13, 7, 3, 9, 16]
+	Costo: 3902
+
+	Iteración 3: cambia el par (2,11)
+	Asignación: [8, 20, 2, 6, 5, 11, 10, 18, 1, 12, 14, 15, 19, 17, 4, 13, 7, 3, 9, 16]
+	Costo: 3890
+
+	Iteración 4: cambia el par (10,6)
+	Asignación: [8, 20, 2, 10, 5, 11, 6, 18, 1, 12, 14, 15, 19, 17, 4, 13, 7, 3, 9, 16]
+	Costo: 3864
+
+	Iteración 5: cambia el par (3,5)
+	Asignación: [8, 20, 2, 10, 3, 11, 6, 18, 1, 12, 14, 15, 19, 17, 4, 13, 7, 5, 9, 16]
+	Costo: 3830
+
+	Iteración 6: cambia el par (1,11)
+	Asignación: [8, 20, 2, 10, 3, 1, 6, 18, 11, 12, 14, 15, 19, 17, 4, 13, 7, 5, 9, 16]
+	Costo: 3786
+
+ Asignación: [8, 20, 2, 10, 3, 1, 6, 18, 11, 12, 14, 15, 19, 17, 4, 13, 7, 5, 9, 16]
+ Costo: 3786
+ Tiempo de ejecución: 1.5738s
