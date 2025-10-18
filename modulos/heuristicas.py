@@ -52,17 +52,17 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
     i = 0
     mejora_global = 0 # Empezamos en 0 porque nos interesan solo los negativos (los que disminuyan el coste actual)
     factible = [0] * len(solInicial) # Inicializamos el vector de factibles
-    n_factibles=len(solInicial), 
-    it=0
+    n_factibles=len(solInicial) # Al inicio, todos son factibles
+    it=0 # Inicialización del número de iteraciones
 
     while it <= maxIteraciones and n_factibles > 0:
         if factible[i] == 0: # Si hay posibilidad de mejora entro
             mejor_local = ()
             mejora_local = maxsize
 
-            for j in range(i+1, len(solInicial)+i): # Opt-2, revisamos las posibles combinaciones
+            for j in range(i+1, len(solInicial)+i): # 2-Opt, revisamos las posibles combinaciones
                 j = j % len(solInicial) # Hacemos el modulo para que no se pase
-                mejora = fact(i, j, solInicial, flujos, distancias) # Miramos si mejora esta combinacion
+                mejora = fact(i, j, solInicial, flujos, distancias) # Miramos si mejora esta combinacion usando la función de factorización
 
                 if mejora < mejora_local: # Guardamos el mejor hasta ahora
                     mejor_local = (i, j)
@@ -76,7 +76,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
                     factible[i] = factible[j] = 0 # Indicamos que por estas dos unidades se puede seguir buscando
 
                     it+=1
-                    break # Salir del dlb una vez que encontramos una mejora
+                    break # Salir del dlb una vez que encontramos una mejora (Primero el mejor)
 
         if mejora < mejora_global: # Si ha habido mejora actualizamos
             mejora_global = mejora
@@ -87,7 +87,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
             factible[i] = 1
             n_factibles -= 1
             if n_factibles == 0:
-                break
+                break # Si se han acabado los factibles, acaba el algoritmo
 
         i=(i+1)%len(solInicial) # Pasamos al siguiente elemento
 
