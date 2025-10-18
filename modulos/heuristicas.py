@@ -1,7 +1,8 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
 import random
-from modulos.func_auxiliares import *
+from .func_auxiliares import (costo, dlb, Modificables)
 from clases.logs import Log
+from clases.memoriaTabu import MemTabu
 
 def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int) -> tuple [list[int], float]:
     inicio = time.time() # Inicio el contador del tiempo
@@ -49,12 +50,13 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
     
     modf = Modificables(improve=False, n_factibles=len(solInicial), menor_actual=0, it=0, costo=costoInicial)
     i = 0
-    factible = [0 for _ in solInicial]
+    factible = [0] * len(solInicial) # Inicializamos el vector de factibles
 
     while modf.it <= maxIteraciones and modf.n_factibles > 0:
         modf.improve = False
-        if factible[i] == 0: # Si hay posibilidad de mejor entro
-            dlb_primer_mejor(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
+        if factible[i] == 0: # Si hay posibilidad de mejora entro
+            intercabio = dlb(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
+            logBusqueda.registraCambioBLocal(intercabio[0], intercabio[1], solInicial, modf.costo, modf.it)
 
         if not modf.improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
             factible[i] = 1
@@ -72,23 +74,29 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
     inicio = time.time()
     
     modf = Modificables(improve=False, n_factibles=len(solInicial), menor_actual=0, it=0, costo=costoInicial)
-    cortoPlazo=[0,0,0]
-    posCortoPlazo=0
-    largoPlazo=[[0 for _ in len(sol)] for _ in len(sol)]
+    mem = MemTabu(tenencia=tenencia, n=len(solInicial))
+    factible = [0 for _ in len(solInicial)]
 
     menorGlobal=solInicial
     menorCosteGlobal=costo
     
-    while modf.it <= maxIteraciones and modf.n_factibles > 0:
+    while modf.it <= maxIteraciones:
         modf.improve = False
-        if factible[i] == 0: # Si hay posibilidad de mejor entro
-            dlb_tabu(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
+        if factible[i] == 0: # Si hay posibilidad de mejora entro
+            # TODO Hacer que devuelva los vecinos?
+            intercabio = dlb(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
+            mem.push(intercabio[0], intercabio[1]) # Guardamos en la memoria tabú
+            logBusqueda.generaLogs(intercabio[0], intercabio[1], solInicial, modf.costo, modf.it)
 
         if not modf.improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
             factible[i] = 1
             modf.n_factibles -= 1
             if modf.n_factibles == 0:
                 break
+
+        if modf.n_factibles == 0:
+            # TODO Seleccionar el mejor de los peores que han salido
+            factible = [0 for _ in len(solInicial)]
 
         i=(i+1)%len(solInicial) # Pasamos al siguiente elemento
 
