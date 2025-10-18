@@ -13,6 +13,14 @@ class MemTabu:
     self.__corta.append((i, j))
     self.__larga[i][j] += 1
 
+  def tabu(self, i, j):
+    tabu = False
+    for t in self.__corta:
+      if (i, j) == t or (j, i) == t:
+        tabu = True
+    return tabu
+
+
   def menosFrecuente(self): 
     menosFrec = ((), maxsize)
     for i, _ in enumerate(self.larga):

@@ -1,6 +1,7 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
 import random
-from .func_auxiliares import (costo, dlb, Modificables)
+from sys import maxsize
+from .func_auxiliares import (explorar_vecinos, Modificables, dos_opt, fact)
 from clases.logs import Log
 from clases.memoriaTabu import MemTabu
 
@@ -48,20 +49,44 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
 def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
     
-    modf = Modificables(improve=False, n_factibles=len(solInicial), menor_actual=0, it=0, costo=costoInicial)
     i = 0
+    mejora_global = 0 # Empezamos en 0 porque nos interesan solo los negativos (los que disminuyan el coste actual)
     factible = [0] * len(solInicial) # Inicializamos el vector de factibles
+    n_factibles=len(solInicial), 
+    it=0
 
-    while modf.it <= maxIteraciones and modf.n_factibles > 0:
-        modf.improve = False
+    while it <= maxIteraciones and n_factibles > 0:
         if factible[i] == 0: # Si hay posibilidad de mejora entro
-            intercabio = dlb(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
-            logBusqueda.registraCambioBLocal(intercabio[0], intercabio[1], solInicial, modf.costo, modf.it)
+            mejor_local = ()
+            mejora_local = maxsize
 
-        if not modf.improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
+            for j in range(i+1, len(solInicial)+i): # Opt-2, revisamos las posibles combinaciones
+                j = j % len(solInicial) # Hacemos el modulo para que no se pase
+                mejora = fact(i, j, solInicial, flujos, distancias) # Miramos si mejora esta combinacion
+
+                if mejora < mejora_local: # Guardamos el mejor hasta ahora
+                    mejor_local = (i, j)
+                    mejora_local = mejora
+
+                if mejora_local < mejora_global: # Si la mejora hasta ahora es menor que lo que teniamos lo devolvemos
+                    dos_opt(solInicial, i, j) # Hacemos el intercambio
+                    
+                    if factible[j] == 1: # Si hemos recuperado un no factible, ahora tenemos uno más
+                        n_factibles += 1
+                    factible[i] = factible[j] = 0 # Indicamos que por estas dos unidades se puede seguir buscando
+
+                    it+=1
+                    break # Salir del dlb una vez que encontramos una mejora
+
+        if mejora < mejora_global: # Si ha habido mejora actualizamos
+            mejora_global = mejora
+            i, j = mejor_local
+            costoInicial+= mejora_local
+            logBusqueda.registraCambioBLocal(i, j, solInicial, costoInicial, it)
+        else: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
             factible[i] = 1
-            modf.n_factibles -= 1
-            if modf.n_factibles == 0:
+            n_factibles -= 1
+            if n_factibles == 0:
                 break
 
         i=(i+1)%len(solInicial) # Pasamos al siguiente elemento
@@ -72,31 +97,52 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
 
 def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, oscilacion: float, estancamiento: float, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
-    
-    modf = Modificables(improve=False, n_factibles=len(solInicial), menor_actual=0, it=0, costo=costoInicial)
+
+    i = 0
+    mejora_global = 0 # Empezamos en 0 porque nos interesan solo los negativos (los que disminuyan el coste actual)
+    factible = [0] * len(solInicial) # Inicializamos el vector de factibles
+    n_factibles=len(solInicial)
+    it=0
     mem = MemTabu(tenencia=tenencia, n=len(solInicial))
-    factible = [0 for _ in len(solInicial)]
 
-    menorGlobal=solInicial
-    menorCosteGlobal=costo
-    
-    while modf.it <= maxIteraciones:
-        modf.improve = False
-        if factible[i] == 0: # Si hay posibilidad de mejora entro
-            # TODO Hacer que devuelva los vecinos?
-            intercabio = dlb(solInicial, factible, i, modf, flujos, distancias, logBusqueda)
-            mem.push(intercabio[0], intercabio[1]) # Guardamos en la memoria tabú
-            logBusqueda.generaLogs(intercabio[0], intercabio[1], solInicial, modf.costo, modf.it)
+    while it <= maxIteraciones:
+        if factible[i] == 0: # Si i tiene posibilidad de mejora buscamos con explorar_vecinos()
+            mejor_local = ()
+            mejora_local = maxsize
 
-        if not modf.improve: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
+            for j in range(i+1, len(solInicial)+i): # Opt-2, revisamos las posibles combinaciones
+                j = j % len(solInicial) # Hacemos el modulo para que no se pase
+                mejora = fact(i, j, solInicial, flujos, distancias) # Miramos si mejora esta combinacion
+
+                if mejora < mejora_local: # Guardamos el mejor hasta ahora
+                    mejor_local = (i, j)
+                    mejora_local = mejora
+
+                if mejora_local < mejora_global: # Si la mejora hasta ahora es menor que lo que teniamos lo devolvemos
+                    dos_opt(solInicial, i, j) # Hacemos el intercambio
+                    
+                    if factible[j] == 1: # Si hemos recuperado un no factible, ahora tenemos uno más
+                        n_factibles += 1
+                    factible[i] = factible[j] = 0 # Indicamos que por estas dos unidades se puede seguir buscando
+
+                    it+=1
+                    break # Salir del dlb una vez que encontramos una mejora
+
+            if not mem.tabu(i, j):
+                mem.push(i, j)
+
+        if mejora_local < mejora_global: # Si ha habido mejora actualizamos
+            i, j = mejor_local
+            mejora_global = mejora_local
+            costoInicial+= mejora_global
+            logBusqueda.registraCambioBLocal(i, j, solInicial, costoInicial, it)
+        else: # Si no se ha encontrado ninguna que mejora, vetamos esta posición poniendo un 1
             factible[i] = 1
-            modf.n_factibles -= 1
-            if modf.n_factibles == 0:
-                break
-
-        if modf.n_factibles == 0:
-            # TODO Seleccionar el mejor de los peores que han salido
-            factible = [0 for _ in len(solInicial)]
+            n_factibles -= 1
+            if n_factibles == 0: # Si no nos quedan más posiciones factibles
+                factible = [0] * len(solInicial) # Reiniciamos el vector de posiciones factibles
+                i, j = mejor_local
+                solInicial = dos_opt(solInicial, i, j) # Intercambiamos para quedarnos con el mejor de los vecinos encontrados (aunque no mejore la global)
 
         i=(i+1)%len(solInicial) # Pasamos al siguiente elemento
 
