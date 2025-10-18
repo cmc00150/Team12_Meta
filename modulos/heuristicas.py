@@ -1,7 +1,7 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
 import random
 from sys import maxsize
-from .func_auxiliares import (explorar_vecinos, Modificables, dos_opt, fact)
+from .func_auxiliares import (dos_opt, fact)
 from clases.logs import Log
 from clases.memoriaTabu import MemTabu
 
