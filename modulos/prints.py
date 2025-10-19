@@ -1,4 +1,4 @@
-from modulos.heuristicas import costo
+from .func_auxiliares import costo
 
 def error(mensaje:str):
       print('[!] Error -',mensaje)

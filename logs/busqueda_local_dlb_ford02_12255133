@@ -2,6 +2,7 @@
                                  ARCHIVO DE DATOS: datos\ford02.dat                                 
                                           SEMILLA: 12255133                                         
                                                 K: 5                                                
+                                        maxIteraciones: 5000                                        
 ----------------------------------------------------------------------------------------------------
  Asignación Inicial: [8, 12, 20, 18, 6, 13, 10, 7, 11, 2, 3, 4, 9, 15, 14, 5, 17, 1, 19, 16]
  Costo Inicial: 35722
@@ -12,76 +13,76 @@
 
 	Iteración 2: cambia el par (6,12)
 	Asignación: [10, 6, 20, 18, 12, 13, 8, 7, 11, 2, 3, 4, 9, 15, 14, 5, 17, 1, 19, 16]
-	Costo: 35302
+	Costo: 35644
 
 	Iteración 3: cambia el par (13,20)
 	Asignación: [10, 6, 13, 18, 12, 20, 8, 7, 11, 2, 3, 4, 9, 15, 14, 5, 17, 1, 19, 16]
-	Costo: 35080
+	Costo: 35500
 
 	Iteración 4: cambia el par (7,18)
 	Asignación: [10, 6, 13, 7, 12, 20, 8, 18, 11, 2, 3, 4, 9, 15, 14, 5, 17, 1, 19, 16]
-	Costo: 34832
+	Costo: 35474
 
 	Iteración 5: cambia el par (20,12)
 	Asignación: [10, 6, 13, 7, 20, 12, 8, 18, 11, 2, 3, 4, 9, 15, 14, 5, 17, 1, 19, 16]
-	Costo: 34590
+	Costo: 35480
 
 	Iteración 6: cambia el par (14,12)
 	Asignación: [10, 6, 13, 7, 20, 14, 8, 18, 11, 2, 3, 4, 9, 15, 12, 5, 17, 1, 19, 16]
-	Costo: 34382
+	Costo: 35514
 
 	Iteración 7: cambia el par (18,8)
 	Asignación: [10, 6, 13, 7, 20, 14, 18, 8, 11, 2, 3, 4, 9, 15, 12, 5, 17, 1, 19, 16]
-	Costo: 34218
+	Costo: 35558
 
 	Iteración 8: cambia el par (9,8)
 	Asignación: [10, 6, 13, 7, 20, 14, 18, 9, 11, 2, 3, 4, 8, 15, 12, 5, 17, 1, 19, 16]
-	Costo: 33768
+	Costo: 35272
 
 	Iteración 9: cambia el par (2,11)
 	Asignación: [10, 6, 13, 7, 20, 14, 18, 9, 2, 11, 3, 4, 8, 15, 12, 5, 17, 1, 19, 16]
-	Costo: 33448
+	Costo: 35402
 
 	Iteración 10: cambia el par (20,11)
 	Asignación: [10, 6, 13, 7, 11, 14, 18, 9, 2, 20, 3, 4, 8, 15, 12, 5, 17, 1, 19, 16]
-	Costo: 33246
+	Costo: 35520
 
 	Iteración 11: cambia el par (8,3)
 	Asignación: [10, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 4, 3, 15, 12, 5, 17, 1, 19, 16]
-	Costo: 33158
+	Costo: 35634
 
 	Iteración 12: cambia el par (12,4)
 	Asignación: [10, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 12, 3, 15, 4, 5, 17, 1, 19, 16]
-	Costo: 33064
+	Costo: 35628
 
 	Iteración 13: cambia el par (10,3)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 12, 10, 15, 4, 5, 17, 1, 19, 16]
-	Costo: 32842
+	Costo: 35500
 
 	Iteración 14: cambia el par (16,15)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 12, 10, 16, 4, 5, 17, 1, 19, 15]
-	Costo: 32698
+	Costo: 35578
 
 	Iteración 15: cambia el par (5,4)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 12, 10, 16, 5, 4, 17, 1, 19, 15]
-	Costo: 32588
+	Costo: 35612
 
 	Iteración 16: cambia el par (1,4)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 12, 10, 16, 5, 1, 17, 4, 19, 15]
-	Costo: 32576
+	Costo: 35710
 
 	Iteración 17: cambia el par (15,4)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 9, 2, 20, 8, 12, 10, 16, 5, 1, 17, 15, 19, 4]
-	Costo: 32382
+	Costo: 35528
 
 	Iteración 18: cambia el par (8,9)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 8, 2, 20, 9, 12, 10, 16, 5, 1, 17, 15, 19, 4]
-	Costo: 31950
+	Costo: 35290
 
 	Iteración 19: cambia el par (15,10)
 	Asignación: [3, 6, 13, 7, 11, 14, 18, 8, 2, 20, 9, 12, 15, 16, 5, 1, 17, 10, 19, 4]
-	Costo: 31690
+	Costo: 35462
 
  Asignación: [3, 6, 13, 7, 11, 14, 18, 8, 2, 20, 9, 12, 15, 16, 5, 1, 17, 10, 19, 4]
  Costo: 31690
- Tiempo de ejecución: 4.4413s
+ Tiempo de ejecución: 1.5590s

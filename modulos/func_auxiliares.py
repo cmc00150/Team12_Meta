@@ -1,15 +1,5 @@
 from dataclasses import dataclass
 from sys import maxsize
-    
-@dataclass
-class Modificables:
-    n_factibles: int
-    it: int
-
-@dataclass
-class ReturnDLB:
-    mejor_encontrado: tuple[int, int]
-    mejora: int
 
 def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
     costo = 0

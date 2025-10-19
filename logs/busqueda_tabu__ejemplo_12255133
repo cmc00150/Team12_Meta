@@ -1,12 +1,19 @@
---------------------------------- LOGS ALGORITMO BUSQUEDA_LOCAL_DLB---------------------------------
+----------------------------------- LOGS ALGORITMO BUSQUEDA_TABU------------------------------------
                                 ARCHIVO DE DATOS: datos\_ejemplo.txt                                
                                           SEMILLA: 12255133                                         
                                                 K: 5                                                
                                         maxIteraciones: 5000                                        
+                                             Tenencia: 3                                            
+                                           Oscilacion: 0.5                                          
+                                         Estancamiento: 0.05                                        
 ----------------------------------------------------------------------------------------------------
  Asignación Inicial: [4, 2, 1, 3]
  Costo Inicial: 310
 
+	Iteración 0: cambia el par (4,3)
+	Asignación: [4, 2, 1, 3]
+	Costo: 294
+
  Asignación: [4, 2, 1, 3]
  Costo: 310
- Tiempo de ejecución: 0.0129s
+ Tiempo de ejecución: 13463.7382s
