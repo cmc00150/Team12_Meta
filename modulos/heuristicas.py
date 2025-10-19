@@ -51,7 +51,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
 
     i = 0                                                   # Posición inicial a investigar en la permutación
     it=0                                                    # Número de soluciones a las que nos movemos (iterador)
-    mejora_global = 0                                       # Empezamos en 0 porque nos interesan solo los negativos (los que disminuyan el coste actual)
+    mejora_global = 0                                       # Empezamos con una mejora de 0 (buscamos negativos)
     factible = [0] * len(solInicial)                        # Inicializamos el vector de factibles
     n_factibles=len(solInicial)                             # Inicializamos el vector de factibles
 
@@ -62,7 +62,7 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
                 j = j % len(solInicial)                             # Hacemos el modulo para que no se pase
                 mejora = fact(i, j, solInicial, flujos, distancias) # Miramos si mejora esta combinacion
 
-                if mejora < mejora_global:                          # SI la mejora hasta ahora es menor que lo que teniamos lo devolvemos
+                if mejora_global + mejora < mejora_global:          # SI la mejora hasta ahora mejor que lo que teniamos lo devolvemos
                     dos_opt(solInicial, i, j)                           # Hacemos el intercambio
                     
                     if factible[j] == 1:                                # SI hemos recuperado un no factible, ahora tenemos uno más
@@ -71,7 +71,9 @@ def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], sol
 
                     improve = True
                     it+=1
-                    logBusqueda.registraCambioBLocal(i, j, solInicial, costoInicial + mejora, it)
+                    costoInicial += mejora
+                    mejora_global += mejora
+                    logBusqueda.registraCambioBLocal(i, j, solInicial, costoInicial, it)
 
                     break                                               # Salir del dlb una vez que encontramos una mejora
             
@@ -91,59 +93,69 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
     i = 0                                                       # Posición inicial a investigar en la permutación
     it=0                                                        # Número de soluciones a las que nos movemos (iterador)
     sin_mejora = 0                                              # Número de iteraciones sin mejora
+# DUDA: Como podemos representar el valor a alcanzar? como el acumulado de las mejoras o como la reducción del propio coste?
     mejora_global = 0                                           # Empezamos en 0 porque nos interesan los que resten el coste actual
+    mejor_global = ()                                           # Mejor movimiento hasta ahora
     mem = MemTabu(tenencia=tenencia, n=len(solInicial))         # Inicialización de la memoria tabú
     factible = [0] * len(solInicial)                            # Inicializamos el vector de factibles
     n_factibles=len(solInicial)                                 # Número de unidades factibles
-    print(costo([3, 0, 1, 2], flujos, distancias))
 
     while it <= maxIteraciones:
+        print("Incial:", solInicial, "i:", i, "mejor global:", mejora_global, "costoActual:", costoInicial, "factibles:", factible)
         if factible[i] == 0:                                    # Si i tiene posibilidad de mejora buscamos con explorar_vecinos()
             mejor_local = ()
             mejora_local = maxsize
-            tabu = False
 
             for j in range(i+1, len(solInicial)+i):                 # Opt-2, revisamos las posibles combinaciones
                 j = j % len(solInicial)                                 # Hacemos el modulo para que no se pase
                 mejora = fact(i, j, solInicial, flujos, distancias)     # Miramos si mejora esta combinacion
-                act_tabu = mem.tabu(i, j)                               # Almacenamos el valor tabú del vecino actual
 
-                if act_tabu and mejora >= mejora_global:                # SI es tabu y no mejora la puntuación global lo omitimos
+                if mejor_global == (i,j) or mejor_global == (j,i):
+                    continue
+                if mem.tabu(i,j) and mejora >= mejora_global:           # SI es tabu y no mejora la puntuación global lo omitimos
                     continue
 
-                if mejora < mejora_local:                               # SI este vecino mejora el valor actual lo apuntamos
-                    tabu = act_tabu                                         # Indicamos que es tabú
+                if mejora < mejora_local:                               # SI este vecino mejora es el más pequeño actual:
                     mejor_local = (i, j)                                    # Guardamos el intercambio
                     mejora_local = mejora                                   # Guardamos la cantidad de mejora
+                print("\tmejora: ", mejora, "cambio: ", (i,j), end="")
             
-            if mejora_local < mejora_global:                         # SI el mejor de los vecinos mejora el global lo escogemos
-                    dos_opt(solInicial, i, j)                          # Hacemos el intercambio, nos movemos a él
-                    
-                    if factible[j] == 1:                               # SI hemos recuperado un no factible, ahora tenemos uno más
-                        n_factibles += 1
-                    factible[i] = factible[j] = 0                      # Indicamos que por estas dos unidades se puede seguir buscando
+            if mejora_local + mejora_global < mejora_global:        # SI el mejor de los vecinos mejora el valor actual nos movemos a él
+                dos_opt(solInicial, i, j)                               # Hacemos el intercambio
+                costoInicial+= mejora_local
+                
+                if factible[j] == 1:                                    # SI hemos recuperado un no factible, ahora tenemos uno más
+                    n_factibles += 1
+                factible[i] = factible[j] = 0                           # Indicamos que por estas dos unidades se puede seguir buscando
 
-                    mejora_global = mejora                             # Actualizamos la mejora
-                    if tabu:                                              # SI el vecino escogido es tabú
-                        mem.eliminar(i,j)                                       # Lo quitamos de la lista
-                    mem.push(i, j)                                        # La añadimos a la memoria tabú
+                mejora_global += mejora_local                            # Actualizamos la mejora
+                mejor_global = (i,j)
+                mem.push(i, j)                                          # La añadimos a la memoria tabú (si ya estaba se elimina y se vuelve a insertar automáticamente)
 
-                    logBusqueda.registraCambioBLocal(i, j, solInicial, costoInicial + mejora_global, it)
-                    it+=1
+                print(" - MEJORA")
+                logBusqueda.registraCambioBLocal(mejor_local[0], mejor_local[1], solInicial, costoInicial, it)
+                it+=1
 
-            else:                                                      # SI no se ha encontrado ninguna que mejora
-                factible[i] = 1                                            # Vetamos esta unidad poniendo un 1
-                n_factibles -= 1                                           # Reducimos el número de casillas factibles
-                sin_mejora+=1                                              # Aumentamos el número de iteraciones sin mejora
-                if n_factibles == 0:                                       # SI no nos quedan más unidades factibles
-                    factible = [0] * len(solInicial)                          # Reiniciamos el vector de posiciones factibles
-                    i, j = mejor_local                                        # Sacamos el intercambio del mejor de los vecinos
-                    dos_opt(solInicial, i, j)                    # Nos movemos a este vecino (aunque no mejore la global)
+            else:                                                   # SI no se ha encontrado ninguna que mejora
+                factible[i] = 1                                         # Vetamos esta unidad poniendo un 1
+                n_factibles -= 1                                        # Reducimos el número de casillas factibles
+                sin_mejora+=1                                           # Aumentamos el número de iteraciones sin mejora
+                print(" - NO")
+# DUDA: Cual es la condición de parada si siempre que no encuentra un mejor se va al mejor de los peores?
+        if n_factibles == 0:                                    # SI no nos quedan más unidades factibles
+                    factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
+                    n_factibles = len(solInicial)
+                    i, j = mejor_local                                      # Sacamos el intercambio del mejor de los vecinos
+                    mejora_global += mejora_local                           # Actualizamos el mejor_global
+                    costoInicial += mejora_local                            # Actualizamos el coste
+                    mejor_global = (i,j)
+                    mem.push(i, j)                                          # Como nos hemos movido, insertamos la solución
+                    dos_opt(solInicial, i, j)                               # Nos movemos a este vecino (aunque no mejore la global)
 
         i=(i+1)%len(solInicial)                                         # Pasamos al siguiente elemento
         if sin_mejora == maxIteraciones * estancamiento:                # SI el número de iteraciones sin mejoras es el 5% del máximo de iteraciones
             sin_mejora = 0                                                  # Reiniciamos el contador de mejora
-            r = random() % 100 + 1                                          # Sacamos un número del 1 al 100
+            r = random.randint(1,100)                                     # Sacamos un número del 1 al 100
             nueva_perm = ()                                                 # Preparamos el nuevo cambio
             if r <= oscilacion * 100:                                       # SI está por debajo de la oscilación DIVERSIFICAMOS
                 nueva_perm = mem.menosFrecuente()

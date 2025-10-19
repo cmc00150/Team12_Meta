@@ -16,7 +16,7 @@ def fact(i, j, perm, f, d):
     for k, elem in enumerate(perm):
         if k == i or k == j:
             continue
-        total += f[i][k]*(d[perm[j]][elem] - d[perm[i]][elem])*2 + f[j][k]*(d[perm[i]][elem] - d[perm[j]][elem])*2
+        total += (f[i][k]*(d[perm[j]][elem] - d[perm[i]][elem])*2) + (f[j][k]*(d[perm[i]][elem] - d[perm[j]][elem])*2)
     return total
 
 def dos_opt (perm, i, j):

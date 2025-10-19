@@ -7,19 +7,18 @@ class MemTabu:
     self.__nuevo = 0
     self.__tenencia = tenencia
     self.__corta = deque(maxlen=tenencia)
-    self.__larga = [[0 for _ in range(n)] for _ in range(n)]
-  
-  def eliminar(self, i, j):   
-    try:       
-      self.__corta.remove((i,j))
-    except:
-      try:
-        self.__corta.remove((j,i))
-      except:
-        pass
+    self.__larga = [[0 for _ in range(n)] for _ in range(n)]    
   
   def push(self, i, j):
-    self.__corta.append((i,j))
+    try:       
+      self.__corta.remove((i,j))        # Intenta borrarlo por si ya estaba
+    except:
+      try:
+        self.__corta.remove((j,i))      # Si no estaba mira el inverso
+      except:
+        pass
+
+    self.__corta.append((i,j))          # Siempre lo añade (estuviera o no)
     self.__larga[i][j] += 1
 
   def tabu(self, i, j) -> bool:
