@@ -11,10 +11,122 @@
 	Asignación: [14, 3, 19, 8, 13, 2, 7, 10, 18, 11, 12, 4, 6, 17, 16, 1, 5, 9, 20, 15]
 	Costo: 34818
 
-	Iteración 2: cambia el par (8,3)
-	Asignación: [14, 8, 19, 3, 13, 2, 7, 10, 18, 11, 12, 4, 6, 17, 16, 1, 5, 9, 20, 15]
-	Costo: 33996
+	Iteración 2: cambia el par (19,3)
+	Asignación: [14, 19, 3, 8, 13, 2, 7, 10, 18, 11, 12, 4, 6, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34882
 
- Asignación: [14, 8, 19, 3, 13, 2, 7, 10, 18, 11, 12, 4, 6, 17, 16, 1, 5, 9, 20, 15]
- Costo: 33996
- Tiempo de ejecución: 1.6348s
+	Iteración 3: cambia el par (8,3)
+	Asignación: [14, 19, 8, 3, 13, 2, 7, 10, 18, 11, 12, 4, 6, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34780
+
+	Iteración 4: cambia el par (11,3)
+	Asignación: [14, 19, 8, 11, 13, 2, 7, 10, 18, 3, 12, 4, 6, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34984
+
+	Iteración 5: cambia el par (6,13)
+	Asignación: [14, 19, 8, 11, 6, 2, 7, 10, 18, 3, 12, 4, 13, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34854
+
+	Iteración 6: cambia el par (10,2)
+	Asignación: [14, 19, 8, 11, 6, 10, 7, 2, 18, 3, 12, 4, 13, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34644
+
+	Iteración 7: cambia el par (2,7)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 7, 18, 3, 12, 4, 13, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34856
+
+	Iteración 8: cambia el par (12,7)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 12, 18, 3, 7, 4, 13, 17, 16, 1, 5, 9, 20, 15]
+	Costo: 34962
+
+	Iteración 9: cambia el par (15,18)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 12, 15, 3, 7, 4, 13, 17, 16, 1, 5, 9, 20, 18]
+	Costo: 34730
+
+	Iteración 10: cambia el par (4,3)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 12, 15, 4, 7, 3, 13, 17, 16, 1, 5, 9, 20, 18]
+	Costo: 34874
+
+	Iteración 11: cambia el par (16,3)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 12, 15, 4, 7, 16, 13, 17, 3, 1, 5, 9, 20, 18]
+	Costo: 34880
+
+	Iteración 12: cambia el par (20,13)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 12, 15, 4, 7, 16, 20, 17, 3, 1, 5, 9, 13, 18]
+	Costo: 34736
+
+	Iteración 13: cambia el par (20,17)
+	Asignación: [14, 19, 8, 11, 6, 10, 2, 12, 15, 4, 7, 16, 17, 20, 3, 1, 5, 9, 13, 18]
+	Costo: 34896
+
+	Iteración 14: cambia el par (11,3)
+	Asignación: [14, 19, 8, 3, 6, 10, 2, 12, 15, 4, 7, 16, 17, 20, 11, 1, 5, 9, 13, 18]
+	Costo: 34538
+
+	Iteración 15: cambia el par (4,5)
+	Asignación: [14, 19, 8, 3, 6, 10, 2, 12, 15, 5, 7, 16, 17, 20, 11, 1, 4, 9, 13, 18]
+	Costo: 34984
+
+	Iteración 16: cambia el par (13,9)
+	Asignación: [14, 19, 8, 3, 6, 10, 2, 12, 15, 5, 7, 16, 17, 20, 11, 1, 4, 13, 9, 18]
+	Costo: 34992
+
+	Iteración 17: cambia el par (11,9)
+	Asignación: [14, 19, 8, 3, 6, 10, 2, 12, 15, 5, 7, 16, 17, 20, 9, 1, 4, 13, 11, 18]
+	Costo: 34980
+
+	Iteración 18: cambia el par (7,18)
+	Asignación: [14, 19, 8, 3, 6, 10, 2, 12, 15, 5, 18, 16, 17, 20, 9, 1, 4, 13, 11, 7]
+	Costo: 34882
+
+	Iteración 19: cambia el par (2,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 19, 12, 15, 5, 18, 16, 17, 20, 9, 1, 4, 13, 11, 7]
+	Costo: 34956
+
+	Iteración 20: cambia el par (18,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 15, 5, 19, 16, 17, 20, 9, 1, 4, 13, 11, 7]
+	Costo: 34916
+
+	Iteración 21: cambia el par (16,15)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 16, 5, 19, 15, 17, 20, 9, 1, 4, 13, 11, 7]
+	Costo: 34872
+
+	Iteración 22: cambia el par (15,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 16, 5, 15, 19, 17, 20, 9, 1, 4, 13, 11, 7]
+	Costo: 34954
+
+	Iteración 23: cambia el par (1,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 16, 5, 15, 1, 17, 20, 9, 19, 4, 13, 11, 7]
+	Costo: 34772
+
+	Iteración 24: cambia el par (16,20)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 20, 5, 15, 1, 17, 16, 9, 19, 4, 13, 11, 7]
+	Costo: 34986
+
+	Iteración 25: cambia el par (13,9)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 20, 5, 15, 1, 17, 16, 13, 19, 4, 9, 11, 7]
+	Costo: 34816
+
+	Iteración 26: cambia el par (9,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 18, 12, 20, 5, 15, 1, 17, 16, 13, 9, 4, 19, 11, 7]
+	Costo: 34998
+
+	Iteración 27: cambia el par (18,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 19, 12, 20, 5, 15, 1, 17, 16, 13, 9, 4, 18, 11, 7]
+	Costo: 34976
+
+	Iteración 28: cambia el par (9,11)
+	Asignación: [14, 2, 8, 3, 6, 10, 19, 12, 20, 5, 15, 1, 17, 16, 13, 11, 4, 18, 9, 7]
+	Costo: 34826
+
+	Iteración 29: cambia el par (11,19)
+	Asignación: [14, 2, 8, 3, 6, 10, 11, 12, 20, 5, 15, 1, 17, 16, 13, 19, 4, 18, 9, 7]
+	Costo: 34798
+
+	Iteración 30: cambia el par (18,15)
+	Asignación: [14, 2, 8, 3, 6, 10, 11, 12, 20, 5, 18, 1, 17, 16, 13, 19, 4, 15, 9, 7]
+	Costo: 34806
+
+ Asignación: [14, 2, 8, 3, 6, 10, 11, 12, 20, 5, 18, 1, 17, 16, 13, 19, 4, 15, 9, 7]
+ Costo: 30948
+ Tiempo de ejecución: 2.0165s

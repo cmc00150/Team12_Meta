@@ -74,7 +74,7 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
                                         costoInicial = costo(solInicial,data.flujos,data.distancias)
                                         logTabu.registrarSolucionInicial(solInicial,costoInicial)
 
-                                        result = busqueda_tabu(data.flujos, data.distancias, solInicial, costoInicial, int(maxIteraciones), int(tenencia), oscilacion, estancamiento, logTabu)
+                                        result = busqueda_tabu(data.flujos, data.distancias, solInicial, costoInicial, int(maxIteraciones), int(tenencia), float(oscilacion), float(estancamiento), logTabu)
 
                                         logTabu.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                                         logTabu.generaLogs()

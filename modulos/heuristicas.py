@@ -48,7 +48,7 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
 
 def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
-    
+
     i = 0                                                   # Posición inicial a investigar en la permutación
     it=0                                                    # Número de soluciones a las que nos movemos (iterador)
     mejora_global = 0                                       # Empezamos en 0 porque nos interesan solo los negativos (los que disminuyan el coste actual)

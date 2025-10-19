@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 from .func_auxiliares import costo
-=======
-from modulos.func_auxiliares import costo
->>>>>>> 7d93e6507f2d84be65f1cf653b0fff0da2f14b78
 
 def error(mensaje:str):
       print('[!] Error -',mensaje)
