@@ -131,7 +131,7 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
 
                 if coste_actual < mejora_global:
                     mejor_global = solInicial
-                    mejora_global += mejora                                 # Actualizamos la mejora
+                    mejora_global += mejora_local                                 # Actualizamos la mejora
 
                 mem.push(i, j, solInicial)                              # La añadimos a la memoria tabú (si ya estaba se elimina y se vuelve a insertar automáticamente)
                 it+=1
