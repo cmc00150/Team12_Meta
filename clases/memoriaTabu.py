@@ -47,9 +47,9 @@ class MemTabu:
     for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
       masFrec = 0
       for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
-        if frec > masFrec and incluido[1] == 0:                            # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
+        if frec > masFrec and incluido[j] == 0:                            # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
           masFrec = frec                              # Asignamos de nuevo
           perm[i] = j                                   # Le asignamos la localización a esa unidad
-          incluido[j] = 1
+      incluido[perm[i]] = 1
 
     return perm

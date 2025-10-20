@@ -1,5 +1,5 @@
-DATA = .\datos\ford04.dat
-ALG = busqueda_local_dlb
+DATA = ./datos/ford04.dat
+ALG = busqueda_tabu
 SEED = 12255133
 K = 5
 max_iteraciones = 5000

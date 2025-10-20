@@ -102,10 +102,7 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
     factible = [0] * len(solInicial)                            # Inicializamos el vector de factibles
     n_factibles=len(solInicial)                                 # Número de unidades factibles
 
-    mostrar = 50
     while it <= maxIteraciones:
-        if mostrar != 0:
-            mostrar-=1
         
         if factible[i] == 0:                                    # Si i tiene posibilidad de mejora buscamos con explorar_vecinos()
             mejor_local = ()
@@ -123,20 +120,21 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
             
             if coste_actual + mejora_local < coste_actual:         # SI el mejor de los vecinos mejora el valor actual nos movemos a él
                 dos_opt(solInicial, mejor_local[0], mejor_local[1])                               # Hacemos el intercambio
-                
-                if factible[j] == 1:                                    # SI hemos recuperado un no factible, ahora tenemos uno más
+                if factible[mejor_local[1]] == 1:                                    # SI hemos recuperado un no factible, ahora tenemos uno más
                     n_factibles += 1
-                factible[i] = factible[j] = 0                           # Indicamos que por estas dos unidades se puede seguir buscando
+                factible[mejor_local[0]] = factible[mejor_local[1]] = 0                           # Indicamos que por estas dos unidades se puede seguir buscando
                 coste_actual += mejora_local
 
                 if coste_actual < mejora_global:
-                    mejor_global = solInicial
-                    mejora_global += mejora_local                                 # Actualizamos la mejora
+                    mejor_global = solInicial.copy()
+                    mejora_global = coste_actual                       # Actualizamos la mejora
 
                 mem.push(i, j, solInicial)                              # La añadimos a la memoria tabú (si ya estaba se elimina y se vuelve a insertar automáticamente)
                 it+=1
                 sin_mejora = 0                                          # Hemos tenido una mejora
-                logBusqueda.registraCambioBLocal(i, j, solInicial, mejora_global, it)
+                mejor_peores = ()
+                mejora_peores = maxsize
+                logBusqueda.registraCambioBLocal(i, j, solInicial, coste_actual, it)
             else:                                                   # SI no se ha encontrado ninguna que mejora
                 factible[i] = 1                                         # Vetamos esta unidad poniendo un 1
                 n_factibles -= 1                                        # Reducimos el número de casillas factibles
@@ -144,18 +142,21 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
                     mejor_peores = mejor_local                              # Guardamos el vecino que es mejor aunque no mejore la global
                     mejora_peores = mejora_local                            # Guardamos su mejora también
 
+        if it == maxIteraciones:
+            break
+
         if n_factibles == 0:                                    # SI no nos quedan más unidades factibles
             factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
             n_factibles = len(solInicial)
-            i, j = mejor_peores                                     # Sacamos el intercambio del mejor de los vecinos encontrados hasta ahora
-            dos_opt(solInicial, i, j)                               # Nos movemos a este vecino (aunque no mejore la global)
-            mem.push(i, j, solInicial)                                          # Como nos hemos movido, insertamos la solución
+            k, l = mejor_peores                                     # Sacamos el intercambio del mejor de los vecinos encontrados hasta ahora
+            dos_opt(solInicial, k, l)                               # Nos movemos a este vecino (aunque no mejore la global)
+            mem.push(k, l, solInicial)                                          # Como nos hemos movido, insertamos la solución
             sin_mejora+=1                                           # Aumentamos el número de iteraciones sin mejora
             coste_actual+= mejora_peores
             mejor_peores = ()
             mejora_peores = maxsize
             it+=1
-            logBusqueda.registraCambioBLocal(i, j, solInicial, mejora_local + mejora_global, it)
+            logBusqueda.registraCambioBLocal(k, l, solInicial, coste_actual, it)
 
         i=(i+1)%len(solInicial)                                         # Pasamos al siguiente elemento
 
@@ -168,10 +169,11 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
             else:                                                           # De lo contrario INTENSIFICAMOS
                 nueva_perm = mem.masFrecuente()
             solInicial = nueva_perm                                 # Hacemos el cambio
+            coste_actual = costo(nueva_perm, flujos, distancias)
             factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
             n_factibles = len(solInicial)
-            it+=1
 
     fin=time.time()                                                 # Fin del contador del tiempo
     tiempo=fin-inicio                                               # Tiempo empleado en obtener el resultado
+    print(costo(mejor_global, flujos, distancias))
     return (mejor_global, tiempo)                                     # Permutación solución + tiempo de ejecución
