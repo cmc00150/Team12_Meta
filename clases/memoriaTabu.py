@@ -27,25 +27,29 @@ class MemTabu:
     self.__corta.clear()
 
   def menosFrecuente(self) -> tuple[int, int]: 
-    perm = []
-    menosFrec = maxsize
+    perm = [-1] * len(self.__larga)
+    incluido = [0] * len(self.__larga)
     
     for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
+      menosFrec = maxsize
       for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
-        if frec < menosFrec and frec > 0:             # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
+        if frec > 0 and frec < menosFrec and incluido[j] == 0:             # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
           menosFrec = frec                              # Asignamos de nuevo
-          perm[i] = j                                   # Le asignamos la localización a esa unidad
+          perm[i] = j
+      incluido[perm[i]] = 1
 
     return perm
 
   def masFrecuente(self) -> tuple[int, int]: 
-    perm = []
-    masFrec = 0
+    perm = [-1] * len(self.__larga)
+    incluido = [0] * len(self.__larga)
 
     for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
+      masFrec = 0
       for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
-        if frec > masFrec:                            # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
+        if frec > masFrec and incluido[1] == 0:                            # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
           masFrec = frec                              # Asignamos de nuevo
           perm[i] = j                                   # Le asignamos la localización a esa unidad
+          incluido[j] = 1
 
     return perm
