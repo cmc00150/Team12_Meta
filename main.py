@@ -56,6 +56,8 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
 
                             logBusqueda.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                             logBusqueda.generaLogs()
+                            if(config.extra[5][0] == '1'): # Si generacionImagen = 1 en config, se genera un gráfico de la evolución del coste del algoritmo a lo largo de las iteraciones
+                                logBusqueda.dibujarGrafica()
             
             case 'busqueda_tabu':
                 if len(config.seed) == 0 or len(config.extra) < 5:
@@ -78,6 +80,8 @@ for algoritmo in config.alg: # Obtengo los diferentes algoritmos del archivo de 
 
                                         logTabu.registrarSolucion(result, costo(result[0], data.flujos, data.distancias))
                                         logTabu.generaLogs()
+                                        if(config.extra[5][0] == '1'): # Si generacionImagen = 1 en config, se genera un gráfico de la evolución del coste del algoritmo a lo largo de las iteraciones
+                                            logTabu.dibujarGrafica()
             case _:
                 error('El algoritmo',algoritmo,'no ha sido programado, no se han obtenido resultados\n')
 

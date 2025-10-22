@@ -1,4 +1,6 @@
 from pathlib import Path
+import matplotlib.pyplot as plt
+
 """
     CLASE PRINCIPAL PARA GUARDAR LOS LOGS DE CADA ALGORITMO EN ARCHIVOS DE TEXTO
     Guarda en un fichero de texto con formato 'nombreAlgoritmo_nombreFicheroDatos_semilla' los resultados obtenidos tras la ejecución de los diferentes algoritmos
@@ -66,6 +68,100 @@ class Log:
         self.__texto+='\n'
 
     """
+    Función que permite obtener un gráfico del avance del costo de la permutación en función de las iteraciones que han pasado
+    Es útil para algoritmos como busqueda_local_dlb o busqueda_tabu
+    """
+    def dibujarGrafica(self):
+        # Construir ruta del archivo de log
+        carpetaActual = Path(__file__).parent
+        nombreDatos = self.__datos.stem.lower()
+        nombreArchivo = self.__algoritmo + '_' + nombreDatos
+        if self.__semilla > 0:
+            nombreArchivo += '_' + str(self.__semilla)
+        nombreArchivo += '.txt'
+        ruta = carpetaActual.parent / 'logs' / nombreArchivo
+
+        # Costes óptimos por archivo
+        costes_optimos = {
+            "ford01": 3542,
+            "ford02": 26876,
+            "ford03": 13292,
+            "ford04": 150528
+        }
+        coste_optimo = costes_optimos.get(nombreDatos, None)
+
+        # Límites máximos del eje Y por archivo
+        limites_y = {
+            "ford01": 4000*1.5,
+            "ford02": 40000*1.5,
+            "ford03": 14000*1.5,
+            "ford04": 200000*1.5
+        }
+        limite_superior_y = limites_y.get(nombreDatos, None)
+
+        # Extraer datos
+        iteraciones = []
+        costes = []
+
+        with open(ruta, "r", encoding="utf-8") as f:
+            lineas = f.readlines()
+
+        i = 0
+        while i < len(lineas):
+            linea = lineas[i].strip()
+            if linea.startswith("Iteración"):
+                partes = linea.split()
+                num_iter = int(partes[1].replace(":", ""))
+                while i + 1 < len(lineas):
+                    i += 1
+                    siguiente = lineas[i].strip()
+                    if siguiente.startswith("Costo:"):
+                        coste = float(siguiente.split(":")[1].strip())
+                        iteraciones.append(num_iter)
+                        costes.append(coste)
+                        break
+            i += 1
+
+        if not iteraciones or not costes:
+            print("No se encontraron datos para graficar.")
+            return
+
+        # Crear gráfico
+        plt.figure(figsize=(12, 6))
+        plt.plot(iteraciones, costes, color='darkgreen', linewidth=1.5, label='Costo por iteración')
+
+        # Añadir línea roja con coste óptimo
+        if coste_optimo:
+            plt.axhline(coste_optimo, color='red', linestyle='--', linewidth=1.2, label=f'Coste óptimo: {coste_optimo}')
+
+        # Configurar eje Y desde 0 hasta el límite definido
+        if limite_superior_y:
+            plt.ylim(0, limite_superior_y)
+        else:
+            # Si no hay límite definido, usar margen proporcional
+            max_coste = max(costes)
+            margen_superior = (max_coste - min(costes)) * 0.5
+            plt.ylim(0, max_coste + margen_superior)
+
+        # Etiquetas y leyenda
+        plt.title("Evolución del coste por iteración", fontsize=14)
+        plt.xlabel("Iteración")
+        plt.ylabel("Costo")
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+
+        # Guardar como PNG con nombre dinámico
+        nombreGrafico = f"grafico_{self.__algoritmo}_{nombreDatos}"
+        if self.__semilla > 0:
+            nombreGrafico += f"_{self.__semilla}"
+        nombreGrafico += ".png"
+
+        rutaGrafico = carpetaActual.parent / 'logs/graficos' / nombreGrafico
+        plt.savefig(rutaGrafico, format='png')
+        plt.close()
+
+    """
     Función para generar logs
         Genera un archivo de texto con el nombre algoritmo_nombreArchivoDatos_semilla, (donde semilla es un parámetro opcional) en la carpeta logs
         Permite llevar un registro de la evolución de los algoritmos
@@ -77,12 +173,12 @@ class Log:
         nombreArchivo=self.__algoritmo+'_'+nombreDatos
         if(self.__semilla > 0):
             nombreArchivo+='_'+str(self.__semilla)
+        nombreArchivo+='.txt'
 
         ruta=carpetaActual.parent/'logs'/nombreArchivo
 
         with open(ruta,'w',encoding='utf-8') as arch:
             arch.write(self.__texto)
-
     """
     Añade una solución FINAL al contenido del fichero, incluyendo la permutación, costo de evaluación y tiempo de ejecución
     """
@@ -107,3 +203,30 @@ class Log:
         self.__texto+=f'\tIteración {iteracion}: cambia el par ({nuevasol[posi]+1},{nuevasol[posj]+1})\n'
         self.__texto+=f'\tAsignación: {[elem+1 for elem in nuevasol]}\n'      
         self.__texto+=f'\tCosto: {nuevoCoste}\n\n'
+
+    """
+    Registra cuándo se reinicializa en la búsqueda tabú, indicando si se ha hecho para intensificar o diversificar
+    Se utiliza para registrar detalles en el algoritmo busqueda_tabu
+    """
+    def registrarReinicializacionIntensificar(self, permutacion, costo, iteracion, intensificar):
+        self.__texto+='\t'
+        if(intensificar):
+            self.__texto+=f' Iteración {iteracion}: REINICIALIZACIÓN PARA APLICAR INTENSIFICACIÓN '.center(100,'I')
+        else:
+            self.__texto+=f' Iteración {iteracion}: REINICIALIZACIÓN PARA APLICAR DIVERSIFICACIÓN '.center(100,'D')
+        self.__texto+='\n'
+        self.__texto+=f'\tAsignación inicial: {[elem+1 for elem in permutacion]}\n'      
+        self.__texto+=f'\tCosto: {costo}\n'
+        if(intensificar):
+            self.__texto+='\t'
+            self.__texto+=f'I'.center(100,'I')
+        else:
+            self.__texto+='\t'
+            self.__texto+=f'D'.center(100,'D')
+        self.__texto+='\n\n'
+    
+    def registraCambioBTabu(self, posi, posj, nuevasol, nuevoCoste, mejorCoste, iteracion):
+        self.__texto+=f'\tIteración {iteracion}: cambia el par ({nuevasol[posi]+1},{nuevasol[posj]+1})\n'
+        self.__texto+=f'\tAsignación: {[elem+1 for elem in nuevasol]}\n'      
+        self.__texto+=f'\tCosto: {nuevoCoste}\n'
+        self.__texto+=f'\tMejor costo global: {mejorCoste}\n\n'

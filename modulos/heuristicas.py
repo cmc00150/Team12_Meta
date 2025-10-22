@@ -133,8 +133,9 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
                 print(" - MEJORA")
                 it+=1
                 sin_mejora = 0                                          # Hemos tenido una mejora
-                logBusqueda.registraCambioBLocal(i, j, solInicial, mejora_global, it)
-
+                mejor_peores = ()
+                mejora_peores = maxsize
+                logBusqueda.registraCambioBTabu(i,j,solInicial,coste_actual,mejora_global,it)
             else:                                                   # SI no se ha encontrado ninguna que mejora
                 factible[i] = 1                                         # Vetamos esta unidad poniendo un 1
                 n_factibles -= 1                                        # Reducimos el número de casillas factibles
@@ -148,23 +149,28 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
             dos_opt(solInicial, i, j)                               # Nos movemos a este vecino (aunque no mejore la global)
             sin_mejora+=1                                           # Aumentamos el número de iteraciones sin mejora
             it+=1
-            logBusqueda.registraCambioBLocal(i, j, solInicial, mejora_local + mejora_global, it)
+            logBusqueda.registraCambioBTabu(i,j,solInicial,coste_actual,mejora_global,it)
 
         i=(i+1)%len(solInicial)                                         # Pasamos al siguiente elemento
         # La mem a largo plazo debe devolver una permutación
         if sin_mejora == maxIteraciones * estancamiento:                # SI el número de iteraciones sin mejoras es el 5% del máximo de iteraciones
             sin_mejora = 0                                                  # Reiniciamos el contador de mejora
             r = random.randint(1,100)                                     # Sacamos un número del 1 al 100
-            nueva_perm = ()                                                 # Preparamos el nuevo cambio
+            nueva_perm = []                                                 # Preparamos el nuevo cambio
+            intensificar=0
             if r <= oscilacion * 100:                                       # SI está por debajo de la oscilación DIVERSIFICAMOS
                 nueva_perm = mem.menosFrecuente()
             else:                                                           # De lo contrario INTENSIFICAMOS
                 nueva_perm = mem.masFrecuente()
-            dos_opt(solInicial, nueva_perm[0], nueva_perm[1])               # Hacemos el cambio
+                intensificar=1
+            solInicial = nueva_perm                                 # Hacemos el cambio
+            coste_actual = costo(nueva_perm, flujos, distancias)
+            it+=1                                                   # Suma una iteración
+            logBusqueda.registrarReinicializacionIntensificar(nueva_perm,coste_actual, it, intensificar) # Se registra en el log la reinicialización
             factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
             n_factibles = len(solInicial)
             mejor_global = (nueva_perm[0], nueva_perm[1])
             it+=1
     fin=time.time()                                                 # Fin del contador del tiempo
     tiempo=fin-inicio                                               # Tiempo empleado en obtener el resultado
-    return (solInicial, tiempo)                                     # Permutación solución + tiempo de ejecución
+    return (mejor_global, tiempo)                                   # Permutación solución + tiempo de ejecución

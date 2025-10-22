@@ -1,8 +1,9 @@
-DATA = .\datos\ford04.dat
-ALG = busqueda_local_dlb
+DATA = .\datos\ford01.dat .\datos\ford02.dat .\datos\ford03.dat .\datos\ford04.dat
+ALG = busqueda_local_dlb busqueda_tabu
 SEED = 12255133
 K = 5
 max_iteraciones = 5000
 tenencia = 3
 oscilacion = 0.5
 estancamiento = 0.05
+generacionImagen = 1
