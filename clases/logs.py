@@ -111,7 +111,7 @@ class Log:
             linea = lineas[i].strip()
             if linea.startswith("Iteración"):
                 partes = linea.split()
-                num_iter = int(partes[1].replace(":", ""))
+                num_iter = int(partes[1].replace(":", ""))-1
                 while i + 1 < len(lineas):
                     i += 1
                     siguiente = lineas[i].strip()
@@ -127,7 +127,7 @@ class Log:
             return
 
         # Crear gráfico
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(12, 12))
         plt.plot(iteraciones, costes, color='darkgreen', linewidth=1.5, label='Costo por iteración')
 
         # Añadir línea roja con coste óptimo
@@ -149,6 +149,8 @@ class Log:
         plt.ylabel("Costo")
         plt.grid(True)
         plt.legend()
+        plt.xlim(left=0)
+        plt.xlim(min(iteraciones), max(iteraciones))
         plt.tight_layout()
 
         # Guardar como PNG con nombre dinámico
@@ -183,7 +185,7 @@ class Log:
     Añade una solución FINAL al contenido del fichero, incluyendo la permutación, costo de evaluación y tiempo de ejecución
     """
     def registrarSolucion(self, nuevaSolucion: tuple[list[int], float], costo):
-        tiempo = f"{nuevaSolucion[1]:.4f}" # Ajusto el tiempo para que se muestre en s aproximando al 4to  
+        tiempo = f"{nuevaSolucion[1]*1000:.4f}" # Ajusto el tiempo para que se muestre en s aproximando al 4to  
         self.__texto+=f' Asignación: {[elem+1 for elem in nuevaSolucion[0]]}'      
         self.__texto+=f'\n Costo: {costo}'
         self.__texto+=f'\n Tiempo de ejecución: {tiempo}s'

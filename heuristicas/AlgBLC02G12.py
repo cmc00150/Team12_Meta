@@ -1,9 +1,6 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
-import random
-from sys import maxsize
 from modulos.func_auxiliares import (dos_opt, fact)
 from clases.logs import Log
-from clases.memoriaTabu import MemTabu
 
 def busqueda_local_dlb(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()

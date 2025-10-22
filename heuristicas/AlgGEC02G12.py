@@ -1,5 +1,4 @@
 import time # Para medir cuánto tarda cada función en ejecutarsey poder comparar rendimientos
-import random
 
 def greedy(flujos: list[list[int]], distancias: list[list[int]], candidatos: int) -> tuple [list[int], float]:
     inicio = time.time() # Inicio el contador del tiempo

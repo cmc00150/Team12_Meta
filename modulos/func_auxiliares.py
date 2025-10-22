@@ -1,6 +1,3 @@
-from dataclasses import dataclass
-from sys import maxsize
-
 def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
     costo = 0
     for i, main in enumerate(permutacion):
