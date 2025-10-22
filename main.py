@@ -1,7 +1,9 @@
-import sys 
-from modulos.heuristicas import *
+import sys, random
+from heuristicas.AlgGE02G12 import greedy
+from heuristicas.AlgGA02G12 import greedy_aleatorizado
+from heuristicas.AlgBL02G12 import busqueda_local_dlb
+from heuristicas.AlgBT02G12 import busqueda_tabu
 from modulos.prints import *
-
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 from clases.logs import Log

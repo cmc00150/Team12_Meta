@@ -17,8 +17,8 @@ class MemTabu:
 
     self.__corta.append((i,j))          # Siempre lo añade (estuviera o no)
 
-    for i, elem in enumerate(perm):     # Actualizamos la memoria a largo plazo (fila - unidad y col - localización)
-      self.__larga[i][elem] += 1
+    for u, l in enumerate(perm):     # Actualizamos la memoria a largo plazo (u - unidad y l - localización)
+      self.__larga[u][l] += 1        # Indicamos que a la unidad se le ha asignado la localización l una vez más
 
   def tabu(self, i, j) -> bool:
     return (i,j) in self.__corta or (j,i) in self.__corta
@@ -27,21 +27,29 @@ class MemTabu:
     self.__corta.clear()
 
   def menosFrecuente(self) -> tuple[int, int]: 
-    perm = []
-    menosFrec = maxsize
-    for i, _ in enumerate(self.__larga):
-      for j in range(0, len(self.__larga)):
-        elem = self.__larga[i][j]
-        if elem < menosFrec and elem != 0:
-          menosFrec = elem
+    perm = [-1] * len(self.__larga)
+    incluido = [0] * len(self.__larga)
+    
+    for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
+      menosFrec = maxsize
+      for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
+        if frec > 0 and frec < menosFrec and incluido[j] == 0:             # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
+          menosFrec = frec                              # Asignamos de nuevo
           perm[i] = j
-    return menosFrec[0]
+      incluido[perm[i]] = 1
+
+    return perm
 
   def masFrecuente(self) -> tuple[int, int]: 
-    masFrec = ((), 0)
-    for i, _ in enumerate(self.__larga):
-      for j in range(i+1, len(self.__larga)):
-        elem = self.__larga[i][j]
-        if elem > masFrec[1] and elem != 0:
-          masFrec = ((i, j), elem)
-    return masFrec[0]
+    perm = [-1] * len(self.__larga)
+    incluido = [0] * len(self.__larga)
+
+    for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
+      masFrec = 0
+      for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
+        if frec > masFrec and incluido[j] == 0:                            # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
+          masFrec = frec                              # Asignamos de nuevo
+          perm[i] = j                                   # Le asignamos la localización a esa unidad
+      incluido[perm[i]] = 1
+
+    return perm
