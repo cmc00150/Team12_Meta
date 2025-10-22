@@ -168,12 +168,11 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
                 nueva_perm = mem.menosFrecuente()
             else:                                                           # De lo contrario INTENSIFICAMOS
                 nueva_perm = mem.masFrecuente()
-            solInicial = nueva_perm                                 # Hacemos el cambio
+            solInicial = nueva_perm.copy()                                 # Hacemos el cambio
             coste_actual = costo(nueva_perm, flujos, distancias)
             factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
             n_factibles = len(solInicial)
 
     fin=time.time()                                                 # Fin del contador del tiempo
     tiempo=fin-inicio                                               # Tiempo empleado en obtener el resultado
-    print(costo(mejor_global, flujos, distancias))
     return (mejor_global, tiempo)                                     # Permutación solución + tiempo de ejecución
