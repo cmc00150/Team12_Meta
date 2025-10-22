@@ -97,5 +97,4 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
 
     fin=time.time()                                                 # Fin del contador del tiempo
     tiempo=fin-inicio                                               # Tiempo empleado en obtener el resultado
-    print(costo(mejor_global, flujos, distancias))
     return (mejor_global, tiempo)                                     # Permutación solución + tiempo de ejecución

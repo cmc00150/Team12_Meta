@@ -26,30 +26,54 @@ class MemTabu:
   def reiniciar_corto_plazo(self):
     self.__corta.clear()
 
-  def menosFrecuente(self) -> tuple[int, int]: 
-    perm = [-1] * len(self.__larga)
-    incluido = [0] * len(self.__larga)
+  def menosFrecuente(self) -> list[int]:
+    n = len(self.__larga)
+    perm = [-1] * n
+    incluido = [0] * n
     
-    for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
-      menosFrec = maxsize
-      for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
-        if frec > 0 and frec < menosFrec and incluido[j] == 0:             # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
-          menosFrec = frec                              # Asignamos de nuevo
-          perm[i] = j
-      incluido[perm[i]] = 1
+    for i in range(n):
+        menosFrec = maxsize
+
+        for j in range(n):
+          if incluido[j] == 0 and self.__larga[i][j] > 0:   # SI la localización no ha sido incluida y la casilla es mayor que 0 (sino nos quedariamos con el 0 todo el rato)
+            if self.__larga[i][j] < menosFrec:              # SI la localización actual es la que menos veces ha estado hastas ahora en la unidad i
+              menosFrec = self.__larga[i][j]                # Actualizamos el valor del menos frecuente
+              perm[i] = j       
+        
+        if menosFrec != maxsize:        # SI no se ha modificado la variable es porque no se ha escogido a ninguno (porque el menor ya estaria )
+            incluido[perm[i]] = 1
+    
+    disponibles = [j for j in range(n) if incluido[j] == 0]
+    for i in range(n):
+        if perm[i] == -1 and disponibles:
+            perm[i] = disponibles.pop(0)
+            incluido[perm[i]] = 1
 
     return perm
 
-  def masFrecuente(self) -> tuple[int, int]: 
-    perm = [-1] * len(self.__larga)
-    incluido = [0] * len(self.__larga)
+  def masFrecuente(self) -> list[int]:
+    n = len(self.__larga)
+    perm = [-1] * n
+    incluido = [0] * n
+    
+    # 1. Primera pasada: asignar según frecuencia máxima
+    for i in range(n):
+        masFrec = -1
+        
+        for j in range(n):
+            if incluido[j] == 0:  # Solo considerar localizaciones disponibles
+                if self.__larga[i][j] > masFrec:
+                    masFrec = self.__larga[i][j]
+                    perm[i] = j
+        
+        # Solo marcar como incluido si realmente se asignó
+        if masFrec != -1:
+            incluido[perm[i]] = 1
 
-    for i, _ in enumerate(self.__larga):          # Recorremos las unidades (filas)
-      masFrec = 0
-      for j, frec in enumerate(self.__larga[i]):    # Por cada unidada, miramos las locailzaciones donde ha estado menos (columnas)
-        if frec > masFrec and incluido[j] == 0:                            # SI la frecuencia es menor que el mínimo hasta ahora y es mayor que 0 (porque sino es una casilla inactiva)
-          masFrec = frec                              # Asignamos de nuevo
-          perm[i] = j                                   # Le asignamos la localización a esa unidad
-      incluido[perm[i]] = 1
-
+    disponibles = [j for j in range(n) if incluido[j] == 0]
+    for i in range(n):
+        if perm[i] == -1 and disponibles:
+            perm[i] = disponibles.pop(0)
+            incluido[perm[i]] = 1
+            
     return perm
