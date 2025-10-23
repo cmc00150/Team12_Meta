@@ -140,9 +140,6 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
                     mejor_peores = mejor_local                              # Guardamos el vecino que es mejor aunque no mejore la global
                     mejora_peores = mejora_local                            # Guardamos su mejora también
 
-        if it == maxIteraciones:
-            break
-
         if n_factibles == 0:                                    # SI no nos quedan más unidades factibles
             factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
             n_factibles = len(solInicial)
@@ -174,6 +171,9 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
             logBusqueda.registrarReinicializacionIntensificar(nueva_perm,coste_actual, it, intensificar) # Se registra en el log la reinicialización
             factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
             n_factibles = len(solInicial)
+        
+        if it == maxIteraciones:
+            break
 
     fin=time.time()                                                 # Fin del contador del tiempo
     tiempo=fin-inicio                                               # Tiempo empleado en obtener el resultado
