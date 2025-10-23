@@ -136,7 +136,7 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
             else:                                                   # SI no se ha encontrado ninguna que mejora
                 factible[i] = 1                                         # Vetamos esta unidad poniendo un 1
                 n_factibles -= 1                                        # Reducimos el número de casillas factibles
-                if mejora_local < mejora_peores:                        # Si este nuevo vecino supera al vecino encontr
+                if mejora_local < mejora_peores:                        # Si este nuevo vecino supera al vecino encontrado
                     mejor_peores = mejor_local                              # Guardamos el vecino que es mejor aunque no mejore la global
                     mejora_peores = mejora_local                            # Guardamos su mejora también
 

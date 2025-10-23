@@ -85,4 +85,4 @@
 
  Asignación: [3, 6, 13, 7, 11, 14, 18, 8, 2, 20, 9, 12, 15, 16, 5, 1, 17, 10, 19, 4]
  Costo: 31690
- Tiempo de ejecución: 2.0537s
+ Tiempo de ejecución: 0.0026s

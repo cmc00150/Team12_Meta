@@ -25012,4 +25012,4 @@
 
  Asignación: [5, 2, 1, 4, 7, 19, 10, 18, 15, 3, 11, 9, 13, 14, 16, 20, 17, 8, 6, 12]
  Costo: 30558
- Tiempo de ejecución: 4967.0668s
+ Tiempo de ejecución: 5.0448s
