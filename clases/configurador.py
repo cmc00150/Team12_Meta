@@ -1,5 +1,5 @@
 import os
-from modulos.prints import error
+from modulos.func_auxiliares import error
 
 def limpiar_terminal(): # Limpia la terminal en cada ejecución
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -18,8 +18,13 @@ class Configurador:
                 exit(1)
 
             self.__data: list[str]  = [] # Inicializo valores para comprobar errores después
-            self.__alg: str         = ""
+            self.alg: str         = ""
             self.__seed: list[str]  = []
+            self.cruce: str = ""
+            self.poblacion: int = -1
+            self.elite: int = -1
+            self.kBest: int = -1
+            self.kWorst: int = -1
             self.__extra: list[str] = []
 
             for linea in texto: # Recorro las líneas del archivo de configuración
@@ -32,38 +37,77 @@ class Configurador:
                 match campo: # Guardo los datos según el campo al que pertenezcan
                     case 'DATA':
                         self.__data=contenido
+                        if not self.__data:
+                            error("La lista de ficheros de datos no puede estar vacía")
+                            exit(1)
                     case 'ALG':
-                        self.__alg=contenido
+                        self.__alg=contenido.pop(0)
+                        if not self.__alg:
+                            error("La lista de algoritmos no puede estar vacía")
+                            exit(1)
                     case 'SEED':
-                        self.__seed=contenido
-                    case _: # Caso por defecto (argumentos extra)
-                        self.__extra.append(contenido)
+                        self.__seed=contenido if contenido else []
+                        if not self.__seed:
+                            error("La lista de semillas no puede estar vacía")
+                            exit(1)
+                    case 'CRUCE':
+                        self.cruce=contenido.pop(0) if contenido else None
+                        if self.cruce is None:
+                            error("El tipo de cruce no puede estar vacío")
+                            exit(1)
+                    case 'M':
+                        try:
+                            self.poblacion = int(contenido[0])
+                        except Exception:
+                            error("El tamaño de la población no es un número")
+                            exit(1)
+                    case 'E':
+                        try:
+                            self.elite = int(contenido[0])
+                        except Exception:
+                            error("El valor de élite no es un número")
+                            exit(1)
+                    case 'kBest':
+                        try:
+                            self.kBest = int(contenido[0])
+                        except Exception:
+                            error("El k mejor no es un número")
+                            exit(1)
+                    case 'kWorst':
+                        try:
+                            self.kWorst = int(contenido[0])
+                        except Exception:
+                            error("El k peor no es un número")
+                            exit(1)
+                    case _:
+                        # Guardamos el resto como argumentos extra (como lista de contenido)
+                        if contenido:
+                            self.__extra.append([campo] + contenido)
 
             # Compruebo que hay datos y algoritmo para trabajar
             if not self.__data :
                 error('La lista de ficheros de datos NO puede estar vacía')
                 exit(1)
-            if not self.__alg:
-                error('Debe indicar al menos un algoritmo para usar')
-                exit(1)
 
     @property
-    def data(self):
+    def data(self) -> list[str]:
         return self.__data.copy()
-    @property
-    def alg(self):
-        return self.__alg
-    @property
-    def seed(self):
-        return self.__seed.copy()
-    @property
-    def extra(self):
-        return self.__extra.copy()
 
-    def mostrarInfo(self): # Función para verificar que se han añadido los datos correctamente
-        print(' CONFIGURACIÓN APLICADA: '.center(100,'X'),
-              '\n  Archivos de datos: ',self.__data,
-              '\n  Algoritmos a usar: ',self.__alg,
-              '\n  Semillas: ',self.__seed,
-              '\n  Argumentos extra: ',self.__extra,'\n',
-              'X'*100,'\n')
+    @property
+    def seed(self) -> list[str]:
+        return self.__seed.copy()
+
+    @property
+    def extra(self) -> list[list[str]]:
+        return [e.copy() for e in self.__extra]
+
+    def mostrarInfo(self):
+        print(' CONFIGURACIÓN APLICADA: '.center(100, 'X'))
+        print(f'  Archivos de datos: {self.data}')
+        print(f'  Algoritmos a usar: {self.alg}')
+        print(f'  Semillas: {self.seed}')
+        print(f'  Cruce: {self.cruce}')
+        print(f'  Población: {self.poblacion}  Elite: {self.elite}')
+        print(f'  kBest: {self.kBest}  kWorst: {self.kWorst}')
+        print(f'  Argumentos extra: {self.extra}')
+        print('X' * 100)

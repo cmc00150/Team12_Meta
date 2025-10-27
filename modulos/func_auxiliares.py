@@ -20,3 +20,14 @@ def dos_opt (perm, i, j):
     aux = perm[i]
     perm[i] = perm[j]
     perm[j] = aux
+
+def error(mensaje:str):
+      print('[!] Error -',mensaje)
+      exit(1)
+
+def finPrograma():
+    print(' o'*50,
+        '\n',
+        f" FIN DEL PROGRAMA, CONSULTE LOS LOGS PARA OBTENER LOS RESULTADOS ".center(100, " "),
+        '\n',
+        ' o'*50)
