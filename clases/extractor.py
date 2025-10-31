@@ -1,5 +1,5 @@
 from itertools import islice
-from modulos.prints import error
+from modulos.func_auxiliares import error
 import copy
 
 class Extractor:
