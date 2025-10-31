@@ -72,6 +72,10 @@
 > 3. Largo plazo
 > 4. Oscilacion
 
+# Práctica 5
+>   Si en la poblacion descendiente ha desaparecido el mejor padre anterior, quito uno de los hijos y meto al padre
+> Tener esquema de generación de población, cruce, mutaciones etc
+
 # Documento
 - ✳️ Le gusta que despues de la tabla
 - ✳️ Desviacion tipica, media, tiempo.
