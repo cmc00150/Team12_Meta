@@ -1,3 +1,5 @@
+import random
+
 def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
     costo = 0
     for i, main in enumerate(permutacion):
@@ -31,3 +33,21 @@ def finPrograma():
         f" FIN DEL PROGRAMA, CONSULTE LOS LOGS PARA OBTENER LOS RESULTADOS ".center(100, " "),
         '\n',
         ' o'*50)
+    
+def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> list[int]:
+    # Obtenemos los vectores
+    v_flujos = [(i, sum(row)) for i, row in enumerate(flujos)]
+    v_distancias = [(i, sum(row)) for i, row in enumerate(distancias)]
+
+    # Los ordenamos
+    sorted_flujos = sorted(v_flujos, key=lambda tuple: tuple[1], reverse=True) # Mayor a menor
+    sorted_distancias = sorted(v_distancias, key=lambda tuple: tuple[1]) # Menor a mayor
+
+    permutacion = [0] * candidatos
+    for _ in range(candidatos):
+        aleatorioFlujos=random.randint(0,min(k,len(sorted_flujos)-1)) # El aleatorio tiene que ser entre 0 y k o entre 0 y el tamaño del vector en caso de que haya menos de k elementos
+        aleatorioDistancias=random.randint(0,min(k,len(sorted_distancias)-1))
+
+        permutacion[sorted_flujos.pop(aleatorioFlujos)[0]] = sorted_distancias.pop(aleatorioDistancias)[0]
+
+    return (permutacion) # Permutación solución + tiempo de ejecución

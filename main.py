@@ -1,7 +1,7 @@
 import sys, random
 from heuristicas.AlgESTC02G12 import evolutivo_estacionario
 from heuristicas.AlgGENC02G12 import evolutivo_generacional
-from modulos.func_auxiliares import (error, finPrograma)
+from modulos.func_auxiliares import (error, finPrograma, greedy_aleatorizado)
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 from clases.logs import Log
