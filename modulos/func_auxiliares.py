@@ -1,4 +1,5 @@
 import random
+from clases.individuo import Individuo
 
 def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
     costo = 0
@@ -34,7 +35,7 @@ def finPrograma():
         '\n',
         ' o'*50)
     
-def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> list[int]:
+def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> Individuo:
     # Obtenemos los vectores
     v_flujos = [(i, sum(row)) for i, row in enumerate(flujos)]
     v_distancias = [(i, sum(row)) for i, row in enumerate(distancias)]
@@ -50,4 +51,13 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
 
         permutacion[sorted_flujos.pop(aleatorioFlujos)[0]] = sorted_distancias.pop(aleatorioDistancias)[0]
 
-    return (permutacion) # Permutación solución + tiempo de ejecución
+    costoPermutacion=costo(permutacion,flujos,distancias)
+    ind=Individuo(permutacion,costoPermutacion,1)
+    return ind # Individuo generado
+
+def aleatorio(flujos: list[list[int]], distancias: list[list[int]], tam: int) -> Individuo:
+    permutacion = [i for i in range (0,tam)]
+    random.shuffle(permutacion) # Barajamos la permutación, de forma que nos aseguramos de que se cumple el factor aleatorio y no se repiten números
+    costoPermutacion=costo(permutacion, flujos, distancias)
+    ind=Individuo(permutacion,costoPermutacion,1)
+    return ind
