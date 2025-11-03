@@ -9,23 +9,21 @@ class Configurador:
         with open(ruta,'r') as archivo:
             texto=archivo.read().splitlines() # Abro el archivo y obtengo sus líneas
 
-            if len(texto) < 2:
-                error('El fichero de configuración debe recibir al menos dos argumentos:',
-                    '\n[!] OBLIGATORIO [!] \tDATA = {ejemplo.txt} (Datos para trabajar)',
-                    '\n[!] OBLIGATORIO [!] \tALG = {greedy}  (Algoritmos con los que ejecutar)',
-                    '\n\t\t\tSEED = {0} (Semillas para generar aleatoriedad)',
-                    '\n\t\t\tArgumentos extra (opcional)')
-                exit(1)
-
-            self.__data: list[str]  = [] # Inicializo valores para comprobar errores después
-            self.alg: str         = ""
-            self.__seed: list[str]  = []
-            self.cruce: str = ""
-            self.poblacion: int = -1
-            self.elite: int = -1
-            self.kBest: int = -1
-            self.kWorst: int = -1
-            self.__extra: list[str] = []
+            self.data: list[str]  = [] # Inicializo valores para comprobar errores después
+            self.alg: list[str]  = []
+            self.seed: list[int]  = []
+            self.k: list[int]  = []
+            self.prcGreedyAleat: list[int]  = []
+            self.tampoblacion: list[int]  = []
+            self.numElites: list[int]  = []
+            self.kBest: list[int]  = []
+            self.prcCruce: list[int]  = []
+            self.cruce: list[str]  = []
+            self.prcMutacion: list[int]  = []
+            self.kWorst: list[int]  = []
+            self.maxEvaluaciones: list[int]  = []
+            self.maxSegundos: list[int]  = []
+            self.extra: list[str] = []
 
             for linea in texto: # Recorro las líneas del archivo de configuración
                 contenido=linea.split() # Guardo una lista con el contenido de la línea
@@ -36,78 +34,100 @@ class Configurador:
                 contenido.pop(0) # Elimino '='
                 match campo: # Guardo los datos según el campo al que pertenezcan
                     case 'DATA':
-                        self.__data=contenido
-                        if not self.__data:
+                        self.data=contenido
+                        if not self.data:
                             error("La lista de ficheros de datos no puede estar vacía")
                             exit(1)
                     case 'ALG':
-                        self.__alg=contenido.pop(0)
-                        if not self.__alg:
+                        self.alg=contenido
+                        if not self.alg:
                             error("La lista de algoritmos no puede estar vacía")
                             exit(1)
                     case 'SEED':
-                        self.__seed=contenido if contenido else []
-                        if not self.__seed:
+                        self.seed=[int(x) for x in contenido]
+                        if not self.seed:
                             error("La lista de semillas no puede estar vacía")
                             exit(1)
+                    case 'K':
+                        self.k=[int(x) for x in contenido]
+                        if not self.k:
+                            error("Debe introducir al menos un parametro k")
+                            exit(1)
+                    case 'PRC_GREEDYALEAT':
+                        self.prcGreedyAleat=[int(x) for x in contenido]
+                        if not self.prcGreedyAleat:
+                            error("Debe introducir al menos un porcentaje de individuos generados mediante greedy aleatorizado")
+                            exit(1)   
+                    case 'TAMPOBLACION':
+                        self.tampoblacion=[int(x) for x in contenido]
+                        if not self.tampoblacion:
+                            error("Debe introducir al menos un tamaño de población")
+                            exit(1) 
+                    case 'NUMELITES':
+                        self.numElites=[int(x) for x in contenido]
+                        if not self.numElites:
+                            error("Debe introducir al menos un valor de élites a conservar")
+                            exit(1)   
+                    case 'KBEST':
+                        self.kBest=[int(x) for x in contenido]
+                        if not self.kBest:
+                            error("Debe introducir al menos un valor de KBEST")
+                            exit(1)   
+                    case 'PRC_CRUCE':
+                        self.prcCruce=[int(x) for x in contenido]
+                        if not self.prcCruce:
+                            error("Debe introducir al menos un porcentaje de cruce")
+                            exit(1)                                                               
                     case 'CRUCE':
-                        self.cruce=contenido.pop(0) if contenido else None
-                        if self.cruce is None:
-                            error("El tipo de cruce no puede estar vacío")
+                        self.cruce=contenido
+                        if not self.cruce:
+                            error("Debe introducir al menos un tipo de cruce")
                             exit(1)
-                    case 'M':
-                        try:
-                            self.poblacion = int(contenido[0])
-                        except Exception:
-                            error("El tamaño de la población no es un número")
+                    case 'PRC_MUTACION':
+                        self.prcMutacion=[int(x) for x in contenido]
+                        if not self.prcMutacion:
+                            error("Debe introducir al menos un porcentaje de mutación")
                             exit(1)
-                    case 'E':
-                        try:
-                            self.elite = int(contenido[0])
-                        except Exception:
-                            error("El valor de élite no es un número")
+                    case 'KWORST':
+                        self.kWorst=[int(x) for x in contenido]
+                        if not self.kWorst:
+                            error("Debe introducir al menos un valor de KWORST")
                             exit(1)
-                    case 'kBest':
-                        try:
-                            self.kBest = int(contenido[0])
-                        except Exception:
-                            error("El k mejor no es un número")
+                    case 'MAX_EVALUACIONES':
+                        self.maxEvaluaciones=[int(x) for x in contenido]
+                        if not self.maxEvaluaciones:
+                            error("Debe introducir al menos un máximo de evaluaciones a ejecutar")
                             exit(1)
-                    case 'kWorst':
-                        try:
-                            self.kWorst = int(contenido[0])
-                        except Exception:
-                            error("El k peor no es un número")
+                    case 'MAX_SEGUNDOS':
+                        self.maxSegundos=[int(x) for x in contenido]
+                        if not self.maxSegundos:
+                            error("Debe introducir al menos un máximo de segundos a ejecutar")
                             exit(1)
                     case _:
                         # Guardamos el resto como argumentos extra (como lista de contenido)
                         if contenido:
-                            self.__extra.append([campo] + contenido)
+                            self.extra.append([campo] + contenido)
 
             # Compruebo que hay datos y algoritmo para trabajar
-            if not self.__data :
+            if not self.data :
                 error('La lista de ficheros de datos NO puede estar vacía')
                 exit(1)
-
-    @property
-    def data(self) -> list[str]:
-        return self.__data.copy()
-
-    @property
-    def seed(self) -> list[str]:
-        return self.__seed.copy()
-
-    @property
-    def extra(self) -> list[list[str]]:
-        return [e.copy() for e in self.__extra]
 
     def mostrarInfo(self):
         print(' CONFIGURACIÓN APLICADA: '.center(100, 'X'))
         print(f'  Archivos de datos: {self.data}')
         print(f'  Algoritmos a usar: {self.alg}')
         print(f'  Semillas: {self.seed}')
+        print(f'  K: {self.k}')
+        print(f'  Porcentaje de generación de población inicial mediante greedy aleatorio: {self.prcGreedyAleat}')
+        print(f'  Tamaño de población: {self.tampoblacion}')
+        print(f'  Número de élites a conservar: {self.numElites}')
+        print(f'  kBest: {self.kBest}')
+        print(f'  Porcentaje de cruce: {self.prcCruce}')
         print(f'  Cruce: {self.cruce}')
-        print(f'  Población: {self.poblacion}  Elite: {self.elite}')
-        print(f'  kBest: {self.kBest}  kWorst: {self.kWorst}')
+        print(f'  Porcentaje de mutación: {self.prcMutacion}')
+        print(f'  kWorst: {self.kWorst}')
+        print(f'  Max evaluaciones: {self.maxEvaluaciones}')
+        print(f'  Max segundos: {self.maxSegundos}')
         print(f'  Argumentos extra: {self.extra}')
         print('X' * 100)
