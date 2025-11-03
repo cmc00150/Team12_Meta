@@ -75,6 +75,48 @@
 # Práctica 5
 >   Si en la poblacion descendiente ha desaparecido el mejor padre anterior, quito uno de los hijos y meto al padre
 > Tener esquema de generación de población, cruce, mutaciones etc
+Nos da igual que se repita un individuo.
+Lo relleno del 1 al 20 unas listas y asi hago el cruce.
+```
+PARA i=1 ht tamaño Pt
+    Crear individuo
+    Inicialización aleatoria
+        generacion? Ver donde se estanca
+        evaluado?
+        elite? Ver si es elite mediante una propiedad en el individuo.
+FIN PARA
+```
+Para ver el estancamiento es mejor ver los costes porque puede ser que dos padres iguales den un hijo igual, lo que da un mismo coste.
+PARA i=1 ht  tamaño PT
+    SI evaluado == falso
+
+PARA i=1 ht tamaño Pt
+    ind = Torneo binario
+    indluir 
+
+CRUCE
+PARA i=1 tamaño Pt/2
+    SI prob(cruce) <= 0.7
+    ENTONCES
+    Cruzar(P(i*2)t, P(i*2+1)t)
+FIN PARA
+
+MUTACION
+Lanzar una probabilidad y si da que sí, cambio dos valores aleatorios.
+
+Elite - calcular elite con respecto de qt, se calcula antes de empezar a generar los descendientes. Calculo cual es el elite del padre. 
+Antes de coger Pt compruebo que Qt tenga un elite.
+
+OX2
+1. Lanzo un aleatorio por cada uno de sus genes (50%).
+2. Eliminamos del padre2 los valores que se han marcado.
+3. Rellenamos los huecos con los valores del padre1.
+4. Podemos hacerlo otra vez pero con los padres invertidos o podemos hacer una funcion que de directamente dos
+
+MOC
+1. Marco un punto de corte
+2. Intercambiamos los primeros del padre1 con los valores al padre2
+3. Intercambiamos los últimos del padre2 con los valores al padre1
 
 # Documento
 - ✳️ Le gusta que despues de la tabla
@@ -84,49 +126,3 @@
 - ❌ No cortar las graficas
 - ✅ Informe corto 15 paginas
 - Tabla final con todos los problemas, por cada uno hacemos la desviacion tipica y el tiempo
-
-# ℹ️ Comandos
-## Iniciar repositorio 
-_(si no se ha iniciado previamente)_
-```
-cd directorio_base_del_proyecto
-git init
-```
-## Descargar ⬇️
-```
-git clone https://github.com/cmc00150/Team12_Meta.git
-```
-## Subir actualizaciones ⬆️
-```
-git add ..
-git commit -m "mensaje cualquiera"
-git push origin main
-```
-## Ramas 🌳 
-> Crear una nueva rama y cambiar a ella
-> ```
-> git switch -c nombre_rama
-> ```
-
-> Moverse entre ramas
-> ```
-> git switch nombre_rama
->```
-
-> Conectar rama
->  _(Nos movemos al main y conectamos la otra rama desde ahi)_ >
-> ```
-> git switch main
-> git merge nombre_rama
->```
-
-> Sincronizarse con el contenido de GitHub
-> ```
-> git pull
-> ```
-
-> Ver en que commit estás
-> _(esto devolverá un sha256 corto que podemos comparar con el id del commit)_
-> ```
-> git rev-parse --short HEAD
-> ```
