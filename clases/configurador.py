@@ -65,9 +65,6 @@ class Configurador:
                             exit(1) 
                     case 'NUMELITES':
                         self.numElites=[int(x) for x in contenido]
-                        if not self.numElites:
-                            error("Debe introducir al menos un valor de élites a conservar")
-                            exit(1)   
                     case 'KBEST':
                         self.kBest=[int(x) for x in contenido]
                         if not self.kBest:
@@ -121,7 +118,8 @@ class Configurador:
         print(f'  K: {self.k}')
         print(f'  Porcentaje de generación de población inicial mediante greedy aleatorio: {self.prcGreedyAleat}')
         print(f'  Tamaño de población: {self.tampoblacion}')
-        print(f'  Número de élites a conservar: {self.numElites}')
+        if(self.numElites):
+            print(f'  Número de élites a conservar: {self.numElites}')
         print(f'  kBest: {self.kBest}')
         print(f'  Porcentaje de cruce: {self.prcCruce}')
         print(f'  Cruce: {self.cruce}')
