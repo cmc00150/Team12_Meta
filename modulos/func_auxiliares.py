@@ -56,7 +56,7 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
     return ind # Individuo generado
 
 def aleatorio(flujos: list[list[int]], distancias: list[list[int]], tam: int) -> Individuo:
-    permutacion = [i for i in range (0,tam)]
+    permutacion = list(range(tam)) # Crea una lista con el rango proporcionado
     random.shuffle(permutacion) # Barajamos la permutación, de forma que nos aseguramos de que se cumple el factor aleatorio y no se repiten números
     costoPermutacion=costo(permutacion, flujos, distancias)
     ind=Individuo(permutacion,costoPermutacion,1)

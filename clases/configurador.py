@@ -13,7 +13,7 @@ class Configurador:
             self.alg: list[str]  = []
             self.seed: list[int]  = []
             self.k: list[int]  = []
-            self.prcGreedyAleat: list[int]  = []
+            self.prcAleatorio: list[int]  = []
             self.tampoblacion: list[int]  = []
             self.numElites: list[int]  = []
             self.kBest: list[int]  = []
@@ -53,10 +53,10 @@ class Configurador:
                         if not self.k:
                             error("Debe introducir al menos un parametro k")
                             exit(1)
-                    case 'PRC_GREEDYALEAT':
-                        self.prcGreedyAleat=[int(x) for x in contenido]
-                        if not self.prcGreedyAleat:
-                            error("Debe introducir al menos un porcentaje de individuos generados mediante greedy aleatorizado")
+                    case 'PRC_ALEATORIO':
+                        self.prcAleatorio=[int(x) for x in contenido]
+                        if not self.prcAleatorio:
+                            error("Debe introducir al menos un porcentaje de individuos generados completamente aleatorios")
                             exit(1)   
                     case 'TAMPOBLACION':
                         self.tampoblacion=[int(x) for x in contenido]
@@ -116,7 +116,7 @@ class Configurador:
         print(f'  Algoritmos a usar: {self.alg}')
         print(f'  Semillas: {self.seed}')
         print(f'  K: {self.k}')
-        print(f'  Porcentaje de generación de población inicial mediante greedy aleatorio: {self.prcGreedyAleat}')
+        print(f'  Porcentaje de generación de población inicial mediante greedy aleatorio: {self.prcAleatorio}')
         print(f'  Tamaño de población: {self.tampoblacion}')
         if(self.numElites):
             print(f'  Número de élites a conservar: {self.numElites}')

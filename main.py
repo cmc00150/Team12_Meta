@@ -18,8 +18,8 @@ config.mostrarInfo()
 
 dataset = [Extractor(archivo) for archivo in config.data] # Obtenemos los datos de cada problema
 
-for (algoritmo, (archivoDatos, data), semilla, k, prc_greedyAleat, tamPoblacion, numElites,kBest, prcCruce, tipoCruce, prcMutacion, kWorst, maxEvaluaciones, 
-    maxSegundos, extra) in product (config.alg, zip(config.data, dataset),config.seed,config.k,config.prcGreedyAleat,config.tampoblacion,config.numElites 
+for (algoritmo, (archivoDatos, data), semilla, k, prcAleatorio, tamPoblacion, numElites,kBest, prcCruce, tipoCruce, prcMutacion, kWorst, maxEvaluaciones, 
+    maxSegundos, extra) in product (config.alg, zip(config.data, dataset),config.seed,config.k,config.prcAleatorio,config.tampoblacion,config.numElites 
     if config.numElites else [None],config.kBest,config.prcCruce,config.cruce,config.prcMutacion,config.kWorst, config.maxEvaluaciones,config.maxSegundos,
     config.extra if config.extra else [None]):
 
@@ -28,11 +28,11 @@ for (algoritmo, (archivoDatos, data), semilla, k, prc_greedyAleat, tamPoblacion,
 
     match algoritmo:
         case 'evolutivo_generacional':
-            logEvolutivoGen = Log(algoritmo,archivoDatos,semilla,k,prc_greedyAleat,tamPoblacion,kBest,prcCruce,tipoCruce,prcMutacion,kWorst,maxEvaluaciones,maxSegundos,numElites)
-            poblacionInicial = Poblacion(tamPoblacion, numElites)
-            if(prc_greedyAleat <= 0):
+            logEvolutivoGen = Log(algoritmo,archivoDatos,semilla,k,prcAleatorio,tamPoblacion,kBest,prcCruce,tipoCruce,prcMutacion,kWorst,maxEvaluaciones,maxSegundos,numElites)
+            poblacionInicial = Poblacion(config, data)
+            if(prcAleatorio <= 0):
                 error('El porcentaje de generación de individuos mediante greedy aleatorizado debe ser mayor a 0')
-            poblacionInicial.generarPoblacionInicial(k,prc_greedyAleat,data.flujos,data.distancias,data.dimension)
+            # poblacionInicial.generarPoblacionInicial(k,prc_greedyAleat,data.flujos,data.distancias,data.dimension)
             logEvolutivoGen.registrarGeneracion(poblacionInicial,1) 
             logEvolutivoGen.generaLogs()             
 
