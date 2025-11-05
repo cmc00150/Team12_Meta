@@ -1,39 +1,74 @@
 from clases.individuo import Individuo
+from modulos.func_auxiliares import (fact, dos_opt, aleatorio, greedy_aleatorizado)
+from clases.extractor import Extractor
+from clases.configurador import Configurador
+from copy import deepcopy
 import random
 
 class Poblacion:
-    def __init__(self, tam: int, elites: int, t_cruce: str):
-        self.__individuos = [Individuo() for _ in tam]
-        self.__elites = [0] * elites
-        self.__cruce = t_cruce
+    def __init__(self, config: Configurador, data: Extractor):
+        self.__poblacion: list[Individuo] = []
+        self.__elites: list[tuple[Individuo, Individuo]] = []
+        self.__extra_data: Extractor = data
 
-    def _construir_hijo(self, mantener: list[int], asignar: list[int], referencia: list[int]) -> list[int]:
-        hijo = []
-        for e in referencia:
-            if e in mantener:
-                hijo.append(e)
-            else:
-                hijo.append(asignar.pop(0))
-        return hijo
+        # -- INICIALIZACIÓN --
+        # GENERACION Y EVALUACIÓN DE LA POBLACION
+        for _ in range(config.tampoblacion):
+            if random.random() < config.prcAleatorio: # Si al sacar un valor entre [0,1) cae dentro del porcentaje de aleatorios usamos aleatorio
+                self.__poblacion.append(aleatorio(
+                    self.__extra_data.flujos, 
+                    self.__extra_data.distancias, 
+                    self.__distancias
+                    ))
+            else: # Sino usamos greedy
+                self.__poblacion.append(greedy_aleatorizado(
+                    self.__extra_data.flujos, 
+                    self.__extra_data.distancias, 
+                    self.__extra_data.candidatos,
+                    config.k,
+                    ))
 
-    def cruce(self, padre1: list[int], padre2: list[int]) -> tuple[list[int], list[int]]:
-        tam = len(padre1)
+        # ELITES        
+        ordenados = sorted(self.__poblacion, key=lambda i: i.getCosto) # Ordenamos según el costo
+        for n in config.numElites:
+            ind = ordenados.pop(n) # Saco los n primeros
+            self.__elites.append((deepcopy(ind), ind)) # Guardamos una copia exacta y la referencia al individuo
 
-        hijos = (None, None)
-        if self.__cruce == "MOC":
-            pivote = random.randint(1, tam-1) - 1 # Va desde el primero al penúltimo, lo convertimos en índice
-            hijos[0] = self._construir_hijo(mantener=padre1[:pivote], asignar=padre1[pivote+1:], referencia=padre2)
-            hijos[1] = self._construir_hijo(mantener=padre2[:pivote], asignar=padre2[pivote+1:], referencia=padre1)
+    def seleccion(self, kBest: int):
+        # TORNEO
+        ganadores = []
+        for _ in range(len(self.__poblacion)):
+            torneo = random.choices(self.__poblacion, k=kBest) # Cogemos aleatoriamente a 3
+            ganadores.append(min(torneo, key=lambda i: i.getCosto)) # Gana el que menor coste tenga
+        
+        # -- REEMPLAZO --
+        self.__poblacion = ganadores # Reemplazamos al inicio
+        # Si estos padres se cruzan y son sustituidos por los hijos dejamos a los hijos en la siguiente gen.
+        # Si mutan, el resultado pasa a la siguiente gen.
+        # Y si no le toca ni uno ni otro pasan a la siguiente gen igualmente.
+        # Asi que ya los pasamos todos a la siguient gen y cruzamos y mutamos los que sean.
 
-        elif self.__cruce == "OX2":
-            asignar = []
-            mantener = []
-            for i, p in enumerate(zip(padre1, padre2)):
-                for e in p:
-                    if random.randint(1, 100) <= 50:
-                        mantener.append(e)
-                    else:
-                        asignar.append(e)
-                hijos[i] = self._construir_hijo(mantener, asignar, p)
+    def cruce_mutacion(self, p_cruce: float, t_cruce: str, p_mutacion: float):
+        # -- CRUCE --
+        n = len(self.__poblacion)
+        for i in range(0, n - (n%2), 2): # Vamos cogiendo de dos en dos
+            if random.random() < p_cruce: # Cae dentro de la probabilidad de cruce, los cruzamos
+                padre1 = self.__poblacion[i]
+                padre2 = self.__poblacion[i+1]
 
-        return hijos
+                hijo1 = padre1.cruce(padre2, t_cruce, self.__extra_data.flujos, self.__extra_data.distancias)
+                hijo2 = padre2.cruce(padre1, t_cruce, self.__extra_data.flujos, self.__extra_data.distancias)
+
+                self.__poblacion[i] = hijo1
+                self.__poblacion[i+1] = hijo2
+        
+        # -- MUTACION --
+        for i in range(n):
+            if random.random() < p_mutacion: # Si cae dentro lo mutamos, sino no hacemos nada
+                perm = self.__poblacion[i].getPermutacion()
+                posiciones = random.choices(range(len(perm)), k=2) # Cojo dos posiciones de esta permutación
+                nuevaPerm = dos_opt(perm, posiciones[0], posiciones[1]) # Los intercambio
+                costo = fact(posiciones[0], posiciones[1], perm, self.__extra_data.flujos, self.__extra_data.distancias)
+
+                self.__poblacion[i] = Individuo(nuevaPerm, costo, self.__poblacion[i].getGeneracion()+1)
+
