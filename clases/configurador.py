@@ -116,7 +116,7 @@ class Configurador:
         print(f'  Algoritmos a usar: {self.alg}')
         print(f'  Semillas: {self.seed}')
         print(f'  K: {self.k}')
-        print(f'  Porcentaje de generación de población inicial mediante greedy aleatorio: {self.prcAleatorio}')
+        print(f'  Porcentaje de generación de población inicial generados completamente aleatorios: {self.prcAleatorio}')
         print(f'  Tamaño de población: {self.tampoblacion}')
         if(self.numElites):
             print(f'  Número de élites a conservar: {self.numElites}')
