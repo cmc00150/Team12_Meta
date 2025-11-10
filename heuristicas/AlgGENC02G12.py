@@ -24,18 +24,17 @@ def evolutivo_generacional(config: Configurador, data: Extractor):
                 padre1 = poblacion[i]
                 padre2 = poblacion[i+1] 
                 # 2. Los reproducimos para obtener a sus hijos
-                hijo1 = padre1.cruce(padre2, t_cruce, data.flujos, data.distancias)
-                hijo2 = padre2.cruce(padre1, t_cruce, data.flujos, data.distancias)
+                hijos = Individuo.cruce(padre1, padre2)
                 # 3. Sustituimos a los padres a los hijos
-                poblacion[i] = hijo1
-                poblacion[i+1] = hijo2
+                poblacion[i] = hijos[0]
+                poblacion[i+1] = hijos[1]
                 # 4. Vemos si es mejor que alguno de los élites
                 poblacion.considerarElite(i)
                 poblacion.considerarElite(i+1)
                 # 5. Anotamos dos evaluaciónes (una por cada hijo)
                 ev+= 2
         
-        if (ev < config.maxEvaluaciones):
+        if (ev == config.maxEvaluaciones):
             break
         
         # -- MUTACION --
@@ -56,7 +55,7 @@ def evolutivo_generacional(config: Configurador, data: Extractor):
                 # 7. Anotamos una evaluación al individuo mutado
                 ev+=1 
             
-        if (ev < config.maxEvaluaciones):
+        if (ev == config.maxEvaluaciones):
             break
 
     return poblacion.getMejor()
