@@ -1,4 +1,4 @@
-from clases.poblacion import (Poblacion, Extractor, Individuo)
+from clases.poblacion import (PoblacionGEN, Extractor, Individuo)
 from modulos.func_auxiliares import (fact, dos_opt)
 from clases.logs import Log
 import time
@@ -9,7 +9,7 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
 
     Itime = time.time()
     # -- GENERACIÓN Y EVALUACIÓN --
-    poblacion = Poblacion(numElites, tamPoblacion, prcAleatorio, k, data)
+    poblacion = PoblacionGEN(numElites, tamPoblacion, prcAleatorio, k, data)
     log.registrarGeneracion(poblacion,1)
 
     ev = len(poblacion) # Contamos las evaluaciones al inicializar los individuos
