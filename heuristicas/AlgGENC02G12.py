@@ -1,61 +1,56 @@
-from clases.poblacion import (Poblacion, Configurador, Extractor, Individuo)
+from clases.poblacion import (Poblacion, Extractor, Individuo)
 from modulos.func_auxiliares import (fact, dos_opt)
+from clases.logs import Log
+import time
 import random
-from multiprocessing import Process
 
 # TODO Temporizador
-def evolutivo_generacional(config: Configurador, data: Extractor):
-    poblacion = Poblacion(config, data)
+def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst, data: Extractor, log: Log):
 
-    ev = 0
-    p_cruce = config.prcCruce
-    p_mutacion = config.prcMutacion
-    t_cruce = config.cruce
+    Itime = time.time()
+    # -- GENERACIÓN Y EVALUACIÓN --
+    poblacion = Poblacion(numElites, tamPoblacion, prcAleatorio, k, data)
+    log.registrarGeneracion(poblacion,1)
 
-    while(ev < config.maxEvaluaciones):
+    ev = len(poblacion) # Contamos las evaluaciones al inicializar los individuos
+    p_cruce = prcCruce
+    p_mutacion = prcMutacion
+    t_cruce = cruce
+
+    while(ev < maxEvaluaciones):
         # -- SELECCIÓN --
-        poblacion.seleccion(config.kBest) # Preparamos la población para su cruce
+        pobl_tmp = poblacion.seleccion(kBest) # Preparamos la población para su cruce
 
         # -- CRUCE --
-        n = len(poblacion)
+        n = len(pobl_tmp)
         for i in range(0, n - (n%2), 2): # Vamos cogiendo de dos en dos
-            if random.random() < p_cruce: # Cae dentro de la probabilidad de cruce, los cruzamos
+            if random.randint(0, 100) < p_cruce: # Cae dentro de la probabilidad de cruce, los cruzamos
                 # 1. Cogemos a los padres
-                padre1 = poblacion[i]
-                padre2 = poblacion[i+1] 
+                padre1 = pobl_tmp[i]
+                padre2 = pobl_tmp[i+1] 
                 # 2. Los reproducimos para obtener a sus hijos
-                hijos = Individuo.cruce(padre1, padre2)
+                hijos = Individuo.cruce(padre1, padre2, t_cruce, data.flujos, data.distancias)
                 # 3. Sustituimos a los padres a los hijos
-                poblacion[i] = hijos[0]
-                poblacion[i+1] = hijos[1]
-                # 4. Vemos si es mejor que alguno de los élites
-                poblacion.considerarElite(i)
-                poblacion.considerarElite(i+1)
-                # 5. Anotamos dos evaluaciónes (una por cada hijo)
+                pobl_tmp[i] = hijos[0]
+                pobl_tmp[i+1] = hijos[1]
+                # 4. Anotamos dos evaluaciónes (una por cada hijo)
                 ev+= 2
-        
-        if (ev == config.maxEvaluaciones):
+
+        if (ev == maxEvaluaciones):
             break
         
         # -- MUTACION --
-        for i in range(n):
-            if random.random() < p_mutacion: # Si cae dentro lo mutamos, sino no hacemos nada
-                # 1. Cogemos la permutación
-                perm = poblacion[i].getPermutacion()       
-                # 2. Selecciono los genes a mutar
-                posiciones = random.choices(range(len(perm)), k=2) # Cojo dos posiciones de esta permutación
-                # 3. Le hago la mutación
-                nuevaPerm = dos_opt(perm, posiciones[0], posiciones[1]) # Los intercambio
-                # 4. Calculo el costo (parcialmente)
-                variacion = fact(posiciones[0], posiciones[1], perm, data.flujos, data.data.distancias)
-                # 5. Creo el nuevo individuo
-                poblacion[i] = Individuo(nuevaPerm, poblacion[i].getCosto() + variacion, poblacion[i].getGeneracion()+1)
-                # 6. Vemos si puede añadirse como élite
-                poblacion.considerarElite(i)
-                # 7. Anotamos una evaluación al individuo mutado
+        for i in pobl_tmp:
+            if random.randint(0, 100) < p_mutacion: # Si cae dentro lo mutamos, sino no hacemos nada
+                i.mutar(data.flujos, data.distancias)
+                # Anotamos una evaluación al individuo mutado
                 ev+=1 
             
-        if (ev == config.maxEvaluaciones):
-            break
-
-    return poblacion.getMejor()
+        if (ev == maxEvaluaciones):
+            break   
+        
+        poblacion.reemplazo(kWorst, pobl_tmp) # Hacemos el reemplazo
+        log.registrarGeneracion(poblacion,poblacion[0].getGeneracion)
+    
+    mejor = poblacion.getMejor()
+    log.registrarSolucion((mejor, time.time() - Itime))
