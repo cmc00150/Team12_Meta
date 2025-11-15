@@ -1,5 +1,4 @@
 import random
-from clases.individuo import Individuo
 
 def costo(permutacion, flujos: list[list[int]], distancias: list[list[int]]): # Función de evaluación de los diferentes algoritmos
     costo = 0
@@ -24,18 +23,7 @@ def dos_opt (perm, i, j):
     perm[i] = perm[j]
     perm[j] = aux
 
-def error(mensaje:str):
-      print('[!] Error -',mensaje)
-      exit(1)
-
-def finPrograma():
-    print(' o'*50,
-        '\n',
-        f" FIN DEL PROGRAMA, CONSULTE LOS LOGS PARA OBTENER LOS RESULTADOS ".center(100, " "),
-        '\n',
-        ' o'*50)
-    
-def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> Individuo:
+def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], candidatos: int, k: int) -> list[int]:
     # Obtenemos los vectores
     v_flujos = [(i, sum(row)) for i, row in enumerate(flujos)]
     v_distancias = [(i, sum(row)) for i, row in enumerate(distancias)]
@@ -51,13 +39,20 @@ def greedy_aleatorizado(flujos: list[list[int]], distancias: list[list[int]], ca
 
         permutacion[sorted_flujos.pop(aleatorioFlujos)[0]] = sorted_distancias.pop(aleatorioDistancias)[0]
 
-    costoPermutacion=costo(permutacion,flujos,distancias)
-    ind=Individuo(permutacion,costoPermutacion,1)
-    return ind # Individuo generado
+    return permutacion
 
-def aleatorio(flujos: list[list[int]], distancias: list[list[int]], tam: int) -> Individuo:
+def aleatorio(tam: int) -> list[int]:
     permutacion = list(range(tam)) # Crea una lista con el rango proporcionado
     random.shuffle(permutacion) # Barajamos la permutación, de forma que nos aseguramos de que se cumple el factor aleatorio y no se repiten números
-    costoPermutacion=costo(permutacion, flujos, distancias)
-    ind=Individuo(permutacion,costoPermutacion,1)
-    return ind
+    return permutacion
+
+def error(mensaje:str):
+      print('[!] Error -',mensaje)
+      exit(1)
+
+def finPrograma():
+    print(' o'*50,
+        '\n',
+        f" FIN DEL PROGRAMA, CONSULTE LOS LOGS PARA OBTENER LOS RESULTADOS ".center(100, " "),
+        '\n',
+        ' o'*50)

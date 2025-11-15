@@ -1,7 +1,7 @@
 import sys, random
 from heuristicas.AlgESTC02G12 import evolutivo_estacionario
 from heuristicas.AlgGENC02G12 import evolutivo_generacional
-from modulos.func_auxiliares import (error, finPrograma, greedy_aleatorizado, aleatorio)
+from modulos.func_auxiliares import (error, finPrograma)
 from clases.extractor import Extractor
 from clases.configurador import Configurador
 from clases.logs import Log
@@ -25,15 +25,12 @@ for (algoritmo, (archivoDatos, data), semilla, k, prcAleatorio, tamPoblacion, nu
 
     random.seed(semilla)
 
-
     match algoritmo:
         case 'evolutivo_generacional':
             logEvolutivoGen = Log(algoritmo,archivoDatos,semilla,k,prcAleatorio,tamPoblacion,kBest,prcCruce,tipoCruce,prcMutacion,kWorst,maxEvaluaciones,maxSegundos,numElites)
-            poblacionInicial = Poblacion(config, data)
             if(prcAleatorio <= 0):
                 error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
-            # poblacionInicial.generarPoblacionInicial(k,prc_greedyAleat,data.flujos,data.distancias,data.dimension)
-            logEvolutivoGen.registrarGeneracion(poblacionInicial,1) 
-            logEvolutivoGen.generaLogs()             
+            evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, tipoCruce, maxEvaluaciones, k, kBest, kWorst, data, logEvolutivoGen)
+            logEvolutivoGen.generaLogs()
 
 finPrograma()

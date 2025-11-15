@@ -88,15 +88,15 @@ class Log:
         self.__texto+='\n'        
 
         for i in range (0,len(elts)):
-            self.__texto+=f'{elts[i]}'
+            self.__texto+=f'{elts[i][0]}'
 
         self.__texto+=f'\t'+'e'.center(40,'e')
         self.__texto+='\n'        
 
-    """
-    Añade una solución FINAL al contenido del fichero, incluyendo la permutación, costo de evaluación, generación y tiempo de ejecución
-    """
     def registrarSolucion(self, nuevaSolucion: tuple[Individuo, float]):
+        """
+        Añade una solución FINAL al contenido del fichero: la permutación, costo de evaluación, generación y tiempo de ejecución
+        """
         tiempo = f"{nuevaSolucion[1]:.4f}" # Ajusto el tiempo para que se muestre en s aproximando al 4to  
         self.__texto+=f' Asignación: {[elem+1 for elem in nuevaSolucion[0].getPermutacion]}'      
         self.__texto+=f'\n Costo: {nuevaSolucion[0].getCosto}'
