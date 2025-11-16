@@ -97,7 +97,7 @@ class Log:
         self.__texto+=f'\t'+'e'.center(40,'e')
         self.__texto+='\n\n\n'        
 
-    def registrarSolucion(self, nuevaSolucion: tuple[Individuo, float]):
+    def registrarSolucion(self, nuevaSolucion: tuple[Individuo, float], numEvaluaciones=-1):
         """
         Añade una solución FINAL al contenido del fichero: la permutación, costo de evaluación, generación y tiempo de ejecución
         """
@@ -107,3 +107,13 @@ class Log:
         self.__texto+=f'\n Costo: {ind.getCosto}'
         self.__texto+=f'\n Generacion: {ind.getGeneracion}'
         self.__texto+=f'\n Tiempo de ejecución: {tiempo}s'
+
+        self.__texto+='\n'
+        self.__texto+=f'-'.center(100,'-')
+        self.__texto+='\n'
+        if numEvaluaciones > -1:
+            self.__texto+=f' FIN POR LÍMITE DE EVALUACIONES: {numEvaluaciones} '.center(100,' ')
+        else:
+            self.__texto+=f' FIN POR LÍMITE DE TIEMPO: {tiempo} '.center(100,' ')
+        self.__texto+='\n'
+        self.__texto+=f'-'.center(100,'-')

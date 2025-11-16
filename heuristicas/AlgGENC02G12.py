@@ -5,19 +5,21 @@ import time
 import random
 
 # TODO Temporizador
-def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst, data: Extractor, log: Log):
+def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst, data: Extractor, log: Log, maxSegundos: int):
 
-    Itime = time.time()
+    TiempoInicio = time.time()
+    TiempoFin = time.time() + maxSegundos
     # -- GENERACIÓN Y EVALUACIÓN --
     poblacion = PoblacionGEN(numElites, tamPoblacion, prcAleatorio, k, data)
     log.registrarGeneracion(poblacion,1)
+    numGeneracion = 1
 
     ev = len(poblacion) # Contamos las evaluaciones al inicializar los individuos
     p_cruce = prcCruce
     p_mutacion = prcMutacion
     t_cruce = cruce
 
-    while(ev < maxEvaluaciones):
+    while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
         pobl_tmp = poblacion.seleccion(kBest) # Preparamos la población para su cruce
 
@@ -36,8 +38,11 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
                 # 4. Anotamos dos evaluaciónes (una por cada hijo)
                 ev+= 2
 
-        if (ev == maxEvaluaciones):
-            break
+            if ev >= maxEvaluaciones or time.time() >= TiempoFin: # Sale del for
+                break
+
+        if ev >= maxEvaluaciones or time.time() >= TiempoFin: # Sale del while
+                break
         
         # -- MUTACION --
         for i in pobl_tmp:
@@ -46,11 +51,20 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
                 # Anotamos una evaluación al individuo mutado
                 ev+=1 
             
-        if (ev == maxEvaluaciones):
-            break   
+            if ev >= maxEvaluaciones or time.time() >= TiempoFin: # Sale del for
+                break   
+
+        if ev >= maxEvaluaciones or time.time() >= TiempoFin: # Sale del while
+                break
         
         poblacion.reemplazo(kWorst, pobl_tmp) # Hacemos el reemplazo
-        log.registrarGeneracion(poblacion,poblacion[0].getGeneracion)
+        numGeneracion += 1
+
+        log.registrarGeneracion(poblacion,numGeneracion)
     
     mejor = poblacion.getMejor()
-    log.registrarSolucion((mejor, time.time() - Itime))
+
+    if ev>=maxEvaluaciones:
+        log.registrarSolucion((mejor, time.time() - TiempoInicio), ev)
+    else:
+        log.registrarSolucion((mejor, time.time() - TiempoInicio))
