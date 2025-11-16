@@ -3,7 +3,7 @@ from modulos.func_auxiliares import (costo, aleatorio, greedy_aleatorizado, dos_
 
 class Individuo:
     def __init__(self, permutacion=[], costo=None, generacion=1):
-        self.__permutacion = permutacion
+        self.__permutacion: list[int] = permutacion
         self.__costo = costo
         self.__generacion = generacion
 
@@ -29,12 +29,19 @@ class Individuo:
                     asignarhijo2.append(p2[i]) # Lo mismo para el padre 2
 
         cont1 = cont2 = 0
+        h1 = []
+        h2 = []
         for i in range(tam):
-            if p2[i] in asignarhijo1:
-                p2[i] = asignarhijo1[cont1]
+            if p2[i] not in asignarhijo1: # Si no está en asignar, lo mantenemos
+                h1.append(p2[i])
+            else: # Si no, lo asignamos según el orden del padre
+                h1.append(asignarhijo1[cont1])
                 cont1+=1
-            if p1[i] in asignarhijo2:
-                p1[i] = asignarhijo2[cont2]
+
+            if p1[i] not in asignarhijo2:
+                h2.append(p1[i])
+            else:
+                h2.append(asignarhijo2[cont2])
                 cont2+=1
 
         nuevaGen = -1
@@ -43,21 +50,21 @@ class Individuo:
         else:
             nuevaGen = padre2.getGeneracion + 1
 
-        hijo1 = Individuo(p2,costo(p2,flujos,distancias),nuevaGen)
-        hijo2 = Individuo(p1,costo(p1,flujos,distancias),nuevaGen)
+        hijo1 = Individuo(h1,costo(h1,flujos,distancias),nuevaGen)
+        hijo2 = Individuo(h2,costo(h2,flujos,distancias),nuevaGen)
 
         return (hijo1,hijo2)
 
     def mutar(self, flujos, distancias):
-        # 1. Cogemos la permutación
+        # 1. Copiamos la permutación
         perm = self.__permutacion
         # 2. Selecciono los genes a mutar
-        posiciones = random.choices(range(len(perm)), k=2) # Cojo dos posiciones de esta permutación
-        # 3. Le hago la mutación
-        dos_opt(perm, posiciones[0], posiciones[1]) # Los intercambio
-        # 4. Calculo el costo (parcialmente)
+        posiciones = random.sample(range(len(perm)), k=2) # Cojo dos posiciones de esta permutación
+        # 3. Calculo el costo (parcialmente)
         variacion = fact(posiciones[0], posiciones[1], perm, flujos, distancias)
-        # 5. Creo el nuevo individuo
+        # 4. Le hago la mutación
+        dos_opt(self.__permutacion, posiciones[0], posiciones[1]) # Los intercambio
+        # 5. Actualizo el costo
         self.__costo += variacion
 
     @property
