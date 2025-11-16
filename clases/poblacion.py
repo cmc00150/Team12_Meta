@@ -28,6 +28,9 @@ class Poblacion:
 
     def __len__(self):
         return self._tamPoblacion
+    
+    def __iter__(self):
+        return iter(self._individuos)
 
     def seleccion(self):
         raise NotImplementedError("Método seleccion no implementado en la clase Población")
@@ -58,8 +61,8 @@ class PoblacionGEN(Poblacion):
         elites = []
         ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
         for n in range(self.__numElites): # Nos quedamos con los n primeros
-            idx = ordenados[n]               
-            elites.append((self._individuos[idx], idx))
+            idx = ordenados.pop(n)                
+            elites.append((deepcopy(self._individuos[idx]), idx))
 
         self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
 
@@ -70,7 +73,7 @@ class PoblacionGEN(Poblacion):
         # KBEST TORNEO
         ganadores = []
         for _ in range(self._tamPoblacion):
-            torneo = random.sample(self._individuos, k=kBest) # Cogemos aleatoriamente a los kBest
+            torneo = random.choices(self._individuos, k=kBest) # Cogemos aleatoriamente a los kBest
             ganadores.append(min(torneo, key=lambda i: i.getCosto)) # Gana el que menor coste tenga
         
         return ganadores
