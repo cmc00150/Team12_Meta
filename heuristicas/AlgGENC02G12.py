@@ -1,5 +1,4 @@
 from clases.poblacion import (PoblacionGEN, Extractor, Individuo)
-from modulos.func_auxiliares import (fact, dos_opt)
 from clases.logs import Log
 import time
 import random
@@ -18,10 +17,15 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
     p_cruce = prcCruce
     p_mutacion = prcMutacion
     t_cruce = cruce
+    mejorGlobal = Individuo()
+    mejorGlobal.copiarIndividuo(poblacion[0])
 
     while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
         pobl_tmp = poblacion.seleccion(kBest) # Preparamos la población para su cruce
+        mejorelitepob = poblacion.getElites[0][0]
+        if mejorelitepob.getCosto < mejorGlobal.getCosto:
+            mejorGlobal.copiarIndividuo(mejorelitepob)
 
         # -- CRUCE --
         n = len(pobl_tmp)
@@ -48,7 +52,8 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
         # -- MUTACION --
         for i in pobl_tmp:
             if random.randint(0, 100) < p_mutacion: # Si cae dentro lo mutamos, sino no hacemos nada
-                i.mutar(data.flujos, data.distancias)
+                posiciones=i.mutar(data.flujos, data.distancias)
+                log.registrarMutacion(posiciones[0]+1,posiciones[1]+1,i)
                 # Anotamos una evaluación al individuo mutado
                 ev+=1 
             
@@ -59,13 +64,12 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
                 break
         
         poblacion.reemplazo(kWorst, pobl_tmp) # Hacemos el reemplazo
-        numGeneracion += 1
+        log.registrarReemplazo();
 
+        numGeneracion += 1
         log.registrarGeneracion(poblacion,numGeneracion)
-    
-    mejor = poblacion.getMejor()
 
     if ev>=maxEvaluaciones:
-        log.registrarSolucion((mejor, time.time() - TiempoInicio), ev)
+        log.registrarSolucion((mejorGlobal, time.time() - TiempoInicio), ev)
     else:
-        log.registrarSolucion((mejor, time.time() - TiempoInicio))
+        log.registrarSolucion((mejorGlobal, time.time() - TiempoInicio))

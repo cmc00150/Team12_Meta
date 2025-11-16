@@ -2,7 +2,7 @@ import random
 from modulos.func_auxiliares import (costo, aleatorio, greedy_aleatorizado, dos_opt, fact)
 
 class Individuo:
-    def __init__(self, permutacion=[], costo=None, generacion=1):
+    def __init__(self, permutacion=[], costo=999999999, generacion=1):
         self.__permutacion: list[int] = permutacion
         self.__costo = costo
         self.__generacion = generacion
@@ -66,6 +66,7 @@ class Individuo:
         dos_opt(self.__permutacion, posiciones[0], posiciones[1]) # Los intercambio
         # 5. Actualizo el costo
         self.__costo += variacion
+        return posiciones # Devuelvo las posiciones intercambiadas para los logs
 
     @property
     def getPermutacion(self) -> list[int]:
@@ -78,20 +79,17 @@ class Individuo:
     @property
     def getGeneracion(self):
         return (self.__generacion)
-    
-    @property
-    def getEvaluado(self):
-        return (self.__evaluado)
-    
-    @property
-    def setEvaluado(self, evaluado):
-        self.__evaluado=evaluado
 
     @property
     def setIndividuo(self, permutacion, costo, generacion):
         self.__permutacion=permutacion
         self.__costo=costo
         self.__generacion=generacion
+    
+    def copiarIndividuo(self, nuevoind: Individuo):
+        self.__permutacion=nuevoind.getPermutacion.copy()
+        self.__costo=nuevoind.getCosto
+        self.__generacion=nuevoind.getGeneracion
 
     def __str__(self): # Sobrecarga del operador print para hacer pruebas
-        return f'\tPermutacion: {[elem+1 for elem in self.__permutacion]}\n\tCosto: {self.__costo}\n\tGeneracion: {self.__generacion}\n'
+        return f'\tPermutacion: {[elem+1 for elem in self.__permutacion]}\n\tCosto: {self.__costo}\n\tGeneracion: {self.__generacion}'

@@ -92,9 +92,6 @@ class PoblacionGEN(Poblacion):
                 self.__elites.add((copia, idx_perdedor))  # Ponemos la referencia a este nuevo individuo.
 
                 self._individuos[idx_perdedor] = copia # Actualizamos el valor en la población
-        
-    def getMejor(self) -> Individuo:
-        return self.__elites[0][0] # Devuelve la referencia mejor de los élites
     
     @property
     def getElites(self) -> list[tuple[Individuo, int]]:

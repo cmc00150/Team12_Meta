@@ -107,3 +107,13 @@ class Log:
             self.__lineas.append(f'\t\t\tHijo {i+1}: {hijos[i].getPermutacion}')
             self.__lineas.append(f'\t\t\t\t\tCosto: {hijos[i].getCosto}')
             self.__lineas.append(f'\t\t\t\t\tGeneracion: {hijos[i].getGeneracion}')
+
+    def registrarMutacion(self, posi, posj, nuevoInd: Individuo):
+        self.__lineas.append(f'\t\tMutacion: cambian las posiciones [{posi} - {posj}]')
+        self.__lineas.append(f'\t\t\tNueva permutacion: {[elem+1 for elem in nuevoInd.getPermutacion]}')
+        self.__lineas.append(f'\t\t\tCosto: {nuevoInd.getCosto}')
+        self.__lineas.append(f'\t\t\tGeneracion: {nuevoInd.getGeneracion}')
+        pass
+
+    def registrarReemplazo(self):
+        self.__lineas.append(f'\t\tReemplazo de población finalizado\n')
