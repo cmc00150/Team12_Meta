@@ -85,6 +85,10 @@ class Log:
 
         self.__lineas.append('\n')
         self.__lineas.append(f'-'.center(100,'-'))
+        self.__lineas.append(f'Asignación: {[elem+1 for elem in nuevaSolucion[0].getPermutacion]}')
+        self.__lineas.append(f'Costo: {nuevaSolucion[0].getCosto}')
+        self.__lineas.append(f'Generacion: {nuevaSolucion[0].getGeneracion}')
+        self.__lineas.append(f'Tiempo de ejecución: {tiempo}s')
         
         if numEvaluaciones > -1:
             self.__lineas.append(f' FIN POR LÍMITE DE EVALUACIONES: {numEvaluaciones} '.center(100,' '))
