@@ -60,27 +60,32 @@ class Log:
 
     def registrarGeneracion(self, nuevaGeneracion: Poblacion, numGeneracion):
         indvs = nuevaGeneracion.getIndividuos
-        elts = nuevaGeneracion.getElites
+        elts = nuevaGeneracion.getElites if hasattr(nuevaGeneracion, 'getElites') else []
 
         self.__lineas.append(f'\t'+f' GENERACION {numGeneracion} '.center(40,'g'))
 
         for i in range (0,nuevaGeneracion.getTamPoblacion):
             self.__lineas.append(f'{indvs[i]}')
 
-        self.__lineas.append(f'\t'+f' ÉLITES DE LA GENERACIÓN {numGeneracion} '.center(40,'e'))
+        if(len(elts) == 0): # Algoritmo estacionario. No tiene élites
+            self.__texto+='\n\n\n'
+            return
+        
+        self.__texto+='\n'        
+        self.__texto+=f'\t'+f' ÉLITES DE LA GENERACIÓN {numGeneracion} '.center(40,'e')
+        self.__texto+='\n'        
 
         for i in range (0,len(elts)):
             self.__lineas.append(f'{elts[i][0]}')
 
         self.__lineas.append(f'\t'+'e'.center(40,'e'))
 
-    def registrarSolucion(self, nuevaSolucion: tuple[Individuo, float]):
+    def registrarSolucion(self, nuevaSolucion: tuple[Individuo, float], numEvaluaciones=-1):
         """
         Añade una solución FINAL al contenido del fichero: la permutación, costo de evaluación, generación y tiempo de ejecución
         """
         tiempo = f"{nuevaSolucion[1]:.4f}" # Ajusto el tiempo para que se muestre en s aproximando al 4to  
+
         self.__lineas.append(f' Asignación: {[elem+1 for elem in nuevaSolucion[0].getPermutacion]}')
         self.__lineas.append(f' Costo: {nuevaSolucion[0].getCosto}')
         self.__lineas.append(f' Tiempo de ejecución: {tiempo}s')
-    
-    # TODO CAMBIAR EL += POR UN VECTOR Y UN JOIN PARA MAS EFICIENCIA

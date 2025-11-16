@@ -30,7 +30,7 @@ for (algoritmo, (archivoDatos, data), semilla, k, prcAleatorio, tamPoblacion, nu
             logEvolutivoGen = Log(algoritmo,archivoDatos,semilla,k,prcAleatorio,tamPoblacion,kBest,prcCruce,tipoCruce,prcMutacion,kWorst,maxEvaluaciones,maxSegundos,numElites)
             if(prcAleatorio <= 0):
                 error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
-            evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, tipoCruce, maxEvaluaciones, k, kBest, kWorst, data, logEvolutivoGen)
+            evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, tipoCruce, maxEvaluaciones, k, kBest, kWorst, data, logEvolutivoGen, maxSegundos)
             logEvolutivoGen.generaLogs()
 
 finPrograma()

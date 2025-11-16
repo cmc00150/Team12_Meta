@@ -55,9 +55,9 @@ class PoblacionGEN(Poblacion):
         self.__elites: SortedKeyList = []
         # Lista ordenada de élites: tupla de (copia, indice). Se ordena por el costo de la copia
         self.__numElites = numElites
+        self.guardarElites()
 
-    def seleccion(self, kBest):
-        # ACTUALIAZAMOS LOS ELITES DE LA NUEVA GENERACIÓN
+    def guardarElites(self):
         elites = []
         ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
         for n in range(self.__numElites): # Nos quedamos con los n primeros
@@ -65,6 +65,10 @@ class PoblacionGEN(Poblacion):
             elites.append((deepcopy(self._individuos[idx]), idx))
 
         self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
+
+    def seleccion(self, kBest):
+        # ACTUALIAZAMOS LOS ELITES DE LA NUEVA GENERACIÓN
+        self.guardarElites()
 
         # KBEST TORNEO
         ganadores = []
@@ -93,7 +97,7 @@ class PoblacionGEN(Poblacion):
         return self.__elites[0][0] # Devuelve la referencia mejor de los élites
     
     @property
-    def getElites(self):
+    def getElites(self) -> list[tuple[Individuo, int]]:
         return self.__elites
 
 class PoblacionEST(Poblacion):

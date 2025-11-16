@@ -94,4 +94,4 @@ class Individuo:
         self.__generacion=generacion
 
     def __str__(self): # Sobrecarga del operador print para hacer pruebas
-        return f'\tPermutacion: {self.__permutacion}\n\tCosto: {self.__costo}\n\tGeneracion: {self.__generacion}\n'
+        return f'\tPermutacion: {[elem+1 for elem in self.__permutacion]}\n\tCosto: {self.__costo}\n\tGeneracion: {self.__generacion}\n'
