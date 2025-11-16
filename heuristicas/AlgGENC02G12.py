@@ -32,6 +32,7 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
                 padre2 = pobl_tmp[i+1] 
                 # 2. Los reproducimos para obtener a sus hijos
                 hijos = Individuo.cruce(padre1, padre2, t_cruce, data.flujos, data.distancias)
+                log.registrarCruce(padre1,padre2,hijos)
                 # 3. Sustituimos a los padres a los hijos
                 pobl_tmp[i] = hijos[0]
                 pobl_tmp[i+1] = hijos[1]

@@ -117,3 +117,11 @@ class Log:
             self.__texto+=f' FIN POR LÍMITE DE TIEMPO: {tiempo} '.center(100,' ')
         self.__texto+='\n'
         self.__texto+=f'-'.center(100,'-')
+
+    def registrarCruce (self, p1: Individuo, p2: Individuo, hijos: tuple[Individuo, Individuo]):
+        self.__texto+= f'\t\tCruce: \n\t\t{p1.getPermutacion} \n\t\t{p2.getPermutacion}\n'
+
+        for i in range(2):
+            self.__texto+= f'\t\t\tHijo {i+1}: {hijos[i].getPermutacion}\n'
+            self.__texto+= f'\t\t\t\tCosto: {hijos[i].getCosto}\n'
+            self.__texto+= f'\t\t\t\tGeneracion: {hijos[i].getGeneracion}\n'
