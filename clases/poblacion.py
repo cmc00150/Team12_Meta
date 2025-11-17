@@ -55,9 +55,9 @@ class PoblacionGEN(Poblacion):
         self.__elites: SortedKeyList = []
         # Lista ordenada de élites: tupla de (copia, indice). Se ordena por el costo de la copia
         self.__numElites = numElites
-        self.guardarElites()
+        self._guardarElites()
 
-    def guardarElites(self):
+    def _guardarElites(self):
         elites = []
         ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
         for n in range(self.__numElites): # Nos quedamos con los n primeros
@@ -68,7 +68,7 @@ class PoblacionGEN(Poblacion):
 
     def seleccion(self, kBest):
         # ACTUALIAZAMOS LOS ELITES DE LA NUEVA GENERACIÓN
-        self.guardarElites()
+        self._guardarElites()
 
         # KBEST TORNEO
         ganadores = []
@@ -101,18 +101,18 @@ class PoblacionEST(Poblacion):
     def __init__(self, tamPoblacion, prcAleatorio, k, data):
         super().__init__(tamPoblacion, prcAleatorio, k, data)
 
-    def seleccion(self, kBest, numPadres) -> tuple[int, int]:
+    def seleccion(self, kBest, numPadres) -> list[Individuo]:
         # KBEST TORNEO
         ganadores = []
 
         for _ in range(numPadres):
             # SIN REEMPLAZO para diversificar
-            torneo = random.sample(range(self._tamPoblacion), k=kBest) # Cogemos aleatoriamente a los kBest
+            torneo = random.sample(self._individuos, k=kBest) # Cogemos aleatoriamente a los kBest
             ganadores.append(min(torneo, key=lambda i: i.getCosto)) # Gana el que menor coste tenga
         
         return ganadores
     
-    def reemplazo(self, kworst:int , individuos: tuple):
+    def reemplazo(self, kworst:int , individuos: list[Individuo]):
         for i in range(len(individuos)):
             torneo = random.sample(range(self._tamPoblacion), k=kworst)
             idx_perdedor = min(torneo, key=lambda idx: self._individuos[idx].getCosto)
@@ -120,4 +120,4 @@ class PoblacionEST(Poblacion):
             self._individuos[idx_perdedor] = individuos[i]
         
     def getMejor(self) -> Individuo:
-        return self._individuos.sort(key=lambda i: i.getCosto)[0] # Devuelve el mejor encontrado
+        return min(self._individuos, key=lambda i: i.getCosto) # Devuelve el mejor encontrado

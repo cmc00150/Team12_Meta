@@ -3,10 +3,9 @@ from heuristicas.AlgESTC02G12 import evolutivo_estacionario
 from heuristicas.AlgGENC02G12 import evolutivo_generacional
 from modulos.func_auxiliares import (error, finPrograma)
 from clases.extractor import Extractor
-from clases.configurador import Configurador
-from clases.logs import Log
-from clases.poblacion import Poblacion
-from itertools import product # Para no tener que estar anidando los bucles
+from clases.configurador import (Configurador, supportedAlg)
+from clases.logs import (LogEstacionario, LogGeneracional)
+from itertools import product
 
 
 if len(sys.argv) != 2: # Se comprueba que se ha introducido solo el archivo de configuración
@@ -18,19 +17,41 @@ config.mostrarInfo()
 
 dataset = [Extractor(archivo) for archivo in config.data] # Obtenemos los datos de cada problema
 
-for (algoritmo, (archivoDatos, data), semilla, k, prcAleatorio, tamPoblacion, numElites,kBest, prcCruce, tipoCruce, prcMutacion, kWorst, maxEvaluaciones, 
-    maxSegundos, extra) in product (config.alg, zip(config.data, dataset),config.seed,config.k,config.prcAleatorio,config.tampoblacion,config.numElites 
-    if config.numElites else [None],config.kBest,config.prcCruce,config.cruce,config.prcMutacion,config.kWorst, config.maxEvaluaciones,config.maxSegundos,
-    config.extra if config.extra else [None]):
+combinaciones = product(
+    config.alg,
+    zip(config.data, dataset),
+    config.seed,
+    config.k,
+    config.prcAleatorio,
+    config.tampoblacion,
+    config.numElites,
+    config.kBest,
+    config.prcCruce,
+    config.cruce,
+    config.prcMutacion,
+    config.kWorst,
+    config.maxEvaluaciones,
+    config.maxSegundos,
+    config.numPadres
+)
 
-    random.seed(semilla)
+for (alg, (ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites, 
+     kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, numPadres) in combinaciones:
 
-    match algoritmo:
-        case 'evolutivo_generacional':
-            logEvolutivoGen = Log(algoritmo,archivoDatos,semilla,k,prcAleatorio,tamPoblacion,kBest,prcCruce,tipoCruce,prcMutacion,kWorst,maxEvaluaciones,maxSegundos,numElites)
+    random.seed()
+
+    match alg:
+        case supportedAlg.GEN: # Usar el Enum para mayor seguridad y claridad
+            logGen = LogGeneracional(ruta_data, alg, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
             if(prcAleatorio <= 0):
                 error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
-            evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, tipoCruce, maxEvaluaciones, k, kBest, kWorst, data, logEvolutivoGen, maxSegundos)
-            logEvolutivoGen.generaLogs()
+            evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst, data, logGen, maxSegundos)
+            logGen.generaLogs()
+        case supportedAlg.EST:
+            logEst = LogEstacionario(ruta_data, alg, seed, k, prcAleatorio, tamPoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
+            if(prcAleatorio <= 0):
+                error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
+            evolutivo_estacionario(tamPoblacion, prcAleatorio, prcMutacion, numPadres, cruce, maxEvaluaciones, k, kBest, kWorst, data, logEst, maxSegundos)
+            logEst.generaLogs()
 
 finPrograma()

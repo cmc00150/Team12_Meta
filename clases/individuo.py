@@ -85,11 +85,6 @@ class Individuo:
         self.__permutacion=permutacion
         self.__costo=costo
         self.__generacion=generacion
-    
-    def copiarIndividuo(self, nuevoind: Individuo):
-        self.__permutacion=nuevoind.getPermutacion.copy()
-        self.__costo=nuevoind.getCosto
-        self.__generacion=nuevoind.getGeneracion
 
     def __str__(self): # Sobrecarga del operador print para hacer pruebas
         return f'\tPermutacion: {[elem+1 for elem in self.__permutacion]}\n\tCosto: {self.__costo}\n\tGeneracion: {self.__generacion}'
