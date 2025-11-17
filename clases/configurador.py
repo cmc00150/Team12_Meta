@@ -2,7 +2,7 @@ import os
 from enum import Enum
 from typing import Annotated
 from modulos.func_auxiliares import error
-from pydantic import BaseModel, FilePath, Field, ValidationError
+from pydantic import BaseModel, FilePath, Field, ValidationError, model_validator
 
 class supportedAlg(str, Enum):
     GEN = 'evolutivo_generacional'
@@ -20,15 +20,27 @@ class ConfigModel(BaseModel):
     k: list[Annotated[int, Field(gt=0)]] = Field(alias='K')
     prcAleatorio: list[Annotated[int, Field(ge=0, le=100)]] = Field(alias='PRC_ALEATORIO')
     tampoblacion: list[Annotated[int, Field(gt=0)]] = Field(alias='TAMPOBLACION')
-    numElites: list[Annotated[int, Field(ge=0)]] = Field(default=[None], alias='NUMELITES')
-    numPadres: list[Annotated[int, Field(gt=0)]] = Field(default=[None], alias='NUMPADRES')
+    numElites: list[Annotated[int, Field(ge=0)]] = Field(default=[None], alias='NUM_ELITES')
+    numPadres: list[Annotated[int, Field(gt=0)]] = Field(default=[None], alias='NUM_PADRES')
     kBest: list[Annotated[int, Field(gt=0)]] = Field(alias='KBEST')
-    prcCruce: list[Annotated[int, Field(ge=0, le=100)]] = Field(default=None, alias='PRC_CRUCE')
+    prcCruce: list[Annotated[int, Field(ge=0, le=100)]] = Field(default=[None], alias='PRC_CRUCE')
     cruce: list[supportedCruce] = Field(alias='CRUCE')
     prcMutacion: list[Annotated[int, Field(ge=0, le=100)]] = Field(alias='PRC_MUTACION')
     kWorst: list[Annotated[int, Field(gt=0)]] = Field(alias='KWORST')
     maxEvaluaciones: list[Annotated[int, Field(gt=0)]] = Field(alias='MAX_EVALUACIONES')
     maxSegundos: list[Annotated[int, Field(gt=0)]] = Field(alias='MAX_SEGUNDOS')
+
+    @model_validator(mode='after')
+    def comprobaciones_post(self):
+        """
+        Comprueba que numElites 
+        """
+        if supportedAlg.GEN in self.alg and (None in self.numElites or None in self.prcCruce):
+                raise ValueError("El parámetro NUM_ELITES y PRC_CRUCE es obligatorio para el algoritmo evolutivo_generacional.")
+        if supportedAlg.EST in self.alg and None in self.numPadres:
+            raise ValueError("El parámetro NUM_PADRES es obligatorio para el algoritmo evolutivo_estacionario.")
+
+        return self
 
 class Configurador(ConfigModel):
     def __init__(self, ruta: str):
@@ -51,7 +63,7 @@ class Configurador(ConfigModel):
         except ValidationError as e:
             # Si Pydantic encuentra un error (campo faltante, tipo incorrecto, valor fuera de rango),
             # lo notificamos y salimos.
-            error(f"Error en el fichero de configuración:\n")
+            error(f"Error en el fichero de configuración:\n{e}")
             exit(1)
         except FileNotFoundError:
             error(f"El archivo de configuración '{ruta}' no fue encontrado.")
