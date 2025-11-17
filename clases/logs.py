@@ -3,17 +3,38 @@ from clases.poblacion import (Individuo, Poblacion)
 from enum import Enum
 from pydantic import FilePath
 
+class SimbolosLog(str, Enum):
+    MEJORA = '📈'
+    EMPEORA = '📉'
+    SIN_CAMBIOS = '0️⃣'
+    CRUCE = '🔀'
+    MUTACION = '🧬'
+    SELECCION = '✓'
+    REEMPLAZO = '♻️'
+    SOLUCION = '🎉'
+    ESTADISTICAS = '📊'
+    CONFIGURACION = '📁'
+    POBLACION = '📋'
+    
+    def __str__(self) -> str:
+        """Devuelve el valor directamente para los prints."""
+        return self.value
+
+    def __format__(self, spec: str) -> str:
+        """Permite usar f"{SimbolosLog.MEJORA:^3s}"."""
+        return format(self.value, spec)
+
 class Log():
-    def __init__(self, data: FilePath, alg: Enum, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos): 
+    def __init__(self, data: FilePath, alg: Enum, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce: Enum, prcMutacion, kWorst, maxEvaluaciones, maxSegundos): 
         self._data = data
-        self._alg = alg
+        self._alg = alg.value
         self._seed = seed
         self._k = k
         self._prcAleatorio = prcAleatorio
         self._tampoblacion = tampoblacion
         self._kBest = kBest
         self._prcCruce = prcCruce
-        self._cruce = cruce
+        self._cruce = cruce.value
         self._prcMutacion = prcMutacion
         self._kWorst = kWorst
         self._maxEvaluaciones = maxEvaluaciones
@@ -32,7 +53,7 @@ class Log():
         self._lineas.append('')
         
         # Configuración
-        self._lineas.append('📁 CONFIGURACIÓN:')
+        self._lineas.append(f'{SimbolosLog.CONFIGURACION} CONFIGURACIÓN:')
         self._lineas.append(f'   Archivo de datos: {self._data}')
         self._lineas.append(f'   Semilla: {self._seed}')
         self._lineas.append(f'   K (greedy): {self._k}')
@@ -51,22 +72,18 @@ class Log():
 
     def registrarSeleccion(self, numSeleccionados: int):
         """Registra la fase de selección"""
-        self._lineas.append(f'   ✓ Selección completada: {numSeleccionados} individuos seleccionados por torneo (k={self._kBest})')
+        self._lineas.append(f'   {SimbolosLog.SELECCION} Selección completada: {numSeleccionados} individuos seleccionados por torneo (k={self._kBest})')
         self._lineas.append('')
 
     def registrarCruce(self, padre1: Individuo, padre2: Individuo, hijos: tuple[Individuo, Individuo]):
         """Registra un cruce específico en GENERACIONAL"""
         self._total_cruces += 1
-        
-        self._lineas.append(f'   🔀 CRUCE ({self._cruce}):')
-        self._lineas.append(f'      Padre 1: Perm={[x+1 for x in padre1.getPermutacion][:8]}... | Costo={padre1.getCosto:>8.2f} | Gen={padre1.getGeneracion}')
-        self._lineas.append(f'      Padre 2: Perm={[x+1 for x in padre2.getPermutacion][:8]}... | Costo={padre2.getCosto:>8.2f} | Gen={padre2.getGeneracion}')
-        
-        promedio_padres = (padre1.getCosto + padre2.getCosto) / 2
+
+        self._lineas.append(f'   {SimbolosLog.CRUCE} CRUCE ({self._cruce}): Padre 1 [Costo={padre1.getCosto}, Gen={padre1.getGeneracion}] & Padre 2 [Costo={padre2.getCosto}, Gen={padre2.getGeneracion}] → Hijos:')
         
         for i, hijo in enumerate(hijos, 1):
-            mejora = promedio_padres - hijo.getCosto
-            simbolo = '✓' if mejora > 0 else '✗'
+            mejora = hijo.getCosto - (padre1, padre2)[i-1].getCosto
+            simbolo = SimbolosLog.MEJORA if mejora < 0 else SimbolosLog.SIN_CAMBIOS if mejora == 0 else SimbolosLog.EMPEORA
             self._lineas.append(f'      {simbolo} Hijo {i}:  Perm={[x+1 for x in hijo.getPermutacion][:8]}... | Costo={hijo.getCosto:>8.2f} | Gen={hijo.getGeneracion} | Δ={mejora:+.2f}')
         
         self._lineas.append('')
@@ -76,9 +93,9 @@ class Log():
         self._total_mutaciones += 1
         
         cambio = individuo.getCosto - costo_anterior
-        simbolo = '✓' if cambio < 0 else '✗'
-        
-        self._lineas.append(f'   {simbolo} 🧬 Mutación [{posiciones[0]+1}↔{posiciones[1]+1}]: {costo_anterior:>8.2f} → {individuo.getCosto:>8.2f} (Δ={cambio:+.2f})')
+        simbolo = SimbolosLog.MEJORA if cambio < 0 else SimbolosLog.SIN_CAMBIOS if cambio == 0 else SimbolosLog.EMPEORA
+
+        self._lineas.append(f'   {simbolo} {SimbolosLog.MUTACION} MUTACIÓN [{posiciones[0]+1}↔{posiciones[1]+1}]: {costo_anterior:>8.2f} → {individuo.getCosto:>8.2f} (Δ={cambio:+.2f})')
 
     def registrarSolucion(self, solucion: tuple[Individuo, float], numEvaluaciones: int = -1):
         """Registra la solución final"""
@@ -86,11 +103,11 @@ class Log():
         
         self._lineas.append('')
         self._lineas.append('='*100)
-        self._lineas.append('  🎉 SOLUCIÓN FINAL  '.center(100, '='))
+        self._lineas.append(f'  {SimbolosLog.SOLUCION} SOLUCIÓN FINAL  '.center(100, '='))
         self._lineas.append('='*100)
         self._lineas.append('')
-        
-        self._lineas.append('📈 RESULTADO:')
+
+        self._lineas.append(f'{SimbolosLog.MEJORA} RESULTADO:')
         self._lineas.append(f'   Permutación: {[x+1 for x in individuo.getPermutacion]}')
         self._lineas.append(f'   Costo: {individuo.getCosto}')
         self._lineas.append(f'   Generación: {individuo.getGeneracion}')
@@ -100,7 +117,7 @@ class Log():
             self._lineas.append(f'   Total evaluaciones: {numEvaluaciones}')
         
         self._lineas.append('')
-        self._lineas.append('📊 ESTADÍSTICAS:')
+        self._lineas.append(f'{SimbolosLog.ESTADISTICAS} ESTADÍSTICAS:')
         self._lineas.append(f'   Total de cruces realizados: {self._total_cruces}')
         self._lineas.append(f'   Total de mutaciones realizadas: {self._total_mutaciones}')
         self._lineas.append('')
@@ -141,7 +158,7 @@ class LogGeneracional(Log):
         peor_costo = max(costos)
         promedio_costo = sum(costos) / len(costos)
         
-        self._lineas.append('📊 ESTADÍSTICAS DE LA GENERACIÓN:')
+        self._lineas.append(f'{SimbolosLog.ESTADISTICAS} ESTADÍSTICAS DE LA GENERACIÓN:')
         self._lineas.append(f'   Mejor costo:     {mejor_costo:>10.2f}')
         self._lineas.append(f'   Peor costo:      {peor_costo:>10.2f}')
         self._lineas.append(f'   Promedio:        {promedio_costo:>10.2f}')
@@ -165,16 +182,16 @@ class LogGeneracional(Log):
             self._lineas.append(f'   ÉLITES DE LA GENERACIÓN {numGeneracion}'.center(100))
             self._lineas.append('⭐'*50)
             for i, (elite, idx) in enumerate(elites):
-                self._lineas.append(f'   🏆 Élite {i+1} (posición {idx}):')
+                self._lineas.append(f'   🏆 Élite {i+1} (posición {idx+1}):')
                 self._lineas.append(f'      Permutación: {[x+1 for x in elite.getPermutacion]}')
                 self._lineas.append(f'      Costo: {elite.getCosto}')
                 self._lineas.append(f'      Generación: {elite.getGeneracion}')
             self._lineas.append('')
         
         # Población completa (resumen)
-        self._lineas.append('📋 POBLACIÓN COMPLETA:')
+        self._lineas.append(f'{SimbolosLog.POBLACION} POBLACIÓN COMPLETA:')
         for i, ind in enumerate(indvs):
-            marca = '🏆' if any(ind.getCosto == e[0].getCosto for e in elites) else '  '
+            marca = '🏆' if any(i == e[1] for e in elites) else '  '
             self._lineas.append(f'   {marca} [{i+1:2d}] Costo: {ind.getCosto:>8.2f} | Gen: {ind.getGeneracion:>3d} | Perm: {[x+1 for x in ind.getPermutacion]}')
         
         self._lineas.append('')
@@ -190,14 +207,14 @@ class LogGeneracional(Log):
     def registrarReemplazo(self):
         """Registra el reemplazo de población en GENERACIONAL"""
         self._lineas.append('')
-        self._lineas.append(f'   ♻️  REEMPLAZO: Nueva población establecida')
+        self._lineas.append(f'   {SimbolosLog.REEMPLAZO}  REEMPLAZO: Nueva población establecida')
         self._lineas.append('')
 
     def generaLogs(self):
         carpetaActual = Path(__file__).parent
         
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"{self._alg.value}_{nombreDatos}_{self._seed}_{self._cruce}"
+        nombreArchivo = f"{self._alg}_{nombreDatos}_{self._seed}_{self._cruce}"
         
         if self._numElites > 0:
             nombreArchivo += f"_E{self._numElites}"
@@ -214,7 +231,7 @@ class LogEstacionario(Log):
 
     def registrarSeleccion(self, padres: list[Individuo]):
         """Registra la selección de padres en ESTACIONARIO"""
-        self._lineas.append(f'   ✓ Selección de {len(padres)} padres por torneo (k={self._kBest}):')
+        self._lineas.append(f'   {SimbolosLog.SELECCION} Selección de {len(padres)} padres por torneo (k={self._kBest}):')
         for i, padre in enumerate(padres, 1):
             self._lineas.append(f'      Padre {i}: Costo={padre.getCosto:>8.2f} | Gen={padre.getGeneracion}')
         self._lineas.append('')
@@ -223,14 +240,14 @@ class LogEstacionario(Log):
         """Registra cruce en ESTACIONARIO"""
         self._total_cruces += 1
         
-        self._lineas.append(f'   🔀 CRUCE ({self._cruce}):')
+        self._lineas.append(f'   {SimbolosLog.CRUCE} CRUCE ({self._cruce}):')
         self._lineas.append(f'      P1: Costo={padre1.getCosto:>8.2f} | P2: Costo={padre2.getCosto:>8.2f}')
         self._lineas.append(f'      H1: Costo={hijos[0].getCosto:>8.2f} | H2: Costo={hijos[1].getCosto:>8.2f}')
         self._lineas.append('')
 
     def registrarReemplazo(self, hijos: list[Individuo]):
         """Registra reemplazo en ESTACIONARIO"""
-        self._lineas.append(f'   ♻️  Reemplazo individuos insertados en población (torneo k={self._kWorst})')
+        self._lineas.append(f'   {SimbolosLog.REEMPLAZO}  Reemplazo individuos insertados en población (torneo k={self._kWorst})')
         for i, hijo in enumerate(hijos, 1):
             self._lineas.append(f'      Hijo {i}: Costo={hijo.getCosto:>8.2f} insertado')
         self._lineas.append('')
@@ -239,7 +256,7 @@ class LogEstacionario(Log):
         carpetaActual = Path(__file__).parent
         
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"{self._alg.value}_{nombreDatos}_{self._seed}_{self._cruce}"
+        nombreArchivo = f"{self._alg}_{nombreDatos}_{self._seed}_{self._cruce}"
         
         nombreArchivo += f"_kB{self._kBest}.txt"
         ruta = carpetaActual.parent / 'logs' / nombreArchivo
