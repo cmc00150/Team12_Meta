@@ -148,7 +148,7 @@ class LogGeneracional(Log):
         # Separador de generación
         self._lineas.append('')
         self._lineas.append('█'*100)
-        self._lineas.append(f'█  GENERACIÓN {numGeneracion} - Evaluaciones: {evaluaciones}  █'.ljust(99) + '█')
+        self._lineas.append('█'+f'GENERACIÓN {numGeneracion} - Evaluaciones: {evaluaciones}'.center(98,' ') + '█')
         self._lineas.append('█'*100)
         self._lineas.append('')
         
@@ -228,6 +228,42 @@ class LogGeneracional(Log):
 class LogEstacionario(Log):
     def __init__(self, data, alg, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos):
         super().__init__(data, alg, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
+
+    def registrarPoblacion(self, poblacion: Poblacion):
+        """
+        Registra una generación completa del algoritmo GENERACIONAL
+        Incluye: población completa, élites, estadísticas
+        """
+        indvs = poblacion.getIndividuos
+        
+        # Separador de generación
+        self._lineas.append('')
+        self._lineas.append('█'*100)
+        self._lineas.append('█'+f'POBLACIÓN INICIAL'.center(98,' ') + '█')
+        self._lineas.append('█'*100)
+        self._lineas.append('')
+        
+        # Estadísticas de la generación
+        costos = [ind.getCosto for ind in indvs]
+        mejor_costo = min(costos)
+        peor_costo = max(costos)
+        promedio_costo = sum(costos) / len(costos)
+        
+        self._lineas.append(f'{SimbolosLog.ESTADISTICAS} ESTADÍSTICAS DE LA POBLACIÓN:')
+        self._lineas.append(f'   Mejor costo:     {mejor_costo:>10.2f}')
+        self._lineas.append(f'   Peor costo:      {peor_costo:>10.2f}')
+        self._lineas.append(f'   Promedio:        {promedio_costo:>10.2f}')
+        self._lineas.append(f'   Rango:           {peor_costo - mejor_costo:>10.2f}')
+        
+        self._mejor_costo_previo = mejor_costo
+        self._lineas.append('')
+        
+        # Población completa (resumen)
+        self._lineas.append(f'{SimbolosLog.POBLACION} POBLACIÓN COMPLETA:')
+        for i, ind in enumerate(indvs):
+            self._lineas.append(f'   [{i+1:2d}] Costo: {ind.getCosto:>8.2f} | Gen: {ind.getGeneracion:>3d} | Perm: {[x+1 for x in ind.getPermutacion]}')
+        
+        self._lineas.append('')
 
     def registrarSeleccion(self, padres: list[Individuo]):
         """Registra la selección de padres en ESTACIONARIO"""

@@ -16,6 +16,8 @@ def evolutivo_estacionario(tamPoblacion, prcAleatorio, prcMutacion, numPadres, c
     ev = len(poblacion) # Contamos las evaluaciones al inicializar los individuos
     mejorGlobal = deepcopy(poblacion[0])
 
+    log.registrarPoblacion(poblacion)
+
     while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
         padres = poblacion.seleccion(kBest, numPadres) # Seleccionamos 2 padres para el cruce
@@ -54,6 +56,8 @@ def evolutivo_estacionario(tamPoblacion, prcAleatorio, prcMutacion, numPadres, c
         
         poblacion.reemplazo(kWorst, hijos) # Hacemos el reemplazo
         log.registrarReemplazo(hijos)
+    
+    log.registrarPoblacion(poblacion)
     
     if ev>=maxEvaluaciones:
         log.registrarSolucion((mejorGlobal, time.time() - TiempoInicio), ev)
