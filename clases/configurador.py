@@ -21,7 +21,7 @@ class ConfigModel(BaseModel):
     prcAleatorio: list[Annotated[int, Field(ge=0, le=100)]] = Field(alias='PRC_ALEATORIO')
     tampoblacion: list[Annotated[int, Field(gt=0)]] = Field(alias='TAMPOBLACION')
     numElites: list[Annotated[int, Field(ge=0)]] = Field(default=[None], alias='NUM_ELITES')
-    numPadres: list[Annotated[int, Field(gt=0)]] = Field(default=[None], alias='NUM_PADRES')
+    numPadres: list[Annotated[int, Field(gt=1)]] = Field(default=[None], alias='NUM_PADRES')
     kBest: list[Annotated[int, Field(gt=0)]] = Field(alias='KBEST')
     prcCruce: list[Annotated[int, Field(ge=0, le=100)]] = Field(default=[None], alias='PRC_CRUCE')
     cruce: list[supportedCruce] = Field(alias='CRUCE')

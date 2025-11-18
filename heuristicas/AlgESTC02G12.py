@@ -10,52 +10,45 @@ def evolutivo_estacionario(tamPoblacion, prcAleatorio, prcMutacion, numPadres, c
 
     TiempoInicio = time.time()
     TiempoFin = time.time() + maxSegundos
+    
     # -- GENERACIÓN Y EVALUACIÓN --
     poblacion = PoblacionEST(tamPoblacion, prcAleatorio, k, data)
-
     ev = len(poblacion) # Contamos las evaluaciones al inicializar los individuos
-    mejorGlobal = deepcopy(poblacion[0])
+    flujos = data.flujos
+    distancias = data.distancias
 
     while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
         padres = poblacion.seleccion(kBest, numPadres) # Seleccionamos 2 padres para el cruce
-        log.registrarSeleccion(padres)
-        mejorpob = poblacion.getMejor()
-        if mejorpob.getCosto < mejorGlobal.getCosto:
-            mejorGlobal = deepcopy(mejorpob)
+        log.iniciarCiclo(padres)
 
         # -- CRUCE --
-        hijos: list[Individuo] = []
         n = len(padres)
         for i in range(0, n - (n%2), 2): # Vamos cogiendo de dos en dos
-            # Los reproducimos para obtener a sus hijos
-            h1, h2 = Individuo.cruce(padres[i], padres[i+1], cruce, data.flujos, data.distancias)
-            hijos.append(h1)
-            hijos.append(h2)
-            # Anotamos dos evaluaciónes (una por cada hijo)
-            ev+= 2
-            log.registrarCruce(padres[i], padres[i+1], hijos)
-            if ev >= maxEvaluaciones or time.time() >= TiempoFin: break
 
-        if ev >= maxEvaluaciones or time.time() >= TiempoFin: break
-        
-        # -- MUTACION --
-        for i in hijos:
-            if random.randint(0, 100) < prcMutacion: # Si cae dentro lo mutamos, sino no hacemos nada
-                costoAnterior = i.getCosto
-                posiciones = i.mutar(data.flujos, data.distancias)
-                log.registrarMutacion(i, (posiciones[0]+1,posiciones[1]+1), costoAnterior)
-                # Anotamos una evaluación al individuo mutado
-                ev+=1 
-            
-            if ev >= maxEvaluaciones or time.time() >= TiempoFin: break
+            # -- CRUCE --
+            h1, h2 = Individuo.cruce(padres[i], padres[i+1], cruce, flujos, distancias)
 
-        if ev >= maxEvaluaciones or time.time() >= TiempoFin: break
+            # -- MUTACIÓN INDIVIDUO 1 --
+            if random.randint(0, 100) < prcMutacion:
+                h1.mutar(flujos, distancias)
+                log.registrarMutacion(i)
+            # -- MUTACIÓN INDIVIDUO 2 --
+            if random.randint(0, 100) < prcMutacion:
+                h2.mutar(flujos, distancias)
+                log.registrarMutacion(i + 1)
         
-        poblacion.reemplazo(kWorst, hijos) # Hacemos el reemplazo
-        log.registrarReemplazo(hijos)
+            # -- EVALUACIÓN --
+            if not h1.getCosto: h1.setCosto(flujos, distancias); ev+=1 # Si no tiene costo es porque es un hijo, por lo que evaluamos
+            if not h2.getCosto: h2.setCosto(flujos, distancias); ev+=1
+        
+            log.registrarCruce(h1, h2)
+
+            # -- REEMPLAZO --
+            poblacion.reemplazo(kWorst, h1) # Hacemos el reemplazo
+            poblacion.reemplazo(kWorst, h2) # Hacemos el reemplazo
+        
+        log.finalizarCruceMutacion()
+        log.registrarReemplazo(padres)
     
-    if ev>=maxEvaluaciones:
-        log.registrarSolucion((mejorGlobal, time.time() - TiempoInicio), ev)
-    else:
-        log.registrarSolucion((mejorGlobal, time.time() - TiempoInicio))
+    log.registrarSolucion((poblacion.getMejor, time.time() - TiempoInicio), ev if ev>=maxEvaluaciones else None)

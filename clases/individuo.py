@@ -2,7 +2,7 @@ import random
 from modulos.func_auxiliares import (costo, aleatorio, greedy_aleatorizado, dos_opt, fact)
 
 class Individuo:
-    def __init__(self, permutacion=[], costo=999999999, generacion=1):
+    def __init__(self, permutacion=[], costo=None, generacion=1, cruzado=False):
         self.__permutacion: list[int] = permutacion
         self.__costo = costo
         self.__generacion = generacion
@@ -50,8 +50,8 @@ class Individuo:
         else:
             nuevaGen = padre2.getGeneracion + 1
 
-        hijo1 = Individuo(h1,costo(h1,flujos,distancias),nuevaGen)
-        hijo2 = Individuo(h2,costo(h2,flujos,distancias),nuevaGen)
+        hijo1 = Individuo(permutacion=h1, generacion=nuevaGen)
+        hijo2 = Individuo(permutacion=h2, generacion=nuevaGen)
 
         return (hijo1,hijo2)
 
@@ -60,12 +60,10 @@ class Individuo:
         perm = self.__permutacion
         # 2. Selecciono los genes a mutar
         posiciones = random.sample(range(len(perm)), k=2) # Cojo dos posiciones de esta permutación
-        # 3. Calculo el costo (parcialmente)
-        variacion = fact(posiciones[0], posiciones[1], perm, flujos, distancias)
+        if self.__costo: # Si tiene costo es porque no es un hijo. No se ha cruzado
+            fact(posiciones[0], posiciones[1], perm, flujos, distancias)
         # 4. Le hago la mutación
         dos_opt(self.__permutacion, posiciones[0], posiciones[1]) # Los intercambio
-        # 5. Actualizo el costo
-        self.__costo += variacion
         return posiciones # Devuelvo las posiciones intercambiadas para los logs
 
     @property
@@ -80,11 +78,8 @@ class Individuo:
     def getGeneracion(self):
         return (self.__generacion)
 
-    @property
-    def setIndividuo(self, permutacion, costo, generacion):
-        self.__permutacion=permutacion
-        self.__costo=costo
-        self.__generacion=generacion
+    def setCosto(self, flujos, distancias):
+        self.__costo = costo(self.__permutacion, flujos, distancias)
 
     def __str__(self): # Sobrecarga del operador print para hacer pruebas
         return f'\tPermutacion: {[elem+1 for elem in self.__permutacion]}\n\tCosto: {self.__costo}\n\tGeneracion: {self.__generacion}'

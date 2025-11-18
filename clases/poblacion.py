@@ -66,7 +66,7 @@ class PoblacionGEN(Poblacion):
 
         self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
 
-    def seleccion(self, kBest):
+    def seleccion(self, kBest) -> list[Individuo]:
         # ACTUALIAZAMOS LOS ELITES DE LA NUEVA GENERACIÓN
         self._guardarElites()
 
@@ -96,6 +96,10 @@ class PoblacionGEN(Poblacion):
     @property
     def getElites(self) -> list[tuple[Individuo, int]]:
         return self.__elites
+    
+    @property
+    def getMejor(self) -> Individuo:
+        return min(self.__elites, key=lambda t: t[0].getCosto)[0] # Devuelvo la copia del élite
 
 class PoblacionEST(Poblacion):
     def __init__(self, tamPoblacion, prcAleatorio, k, data):
@@ -112,12 +116,12 @@ class PoblacionEST(Poblacion):
         
         return ganadores
     
-    def reemplazo(self, kworst:int , individuos: list[Individuo]):
-        for i in range(len(individuos)):
-            torneo = random.sample(range(self._tamPoblacion), k=kworst)
-            idx_perdedor = min(torneo, key=lambda idx: self._individuos[idx].getCosto)
+    def reemplazo(self, kworst:int , individuo: Individuo):
+        torneo = random.sample(range(self._tamPoblacion), k=kworst)
+        idx_perdedor = min(torneo, key=lambda idx: self._individuos[idx].getCosto)
 
-            self._individuos[idx_perdedor] = individuos[i]
+        self._individuos[idx_perdedor] = individuo
         
+    @property
     def getMejor(self) -> Individuo:
         return min(self._individuos, key=lambda i: i.getCosto) # Devuelve el mejor encontrado
