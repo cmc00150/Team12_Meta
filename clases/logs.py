@@ -152,7 +152,15 @@ class LogGeneracional(Log):
         """Registra estadísticas de la generación"""
         indvs = poblacion.getIndividuos
         elites = poblacion.getElites if hasattr(poblacion, 'getElites') else []
+
+        # Separador de generación
+        self._lineas.append('')
+        self._lineas.append('█'*100)
+        self._lineas.append('█'+f'GENERACIÓN {numGeneracion} - Evaluaciones: {evaluaciones}'.center(98,' ') + '█')
+        self._lineas.append('█'*100)
+        self._lineas.append('')
         
+        # Estadísticas de la generación
         costos = [ind.getCosto for ind in indvs]
         mejor = min(costos)
         peor = max(costos)
