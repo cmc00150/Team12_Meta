@@ -9,7 +9,7 @@ import random
 def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst, data: Extractor, log: LogGeneracional, maxSegundos: int):
 
     TiempoInicio = time.time()
-    TiempoFin = time.time() + maxSegundos
+    TiempoFin = TiempoInicio + maxSegundos
     
     # -- GENERACIÓN Y EVALUACIÓN --
     poblacion = PoblacionGEN(numElites, tamPoblacion, prcAleatorio, k, data)
@@ -44,15 +44,26 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
                 if idv1.getCosto: ev+=1 # Si tiene coste es porque no se ha cruzado, contabiliza el fact() de dentro de mutar()
                 idv1.mutar(flujos, distancias)
                 log.registrarMutacion(i)
+                if ev >= maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+                    break;
             # -- MUTACIÓN INDIVIDUO 2 --
             if random.randint(0, 100) < prcMutacion:
                 if idv2.getCosto: ev+=1 # Si tiene coste es porque no se ha cruzado
                 idv2.mutar(flujos, distancias)
                 log.registrarMutacion(i+1)
+                if ev >= maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+                    break;
         
             # -- EVALUACIÓN --
             if not idv1.getCosto: pobl_tmp[i].setCosto(flujos, distancias); ev+=1 # Si no tiene costo es porque es un hijo, por lo que evaluamos
+            if ev >= maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+                break;
             if not idv2.getCosto: pobl_tmp[i+1].setCosto(flujos, distancias); ev+=1
+            if ev >= maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+                break;
+        
+        if ev >= maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+            break;
         
         log.finalizarSeleccion()
         log.registrarReemplazo(pobl_tmp)
