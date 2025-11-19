@@ -17,8 +17,6 @@ def evolutivo_estacionario(tamPoblacion, prcAleatorio, prcMutacion, numPadres, c
     flujos = data.flujos
     distancias = data.distancias
 
-    log.registrarPoblacion(poblacion)
-
     while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
         padres = poblacion.seleccion(kBest, numPadres) # Seleccionamos 2 padres para el cruce
