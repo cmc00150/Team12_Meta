@@ -18,7 +18,8 @@ def evolutivo_generacional(numElites, tamPoblacion, prcAleatorio, prcCruce, prcM
     # Cacheamos las estructuras para mas eficiencia
     flujos = data.flujos
     distancias = data.distancias
-    log.registrarGeneracion(poblacion,1, numGeneracion)
+    log.registrarPoblacionInicial(poblacion)
+    #log.registrarGeneracion(poblacion,1, numGeneracion)
 
     while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --

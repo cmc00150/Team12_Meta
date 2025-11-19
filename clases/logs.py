@@ -56,13 +56,34 @@ class Log():
         self._lineas.append('='*90)
         self._lineas.append('')
 
+    def registrarPoblacionInicial(self, poblacion: Poblacion):
+        """Registra la población inicial"""
+        indvs = poblacion.getIndividuos
+        
+        self._lineas.append('='*90)
+        self._lineas.append('='+f' POBLACIÓN INICIAL '.center(88, ' ')+'=')
+        self._lineas.append('='*90)
+        
+        for i, ind in enumerate(indvs):
+            perm_str = str([x+1 for x in ind.getPermutacion][:6])[:-1] + '...]'
+            self._lineas.append(f'   [{i:3d}]  {perm_str:30s}  |  Costo: {ind.getCosto:>6.0f}  |  Gen: {ind.getGeneracion:>2d}')
+        
+        costos = [ind.getCosto for ind in indvs]
+        mejor = min(costos)
+        peor = max(costos)
+        promedio = sum(costos) / len(costos)
+        
+        self._lineas.append('')
+        self._lineas.append(f'   → Mejor: {mejor:.0f} | Promedio: {promedio:.0f} | Peor: {peor:.0f}')
+        self._lineas.append('='*90)
+
     def registrarSolucion(self, solucion: tuple[Individuo, float], evaluaciones: int):
         """Registra la solución final"""
         individuo, tiempo = solucion
         
         self._lineas.append('')
         self._lineas.append('='*90)
-        self._lineas.append(f' SOLUCIÓN FINAL '.center(90, '='))
+        self._lineas.append('='+f' SOLUCIÓN FINAL '.center(88, ' ')+'=')
         self._lineas.append('='*90)
         self._lineas.append(f'Permutación: {[x+1 for x in individuo.getPermutacion]}')
         self._lineas.append(f'Costo: {individuo.getCosto} | Gen: {individuo.getGeneracion} | Tiempo: {tiempo:.4f}s')
@@ -210,12 +231,12 @@ class LogGeneracional(Log):
     def generaLogs(self):
         carpetaActual = Path(__file__).parent
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"{self._alg}_{nombreDatos}_s{self._seed}_{self._cruce}"
+        nombreArchivo = f"{self._alg}_{nombreDatos}_{self._seed}_{self._cruce}"
         
         if self._numElites > 0:
             nombreArchivo += f"_E{self._numElites}"
         
-        nombreArchivo += f"_k{self._kBest}.txt"
+        nombreArchivo += f"_kBest{self._kBest}.txt"
         ruta = carpetaActual.parent / 'logs' / nombreArchivo
 
         with open(ruta, 'w', encoding='utf-8') as arch:
@@ -314,7 +335,7 @@ class LogEstacionario(Log):
     def generaLogs(self):
         carpetaActual = Path(__file__).parent
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"{self._alg}_{nombreDatos}_s{self._seed}_{self._cruce}_k{self._kBest}.txt"
+        nombreArchivo = f"{self._alg}_{nombreDatos}_{self._seed}_{self._cruce}_kBest{self._kBest}.txt"
         ruta = carpetaActual.parent / 'logs' / nombreArchivo
 
         with open(ruta, 'w', encoding='utf-8') as arch:

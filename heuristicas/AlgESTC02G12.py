@@ -17,7 +17,7 @@ def evolutivo_estacionario(tamPoblacion, prcAleatorio, prcMutacion, numPadres, c
     flujos = data.flujos
     distancias = data.distancias
 
-    log.registrarPoblacion(poblacion)
+    log.registrarPoblacionInicial(poblacion)
 
     while(ev < maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
