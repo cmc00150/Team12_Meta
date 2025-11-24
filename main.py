@@ -1,5 +1,5 @@
 import sys, random
-from heuristicas.AlgGENC02G12 import evolutivo_generacional, GenData, TabuData
+from heuristicas.AlgMEMC02G12 import memetico_generacional, GenData, TabuData
 from modulos.func_auxiliares import (error, finPrograma)
 from clases.extractor import Extractor
 from clases.configurador import (Configurador, supportedAlg)
@@ -45,7 +45,7 @@ for ((ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites,
 
     genData = GenData(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst)
     tabuData = TabuData(evaluaciones, iteracionesBL)
-    evolutivo_generacional(genData, tabuData, data, log, maxSegundos)
+    memetico_generacional(genData, tabuData, data, log, maxSegundos)
     log.generaLogs()
 
 finPrograma()
