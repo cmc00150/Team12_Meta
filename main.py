@@ -38,7 +38,7 @@ combinaciones = product(
 for (alg, (ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites, 
      kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, numPadres) in combinaciones:
 
-    random.seed()
+    random.seed(seed)
 
     match alg:
         case supportedAlg.GEN: # Usar el Enum para mayor seguridad y claridad
