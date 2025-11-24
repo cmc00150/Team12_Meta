@@ -15,18 +15,18 @@ class supportedCruce(str, Enum):
 class ConfigModel(BaseModel):
     # Definimos todos los campos del fichero de configuración aquí
     data: list[FilePath] = Field(alias='DATA')
-    alg: list[supportedAlg] = Field(alias='ALG')
     seed: list[Annotated[int, Field(ge=10000000, le=99999999)]] = Field(alias='SEED')
     k: list[Annotated[int, Field(gt=0)]] = Field(alias='K')
     prcAleatorio: list[Annotated[int, Field(ge=0, le=100)]] = Field(alias='PRC_ALEATORIO')
     tampoblacion: list[Annotated[int, Field(gt=0)]] = Field(alias='TAMPOBLACION')
     numElites: list[Annotated[int, Field(ge=0)]] = Field(default=[None], alias='NUM_ELITES')
-    numPadres: list[Annotated[int, Field(gt=1)]] = Field(default=[None], alias='NUM_PADRES')
     kBest: list[Annotated[int, Field(gt=0)]] = Field(alias='KBEST')
     prcCruce: list[Annotated[int, Field(ge=0, le=100)]] = Field(default=[None], alias='PRC_CRUCE')
     cruce: list[supportedCruce] = Field(alias='CRUCE')
     prcMutacion: list[Annotated[int, Field(ge=0, le=100)]] = Field(alias='PRC_MUTACION')
     kWorst: list[Annotated[int, Field(gt=0)]] = Field(alias='KWORST')
+    evaluaciones: list[Annotated[int, Field(gt=0)]] = Field(alias='EVALUACIONES')
+    iteracionesBL: list[Annotated[int, Field(gt=0)]] = Field(alias='ITERACIONES_BL')
     maxEvaluaciones: list[Annotated[int, Field(gt=0)]] = Field(alias='MAX_EVALUACIONES')
     maxSegundos: list[Annotated[int, Field(gt=0)]] = Field(alias='MAX_SEGUNDOS')
 
@@ -35,10 +35,8 @@ class ConfigModel(BaseModel):
         """
         Comprueba que numElites 
         """
-        if supportedAlg.GEN in self.alg and (None in self.numElites or None in self.prcCruce):
+        if None in self.numElites or None in self.prcCruce:
                 raise ValueError("El parámetro NUM_ELITES y PRC_CRUCE es obligatorio para el algoritmo evolutivo_generacional.")
-        if supportedAlg.EST in self.alg and None in self.numPadres:
-            raise ValueError("El parámetro NUM_PADRES es obligatorio para el algoritmo evolutivo_estacionario.")
 
         return self
 
