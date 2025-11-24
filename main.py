@@ -3,7 +3,7 @@ from heuristicas.AlgGENC02G12 import evolutivo_generacional, GenData, TabuData
 from modulos.func_auxiliares import (error, finPrograma)
 from clases.extractor import Extractor
 from clases.configurador import (Configurador, supportedAlg)
-from clases.logs import (LogEstacionario, LogGeneracional)
+from clases.logs import Log
 from itertools import product
 
 
@@ -31,20 +31,21 @@ combinaciones = product(
     config.maxEvaluaciones,
     config.maxSegundos,
     config.iteracionesBL,
-    config.evaluaciones
+    config.evaluaciones,
+    config.tenencia
 )
 
 for ((ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites, 
-     kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, iteracionesBL, evaluaciones) in combinaciones:
+     kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, iteracionesBL, evaluaciones, tenencia) in combinaciones:
 
     random.seed(seed)
-    #log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
+    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
     if(prcAleatorio <= 0):
         error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
 
     genData = GenData(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst)
     tabuData = TabuData(evaluaciones, iteracionesBL)
     evolutivo_generacional(genData, tabuData, data, log, maxSegundos)
-    #logGen.generaLogs()
+    log.generaLogs()
 
 finPrograma()
