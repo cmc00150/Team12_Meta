@@ -25,9 +25,8 @@ class SimbolosLog(str, Enum):
         return format(self.value, spec)
 
 class Log():
-    def __init__(self, data, alg, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxIteracionesTabu, tenencia):
+    def __init__(self, data, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxIteracionesTabu, tenencia):
         self._data = data
-        self._alg = alg.value
         self._seed = seed
         self._k = k
         self._prcAleatorio = prcAleatorio
@@ -58,7 +57,7 @@ class Log():
 
         # Encabezado compacto
         self._lineas.append('='*90)
-        self._lineas.append(f' {self._alg.upper()} '.center(90, '='))
+        self._lineas.append(f' ALGORITMO MEMETICO GENERACIONAL '.center(90, '='))
         self._lineas.append('='*90)
         self._lineas.append(f'Datos: {self._data.stem} | Seed: {seed} | Cruce: {self._cruce} | Población: {tampoblacion}')
         self._lineas.append(f'k_greedy: {k} | Aleatorios: {prcAleatorio}% | k_torneo: {kBest} | Cruce: {prcCruce}% | Mutación: {prcMutacion}%')
@@ -231,7 +230,7 @@ class Log():
     def generaLogs(self):
         carpetaActual = Path(__file__).parent
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"{self._alg}_{nombreDatos}_{self._seed}_{self._cruce}"
+        nombreArchivo = f"memetico_generacional_{nombreDatos}_{self._seed}_{self._cruce}"
         
         if self._numElites > 0:
             nombreArchivo += f"_E{self._numElites}"

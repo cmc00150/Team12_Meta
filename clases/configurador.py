@@ -29,6 +29,7 @@ class ConfigModel(BaseModel):
     iteracionesBL: list[Annotated[int, Field(gt=0)]] = Field(alias='ITERACIONES_BL')
     maxEvaluaciones: list[Annotated[int, Field(gt=0)]] = Field(alias='MAX_EVALUACIONES')
     maxSegundos: list[Annotated[int, Field(gt=0)]] = Field(alias='MAX_SEGUNDOS')
+    tenencia: list[supportedAlg] = Field(alias='TENENCIA')
 
     @model_validator(mode='after')
     def comprobaciones_post(self):

@@ -1,5 +1,5 @@
 from clases.poblacion import (PoblacionGEN, Extractor, Individuo)
-from clases.logs import LogGeneracional
+from clases.logs import Log
 from dataclasses import dataclass
 import time
 import random
@@ -22,7 +22,7 @@ class TabuData:
     evaluaciones: int
     iteracionesBL: int
 
-def evolutivo_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, log: LogGeneracional, maxSegundos: int):
+def evolutivo_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, log: Log, maxSegundos: int):
 
     TiempoInicio = time.time()
     TiempoFin = TiempoInicio + maxSegundos
