@@ -25,7 +25,7 @@ class SimbolosLog(str, Enum):
         return format(self.value, spec)
 
 class Log():
-    def __init__(self, data: FilePath, alg: Enum, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce: Enum, prcMutacion, kWorst, maxEvaluaciones, maxSegundos): 
+    def __init__(self, data, alg, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxIteracionesTabu, tenencia):
         self._data = data
         self._alg = alg.value
         self._seed = seed
@@ -39,6 +39,16 @@ class Log():
         self._kWorst = kWorst
         self._maxEvaluaciones = maxEvaluaciones
         self._maxSegundos = maxSegundos
+        self._numElites = numElites
+        self._poblacion_previa = {}  # {idx: costo} para comparar
+        # Acumuladores del ciclo actual
+        self._poblacion_seleccionada = []
+        self._parejas_cruce = []
+        self._indices_mutados = set()
+        # Parámetros BTABU
+        self._maxIteracionesTabu = maxIteracionesTabu
+        self._tenencia = tenencia
+        
         self._lineas = []
         
         # Estadísticas
@@ -52,7 +62,11 @@ class Log():
         self._lineas.append('='*90)
         self._lineas.append(f'Datos: {self._data.stem} | Seed: {seed} | Cruce: {self._cruce} | Población: {tampoblacion}')
         self._lineas.append(f'k_greedy: {k} | Aleatorios: {prcAleatorio}% | k_torneo: {kBest} | Cruce: {prcCruce}% | Mutación: {prcMutacion}%')
-        self._lineas.append(f'Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
+        if self._numElites > 0:
+            self._lineas.append(f'Élites: {numElites} | k_worst: {kWorst} | Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
+        else:
+            self._lineas.append(f'k_worst: {kWorst} | Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
+        self._lineas.append(f'Max iter. tabú: {maxIteracionesTabu} | Tenencia: {tenencia}')
         self._lineas.append('='*90)
         self._lineas.append('')
 
@@ -97,20 +111,6 @@ class Log():
         
         self._lineas.append('='*90)
 
-class LogGeneracional(Log):
-    def __init__(self, data, alg, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos):
-        super().__init__(data, alg, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
-        self._numElites = numElites
-        self._poblacion_previa = {}  # {idx: costo} para comparar
-        
-        # Acumuladores del ciclo actual
-        self._poblacion_seleccionada = []
-        self._parejas_cruce = []
-        self._indices_mutados = set()
-        
-        if self._numElites > 0:
-            self._lineas[4] += f' | Élites: {numElites}'
-    
     def iniciarCiclo(self, poblacion_seleccionada: list[Individuo]):
         """Inicia un nuevo ciclo guardando la población seleccionada"""
         self._poblacion_seleccionada = poblacion_seleccionada
@@ -237,105 +237,6 @@ class LogGeneracional(Log):
             nombreArchivo += f"_E{self._numElites}"
         
         nombreArchivo += f"_kBest{self._kBest}.txt"
-        ruta = carpetaActual.parent / 'logs' / nombreArchivo
-
-        with open(ruta, 'w', encoding='utf-8') as arch:
-            arch.write('\n'.join(self._lineas))
-
-class LogEstacionario(Log):
-    def __init__(self, data, alg, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos):
-        super().__init__(data, alg, seed, k, prcAleatorio, tampoblacion, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
-        self._ciclo_actual = 0
-        self._padres_actuales = []
-        self._hijos_actuales = []
-        self._mutaciones_actuales = []
-
-    def iniciarCiclo(self, padres: list[Individuo]):
-        """Inicia un nuevo ciclo guardando los padres seleccionados"""
-        self._ciclo_actual += 1
-        self._padres_actuales = padres
-        self._hijos_actuales = []
-        self._mutaciones_actuales = []
-        
-        # Registrar ciclo y padres en 2 líneas
-        self._lineas.append('')
-        self._lineas.append(f'{"─"*90}')
-        self._lineas.append(f'CICLO {self._ciclo_actual}')
-        
-        # Padres en una sola línea
-        padres_str = ' | '.join([
-            f'P{i+1}:{p.getCosto:.0f}' 
-            for i, p in enumerate(padres)
-        ])
-        self._lineas.append(f'{SimbolosLog.SELECCION} Padres: {padres_str}')
-
-    def registrarCruce(self, h1: Individuo, h2: Individuo):
-        """Registra el cruce y guarda los hijos"""
-        self._hijos_actuales.extend([h1, h2])
-        self._mutaciones_actuales.extend([False, False])  # Aún no mutados
-        self._total_cruces += 1
-
-    def registrarMutacion(self, idx_hijo: int):
-        """
-        Registra que un hijo mutó
-        idx_hijo: índice del hijo en la lista de hijos
-        """
-        if idx_hijo < len(self._mutaciones_actuales):
-            self._mutaciones_actuales[idx_hijo] = True
-            self._total_mutaciones += 1
-
-    def finalizarCruceMutacion(self):
-        """Registra los hijos después de cruce y mutación en 2 líneas"""
-        if not self._hijos_actuales:
-            return
-        
-        # Hijos en una línea
-        hijos_str = ' | '.join([
-            f'{"🧬" if self._mutaciones_actuales[i] else ""}H{i+1}:{h.getCosto:.0f}' 
-            for i, h in enumerate(self._hijos_actuales)
-        ])
-        self._lineas.append(f'{SimbolosLog.CRUCE} Hijos: {hijos_str}')
-
-    def registrarReemplazo(self, padres: list[Individuo]):
-        """
-        Registra el reemplazo en 1-2 líneas máximo
-        padres: Los padres originales del ciclo
-        """
-        if not self._hijos_actuales:
-            return
-        
-        # Reemplazos compactos
-        reemplazos = []
-        mejoras = empeoramientos = 0
-        
-        for i, hijo in enumerate(self._hijos_actuales):
-            if i < len(padres):
-                padre = padres[i]
-                diff = hijo.getCosto - padre.getCosto
-                
-                if diff < 0:
-                    simbolo = SimbolosLog.MEJORA
-                    mejoras += 1
-                elif diff > 0:
-                    simbolo = SimbolosLog.EMPEORA
-                    empeoramientos += 1
-                else:
-                    simbolo = '='
-                
-                reemplazos.append(f'P{i+1}→H{i+1}({diff:+.0f}{simbolo})')
-        
-        # Todo en una línea
-        reemplazos_str = ' | '.join(reemplazos)
-        self._lineas.append(f'{SimbolosLog.REEMPLAZO} {reemplazos_str}')
-        
-        # Resumen (opcional, solo si hay cambios)
-        if mejoras > 0 or empeoramientos > 0:
-            self._lineas.append(f'   → {SimbolosLog.MEJORA}{mejoras} | {SimbolosLog.EMPEORA}{empeoramientos}')
-
-    def generaLogs(self):
-        carpetaActual = Path(__file__).parent
-        nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"{self._alg}_{nombreDatos}_{self._seed}_{self._cruce}_kBest{self._kBest}.txt"
         ruta = carpetaActual.parent / 'logs' / nombreArchivo
 
         with open(ruta, 'w', encoding='utf-8') as arch:

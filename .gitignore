@@ -2,3 +2,8 @@
 clases/__pycache__/memoriaTabu.cpython-313.pyc
 logs/desktop.ini
 logs/graficos/desktop.ini
+logs/evolutivo_estacionario_ford01_12255133_MOC_kBest2.txt
+logs/evolutivo_estacionario_ford01_12255133_OX2_kBest2.txt
+logs/evolutivo_generacional_ford01_12255133_MOC_E1_kBest2.txt
+logs/evolutivo_generacional_ford01_12255133_OX2_E1_kBest2.txt
+.vscode/extensions.json
