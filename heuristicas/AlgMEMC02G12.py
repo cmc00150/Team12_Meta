@@ -62,11 +62,9 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
             idv2 = pobl_tmp[i+1]
 
             # -- CRUCE --
-            cruce = random.randint(0, 100) < gendata.prcCruce
-            mutacion1 = random.randint(0, 100) < gendata.prcMutacion
-            mutacion2 = random.randint(0, 100) < gendata.prcMutacion
+            cruzar = random.randint(0, 100) < gendata.prcCruce
 
-            if cruce: # Cae dentro de la probabilidad de cruce, los cruzamos                
+            if cruzar: # Cae dentro de la probabilidad de cruce, los cruzamos                
                 h1, h2 = Individuo.cruce(idv1, idv2, gendata.cruce)
                 log.registrarCruce(i, i+1)
 
@@ -74,25 +72,25 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
                 idv2 = pobl_tmp[i+1] = h2
 
             # -- MUTACIÓN INDIVIDUO 1 --
-            if mutacion1:
-                idv1.mutar(flujos, distancias) # Si no tiene costo (no cruzado) se evalua dentro.
+            if random.randint(0, 100) < gendata.prcMutacion:
+                idv1.mutar(flujos, distancias) # Si tiene costo (no se ha cruzado) se evalua dentro.
+                if not cruzar: # Como se ha evaluado en mutar sumamos
+                    if registrar_evaluacion(): break # Si al registrar se ha pasado el máximo paramos
                 log.registrarMutacion(i)
             # -- MUTACIÓN INDIVIDUO 2 --
-            if mutacion1:
+            if random.randint(0, 100) < gendata.prcMutacion:
                 idv2.mutar(flujos, distancias)
+                if not cruzar:
+                    if registrar_evaluacion(): break
                 log.registrarMutacion(i+1)
         
             # -- EVALUACIÓN --
-            if not idv1.getCosto: # Si no tiene costo es porque es un hijo, por lo que evaluamos
+            if cruzar: # Si se ha cruzado, entonces no tiene costo y no se ha evaluado en mutar
                 pobl_tmp[i].setCosto(flujos, distancias)
+                if registrar_evaluacion(): break
             
-            if not idv2.getCosto: 
+            if cruzar: 
                 pobl_tmp[i+1].setCosto(flujos, distancias)
-
-            if cruce or mutacion1:
-                if registrar_evaluacion(): break # Si al registrar se ha pasado el máximo paramos
-            
-            if cruce or mutacion2:
                 if registrar_evaluacion(): break          
         
         log.finalizarSeleccion()
