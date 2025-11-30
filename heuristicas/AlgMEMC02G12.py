@@ -83,7 +83,7 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
                 log.registrarMutacion(i+1)
         
             # -- EVALUACIÓN --
-            if not idv2.getCosto: # Si no tiene costo es porque es un hijo, por lo que evaluamos
+            if not idv1.getCosto: # Si no tiene costo es porque es un hijo, por lo que evaluamos
                 pobl_tmp[i].setCosto(flujos, distancias)
             
             if not idv2.getCosto: 
