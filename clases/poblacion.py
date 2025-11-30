@@ -13,7 +13,6 @@ class Poblacion:
         self.__elites: SortedKeyList = []
         # Lista ordenada de élites: tupla de (copia, indice). Se ordena por el costo de la copia
         self.__numElites = numElites
-        self._guardarElites()
 
         # -- INICIALIZACIÓN --
         # GENERACIÓN Y EVALUACIÓN DE LA POBLACIÓN
@@ -36,6 +35,15 @@ class Poblacion:
     
     def __iter__(self):
         return iter(self._individuos)
+    
+    def _guardarElites(self):
+        elites = []
+        ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
+        for n in range(self.__numElites): # Nos quedamos con los n primeros
+            idx = ordenados.pop(n)                
+            elites.append((deepcopy(self._individuos[idx]), idx))
+
+        self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
 
     def seleccion(self, kBest) -> list[Individuo]:
         # ACTUALIAZAMOS LOS ELITES DE LA NUEVA GENERACIÓN
@@ -54,7 +62,7 @@ class Poblacion:
         # REVISIÓN ÉLITES
         for i in range(len(self.__elites)):
             copia, idx = self.__elites[i]
-            if copia is not self._individuos[idx]: # Entonces es porque hemos perdido a ese élite
+            if copia.id != self._individuos[idx].id: # Entonces es porque hemos perdido a ese élite
                 # Cogemos aleatoriamente a varios ind. para escoger el peor de ellos
                 torneo = random.sample(range(self._tamPoblacion), k=kworst) # Cogemos aleatoriamente índices
                 idx_perdedor = max(torneo, key=lambda idx: self._individuos[idx].getCosto) # Gana el indice del individuo con el peor costo
@@ -64,24 +72,19 @@ class Poblacion:
 
                 self._individuos[idx_perdedor] = copia # Actualizamos el valor en la población
     
-    def busquedaTabu(self, flujos, distancias, maxIteracionesBL: int, tenencia: int):
-        mejor: Individuo = self.__elites[0][0]
+    def busquedaTabu(self, flujos, distancias, maxIteracionesBL: int, tenencia: int, log):
+        mejor, idx = self.__elites[0]
 
-        nuevo_mejor = busqueda_tabu(flujos, distancias, mejor.getPermutacion, mejor.getCosto, maxIteracionesBL, tenencia, None)
-        self.__elites.
+        nuevo_mejor = busqueda_tabu(flujos, distancias, mejor.getPermutacion, mejor.getCosto, maxIteracionesBL, tenencia, log)
+        ind = Individuo(nuevo_mejor[0], nuevo_mejor[1], mejor.getGeneracion)
+
+        self._individuos[idx] = ind # Sustituimos en la población
+        self.__elites.pop(0) # Sustituimos en los élites
+        self.__elites.add((deepcopy(ind), idx))
         
     
     def getMejor(self) -> Individuo:
         raise NotImplementedError("Método getMejor no implementado en la clase Población")
-    
-    def _guardarElites(self):
-        elites = []
-        ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
-        for n in range(self.__numElites): # Nos quedamos con los n primeros
-            idx = ordenados.pop(n)                
-            elites.append((deepcopy(self._individuos[idx]), idx))
-
-        self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
 
     @property
     def getIndividuos(self) -> list[Individuo]:

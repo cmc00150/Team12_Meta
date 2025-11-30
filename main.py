@@ -39,12 +39,12 @@ for ((ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites,
      kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, iteracionesBL, evaluaciones, tenencia) in combinaciones:
 
     random.seed(seed)
-    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos)
+    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxEvaluaciones, tenencia)
     if(prcAleatorio <= 0):
         error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
 
     genData = GenData(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst)
-    tabuData = TabuData(evaluaciones, iteracionesBL)
+    tabuData = TabuData(evaluaciones, iteracionesBL, tenencia)
     memetico_generacional(genData, tabuData, data, log, maxSegundos)
     log.generaLogs()
 

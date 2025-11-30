@@ -1,14 +1,18 @@
 import random
-from modulos.func_auxiliares import (costo, aleatorio, greedy_aleatorizado, dos_opt, fact)
+from modulos.func_auxiliares import (costo, dos_opt, fact)
 
 class Individuo:
-    def __init__(self, permutacion=[], costo=None, generacion=1, cruzado=False):
+    _id_individuo = 0
+
+    def __init__(self, permutacion=[], costo=None, generacion=1):
         self.__permutacion: list[int] = permutacion
         self.__costo = costo
         self.__generacion = generacion
+        self._id = Individuo._id_individuo
+        Individuo._id_individuo += 1
 
     @staticmethod
-    def cruce(padre1: "Individuo", padre2: "Individuo", cruce: str, flujos: list[list[int]], distancias: list[list[int]]) -> tuple["Individuo", "Individuo"]:
+    def cruce(padre1: "Individuo", padre2: "Individuo", cruce: str) -> tuple["Individuo", "Individuo"]:
         tam = len(padre1.getPermutacion)
         p1 = padre1.getPermutacion
         p2 = padre2.getPermutacion
@@ -61,15 +65,20 @@ class Individuo:
         # 2. Selecciono los genes a mutar
         posiciones = random.sample(range(len(perm)), k=2) # Cojo dos posiciones de esta permutación
         if self.__costo: # Si tiene costo es porque no es un hijo. No se ha cruzado
-            fact(posiciones[0], posiciones[1], perm, flujos, distancias)
+            delta = fact(posiciones[0], posiciones[1], perm, flujos, distancias)
+            self.__costo += delta
         # 4. Le hago la mutación
         dos_opt(self.__permutacion, posiciones[0], posiciones[1]) # Los intercambio
         return posiciones # Devuelvo las posiciones intercambiadas para los logs
 
     @property
+    def id(self):
+        return self._id
+
+    @property
     def getPermutacion(self) -> list[int]:
         return (self.__permutacion)
-    
+
     @property
     def getCosto(self):
         return (self.__costo)    

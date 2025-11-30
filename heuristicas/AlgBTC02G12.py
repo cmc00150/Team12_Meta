@@ -26,26 +26,27 @@ class MemTabu:
   def reiniciar_corto_plazo(self):
     self.__corta.clear()
 
-def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, log: Log) -> tuple [list[int], float]:
+def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, log: Log) -> tuple [list[int], int]:
+    solActual = solInicial[:]
 
     i = 0                                                       # Posición inicial a investigar en la permutación
     it=0                                                        # Número de soluciones a las que nos movemos (iterador)
-    mejor_global = solInicial.copy()                            # Mejor movimiento hasta ahora
+    mejor_global = solActual.copy()                            # Mejor movimiento hasta ahora
     mejora_global = costoInicial                                # Empezamos con el costo inicial
     coste_actual = costoInicial                                 # Costo de las soluciones hacia las que nos movemos
     mejor_peores = ()
     mejora_peores = maxsize
     mem = MemTabu(tenencia=tenencia)         # Inicialización de la memoria tabú
-    factible = [0] * len(solInicial)                            # Inicializamos el vector de factibles
-    n_factibles=len(solInicial)                                 # Número de unidades factibles
+    factible = [0] * len(solActual)                            # Inicializamos el vector de factibles
+    n_factibles=len(solActual)                                 # Número de unidades factibles
 
     while it <= maxIteraciones:
       if factible[i] == 0:                                    # Si i tiene posibilidad de mejora buscamos con explorar_vecinos()
         mejor_local = ()
         mejora_local = maxsize
-        for j in range(i+1, len(solInicial)+i):                 # Revisamos las posibles combinaciones
-          j = j % len(solInicial)                                 # Hacemos el modulo para que no se pase
-          mejora = fact(i, j, solInicial, flujos, distancias)     # Miramos si mejora esta combinacion
+        for j in range(i+1, len(solActual)+i):                 # Revisamos las posibles combinaciones
+          j = j % len(solActual)                                 # Hacemos el modulo para que no se pase
+          mejora = fact(i, j, solActual, flujos, distancias)     # Miramos si mejora esta combinacion
 
           if mem.tabu(i,j) and mejora + coste_actual >= mejora_global: # SI es tabu y no mejora la puntuación global lo omitimos
               continue
@@ -55,18 +56,19 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
               mejor_local = (i,j)
         
         if coste_actual + mejora_local < coste_actual:         # SI el mejor de los vecinos mejora el valor actual nos movemos a él
-          dos_opt(solInicial, mejor_local[0], mejor_local[1])                               # Hacemos el intercambio
+          dos_opt(solActual, mejor_local[0], mejor_local[1])                               # Hacemos el intercambio
           if factible[mejor_local[1]] == 1:                                    # SI hemos recuperado un no factible, ahora tenemos uno más
               n_factibles += 1
           factible[mejor_local[0]] = factible[mejor_local[1]] = 0                           # Indicamos que por estas dos unidades se puede seguir buscando
           coste_actual += mejora_local
 
           if coste_actual < mejora_global:
-              mejor_global = solInicial.copy()
+              mejor_global = solActual[:]
               mejora_global = coste_actual                       # Actualizamos la mejora
 
           mem.push(i, j)                              # La añadimos a la memoria tabú (si ya estaba se elimina y se vuelve a insertar automáticamente)
           it+=1
+          log.registraCambioBTabu(i,j,solActual,coste_actual,mejora_global,it)
           mejor_peores = ()
           mejora_peores = maxsize
         else:                                                   # SI no se ha encontrado ninguna que mejora
@@ -77,20 +79,17 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
             mejora_peores = mejora_local                            # Guardamos su mejora también
 
       if n_factibles == 0:                                    # SI no nos quedan más unidades factibles
-        factible = [0] * len(solInicial)                        # Reiniciamos el vector de posiciones factibles
-        n_factibles = len(solInicial)
+        factible = [0] * len(solActual)                        # Reiniciamos el vector de posiciones factibles
+        n_factibles = len(solActual)
         k, l = mejor_peores                                     # Sacamos el intercambio del mejor de los vecinos encontrados hasta ahora
-        dos_opt(solInicial, k, l)                               # Nos movemos a este vecino (aunque no mejore la global)
+        dos_opt(solActual, k, l)                               # Nos movemos a este vecino (aunque no mejore la global)
         mem.push(k, l)                                          # Como nos hemos movido, insertamos la solución
         coste_actual+= mejora_peores
         mejor_peores = ()
         mejora_peores = maxsize
         it+=1
+        log.registraCambioBTabu(i,j,solActual,coste_actual,mejora_global,it)
       
-      log.registraCambioBTabu(i,j,solInicial,coste_actual,mejora_global,it)
-      i=(i+1)%len(solInicial)                                         # Pasamos al siguiente elemento
+      i=(i+1)%len(solActual)                                         # Pasamos al siguiente elemento
 
-      if it == maxIteraciones:
-        break
-
-    return mejor_global                                     # Permutación solución + tiempo de ejecución
+    return (mejor_global, mejora_global)     # Permutación solución + tiempo de ejecución

@@ -1,7 +1,9 @@
 from pathlib import Path
-from clases.poblacion import (Individuo, Poblacion)
 from enum import Enum
-from pydantic import FilePath
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from clases.poblacion import (Individuo, Poblacion)
 
 class SimbolosLog(str, Enum):
     MEJORA = '📈'
@@ -69,7 +71,7 @@ class Log():
         self._lineas.append('='*90)
         self._lineas.append('')
 
-    def registrarPoblacionInicial(self, poblacion: Poblacion):
+    def registrarPoblacionInicial(self, poblacion: 'Poblacion'):
         """Registra la población inicial"""
         indvs = poblacion.getIndividuos
         
@@ -90,7 +92,7 @@ class Log():
         self._lineas.append(f'   → Mejor: {mejor:.0f} | Promedio: {promedio:.0f} | Peor: {peor:.0f}')
         self._lineas.append('='*90)
 
-    def registrarSolucion(self, solucion: tuple[Individuo, float], evaluaciones: int):
+    def registrarSolucion(self, solucion: tuple['Individuo', float], evaluaciones: int):
         """Registra la solución final"""
         individuo, tiempo = solucion
         
@@ -110,7 +112,7 @@ class Log():
         
         self._lineas.append('='*90)
 
-    def iniciarCiclo(self, poblacion_seleccionada: list[Individuo]):
+    def iniciarCiclo(self, poblacion_seleccionada: list['Individuo']):
         """Inicia un nuevo ciclo guardando la población seleccionada"""
         self._poblacion_seleccionada = poblacion_seleccionada
         self._parejas_cruce = []
@@ -162,13 +164,14 @@ class Log():
             
             perm_str = str([x+1 for x in ind.getPermutacion][:6])[:-1] + '...]'
             
+            ind_costo = 'None' if not ind.getCosto else f'{ind.getCosto:>6.0f}'
             # Formato con alineación generosa
-            self._lineas.append(f'{marca_mut}{marca_cruce}  [{i:3d}]  {perm_str:30s}  |  {ind.getCosto:>6.0f}  |  Gen: {ind.getGeneracion:>2d}')
+            self._lineas.append(f'{marca_mut}{marca_cruce}  [{i:3d}]  {perm_str:30s}  |  {ind_costo}  |  Gen: {ind.getGeneracion:>2d}')
         
         # Resumen
         self._lineas.append(f'   → {len(self._parejas_cruce)} cruces | {len(self._indices_mutados)} mutaciones')
     
-    def registrarGeneracion(self, poblacion: Poblacion, numGeneracion: int, evaluaciones: int):
+    def registrarGeneracion(self, poblacion: 'Poblacion', numGeneracion: int, evaluaciones: int):
         """Registra estadísticas de la generación"""
         indvs = poblacion.getIndividuos
         elites = poblacion.getElites if hasattr(poblacion, 'getElites') else []
@@ -181,7 +184,7 @@ class Log():
         self._lineas.append('')
         
         # Estadísticas de la generación
-        costos = [ind.getCosto for ind in indvs]
+        costos = [ind.getCosto if ind.getCosto is not None else float('inf') for ind in indvs]
         mejor = min(costos)
         peor = max(costos)
         promedio = sum(costos) / len(costos)
@@ -197,7 +200,7 @@ class Log():
         
         self._lineas.append(f'{"="*90}')
 
-    def registrarReemplazo(self, poblacion_nueva: list[Individuo]):
+    def registrarReemplazo(self, poblacion_nueva: list['Individuo']):
         """Registra el reemplazo comparando con población previa"""
         self._lineas.append('')
         self._lineas.append(f'{SimbolosLog.REEMPLAZO} REEMPLAZO:')
@@ -205,6 +208,10 @@ class Log():
         mejoras = empeoramientos = sin_cambios = 0
         
         for i, ind in enumerate(poblacion_nueva):
+            if ind.getCosto is None:
+                self._lineas.append(f'   [{i:3d}]  ERROR: INDIVIDUO SIN EVALUAR')
+                continue
+
             costo_nuevo = ind.getCosto
             costo_prev = self._poblacion_previa.get(i, costo_nuevo)
             diff = costo_nuevo - costo_prev
@@ -240,3 +247,9 @@ class Log():
 
         with open(ruta, 'w', encoding='utf-8') as arch:
             arch.write('\n'.join(self._lineas))
+
+    def registraCambioBTabu(self, posi, posj, nuevasol, nuevoCoste, mejorCoste, iteracion):
+        self._lineas.append(f'\tIteración {iteracion}: cambia el par ({nuevasol[posi]+1},{nuevasol[posj]+1})\n')
+        self._lineas.append(f'\tAsignación: {[elem+1 for elem in nuevasol]}\n'      )
+        self._lineas.append(f'\tCosto: {nuevoCoste}\n')
+        self._lineas.append(f'\tMejor costo global: {mejorCoste}\n\n')

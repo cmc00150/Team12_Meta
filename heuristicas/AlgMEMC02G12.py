@@ -1,4 +1,4 @@
-from clases.poblacion import (PoblacionGEN, Extractor, Individuo)
+from clases.poblacion import (Poblacion, Extractor, Individuo)
 from clases.logs import Log
 from dataclasses import dataclass
 import time
@@ -21,6 +21,7 @@ class GenData:
 class TabuData:
     evaluaciones: int
     iteracionesBL: int
+    tenencia: int
 
 def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, log: Log, maxSegundos: int):
 
@@ -28,14 +29,14 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
     TiempoFin = TiempoInicio + maxSegundos
     
     # -- GENERACIÓN Y EVALUACIÓN --
-    poblacion = PoblacionGEN(gendata.numElites, gendata.tamPoblacion, gendata.prcAleatorio, gendata.k, data)
+    poblacion = Poblacion(gendata.tamPoblacion, gendata.prcAleatorio, gendata.k, gendata.numElites, data)
     numGeneracion = 1
     ev = len(poblacion) # Contamos las evaluaciones al inicializar los individuos
     # Cacheamos las estructuras para mas eficiencia
     flujos = data.flujos
     distancias = data.distancias
     log.registrarPoblacionInicial(poblacion)
-    #log.registrarGeneracion(poblacion,1, numGeneracion)
+    log.registrarGeneracion(poblacion,1, numGeneracion)
 
     while(ev < gendata.maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
@@ -49,7 +50,7 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
 
             # -- CRUCE --
             if random.randint(0, 100) < gendata.prcCruce: # Cae dentro de la probabilidad de cruce, los cruzamos                
-                h1, h2 = Individuo.cruce(idv1, idv2, gendata.cruce, flujos, distancias)
+                h1, h2 = Individuo.cruce(idv1, idv2, gendata.cruce)
                 log.registrarCruce(i, i+1)
 
                 idv1 = pobl_tmp[i] = h1
@@ -67,19 +68,24 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
                 log.registrarMutacion(i+1)
         
             # -- EVALUACIÓN --
-            if not idv1.getCosto: pobl_tmp[i].setCosto(flujos, distancias); ev+=1 # Si no tiene costo es porque es un hijo, por lo que evaluamos
-            if ev == tabuData.evaluaciones:
-                poblacion.getMejor() = (tabuData.iteracionesBL, flujos, distancias, log, TiempoInicio, TiempoFin, gendata.maxEvaluaciones, ev)
-            elif ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
-                break;
-            if not idv2.getCosto: pobl_tmp[i+1].setCosto(flujos, distancias); ev+=1
-            if ev == tabuData.evaluaciones:
-                idv2.tabuSearch(tabuData.iteracionesBL, flujos, distancias, log, TiempoInicio, TiempoFin, gendata.maxEvaluaciones, ev)
-            elif ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
-                break;
 
-        if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
-            break;
+            if not idv1.getCosto: 
+                pobl_tmp[i].setCosto(flujos, distancias)
+                ev+=1 # Si no tiene costo es porque es un hijo, por lo que evaluamos
+
+            if ev % tabuData.evaluaciones == 0 : # Si ha llegado a las evaluaciones, buscamos con la tabu sobre el élite
+                poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
+            if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin: # Si ha llegado al límite de ev, nos salimos
+                break;
+            
+            if not idv2.getCosto: 
+                pobl_tmp[i+1].setCosto(flujos, distancias)
+                ev+=1
+
+            if ev % tabuData.evaluaciones == 0:
+                poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
+            if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+                break;
         
         log.finalizarSeleccion()
         log.registrarReemplazo(pobl_tmp)
