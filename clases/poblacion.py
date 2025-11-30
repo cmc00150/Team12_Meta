@@ -1,14 +1,19 @@
 from clases.individuo import Individuo
 from modulos.func_auxiliares import (costo, aleatorio, greedy_aleatorizado)
+from heuristicas.AlgBTC02G12 import busqueda_tabu
 from clases.extractor import Extractor
 from copy import deepcopy
 from sortedcontainers import SortedKeyList
 import random
 
 class Poblacion:
-    def __init__(self, tamPoblacion: int, prcAleatorio: int, k: int, data: Extractor):
+    def __init__(self, tamPoblacion: int, prcAleatorio: int, k: int, numElites, data: Extractor):
         self._tamPoblacion = tamPoblacion
         self._individuos: list[Individuo] = []
+        self.__elites: SortedKeyList = []
+        # Lista ordenada de élites: tupla de (copia, indice). Se ordena por el costo de la copia
+        self.__numElites = numElites
+        self._guardarElites()
 
         # -- INICIALIZACIÓN --
         # GENERACIÓN Y EVALUACIÓN DE LA POBLACIÓN
@@ -31,40 +36,6 @@ class Poblacion:
     
     def __iter__(self):
         return iter(self._individuos)
-
-    def seleccion(self):
-        raise NotImplementedError("Método seleccion no implementado en la clase Población")
-
-    def reemplazo(self):
-        raise NotImplementedError("Método reemplazo no implementado en la clase Población")
-    
-    def getMejor(self) -> Individuo:
-        raise NotImplementedError("Método getMejor no implementado en la clase Población")
-
-    @property
-    def getIndividuos(self) -> list[Individuo]:
-        return self._individuos
-    
-    @property
-    def getTamPoblacion(self) -> int:
-        return self._tamPoblacion
-
-class PoblacionGEN(Poblacion):
-    def __init__(self, numElites, tamPoblacion, prcAleatorio, k, data):
-        super().__init__(tamPoblacion, prcAleatorio, k, data)
-        self.__elites: SortedKeyList = []
-        # Lista ordenada de élites: tupla de (copia, indice). Se ordena por el costo de la copia
-        self.__numElites = numElites
-        self._guardarElites()
-
-    def _guardarElites(self):
-        elites = []
-        ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
-        for n in range(self.__numElites): # Nos quedamos con los n primeros
-            idx = ordenados.pop(n)                
-            elites.append((deepcopy(self._individuos[idx]), idx))
-
-        self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
 
     def seleccion(self, kBest) -> list[Individuo]:
         # ACTUALIAZAMOS LOS ELITES DE LA NUEVA GENERACIÓN
@@ -93,6 +64,33 @@ class PoblacionGEN(Poblacion):
 
                 self._individuos[idx_perdedor] = copia # Actualizamos el valor en la población
     
+    def busquedaTabu(self, flujos, distancias, maxIteracionesBL: int, tenencia: int):
+        mejor: Individuo = self.__elites[0][0]
+
+        nuevo_mejor = busqueda_tabu(flujos, distancias, mejor.getPermutacion, mejor.getCosto, maxIteracionesBL, tenencia, None)
+        self.__elites.
+        
+    
+    def getMejor(self) -> Individuo:
+        raise NotImplementedError("Método getMejor no implementado en la clase Población")
+    
+    def _guardarElites(self):
+        elites = []
+        ordenados = sorted(range(self._tamPoblacion), key=lambda idx: self._individuos[idx].getCosto) # Ordenamos según el costo (menor a mayor)
+        for n in range(self.__numElites): # Nos quedamos con los n primeros
+            idx = ordenados.pop(n)                
+            elites.append((deepcopy(self._individuos[idx]), idx))
+
+        self.__elites = SortedKeyList(elites, key=lambda ind_tuple: ind_tuple[0].getCosto)
+
+    @property
+    def getIndividuos(self) -> list[Individuo]:
+        return self._individuos
+    
+    @property
+    def getTamPoblacion(self) -> int:
+        return self._tamPoblacion
+    
     @property
     def getElites(self) -> list[tuple[Individuo, int]]:
         return self.__elites
@@ -100,28 +98,3 @@ class PoblacionGEN(Poblacion):
     @property
     def getMejor(self) -> Individuo:
         return min(self.__elites, key=lambda t: t[0].getCosto)[0] # Devuelvo la copia del élite
-
-class PoblacionEST(Poblacion):
-    def __init__(self, tamPoblacion, prcAleatorio, k, data):
-        super().__init__(tamPoblacion, prcAleatorio, k, data)
-
-    def seleccion(self, kBest, numPadres) -> list[Individuo]:
-        # KBEST TORNEO
-        ganadores = []
-
-        for _ in range(numPadres):
-            # SIN REEMPLAZO para diversificar
-            torneo = random.sample(self._individuos, k=kBest) # Cogemos aleatoriamente a los kBest
-            ganadores.append(min(torneo, key=lambda i: i.getCosto)) # Gana el que menor coste tenga
-        
-        return ganadores
-    
-    def reemplazo(self, kworst:int , individuo: Individuo):
-        torneo = random.sample(range(self._tamPoblacion), k=kworst)
-        idx_perdedor = min(torneo, key=lambda idx: self._individuos[idx].getCosto)
-
-        self._individuos[idx_perdedor] = individuo
-        
-    @property
-    def getMejor(self) -> Individuo:
-        return min(self._individuos, key=lambda i: i.getCosto) # Devuelve el mejor encontrado

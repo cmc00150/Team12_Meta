@@ -85,7 +85,7 @@ class MemTabu:
             
     return perm
 
-def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, oscilacion: float, estancamiento: float, logBusqueda: Log) -> tuple [list[int], float]:
+def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInicial:list[int], costoInicial: int, maxIteraciones: int, tenencia: int, logBusqueda: Log) -> tuple [list[int], float]:
     inicio = time.time()
 
     i = 0                                                       # Posición inicial a investigar en la permutación

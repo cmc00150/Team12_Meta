@@ -60,24 +60,24 @@ def evolutivo_generacional(gendata: GenData, tabuData: TabuData,data: Extractor,
                 if idv1.getCosto: ev+=1 # Si tiene coste es porque no se ha cruzado, contabiliza el fact() de dentro de mutar()
                 idv1.mutar(flujos, distancias)
                 log.registrarMutacion(i)
-                if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
-                    break;
             # -- MUTACIÓN INDIVIDUO 2 --
             if random.randint(0, 100) < gendata.prcMutacion:
                 if idv2.getCosto: ev+=1 # Si tiene coste es porque no se ha cruzado
                 idv2.mutar(flujos, distancias)
                 log.registrarMutacion(i+1)
-                if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
-                    break;
         
             # -- EVALUACIÓN --
             if not idv1.getCosto: pobl_tmp[i].setCosto(flujos, distancias); ev+=1 # Si no tiene costo es porque es un hijo, por lo que evaluamos
-            if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+            if ev == tabuData.evaluaciones:
+                poblacion.getMejor() = (tabuData.iteracionesBL, flujos, distancias, log, TiempoInicio, TiempoFin, gendata.maxEvaluaciones, ev)
+            elif ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
                 break;
             if not idv2.getCosto: pobl_tmp[i+1].setCosto(flujos, distancias); ev+=1
-            if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
+            if ev == tabuData.evaluaciones:
+                idv2.tabuSearch(tabuData.iteracionesBL, flujos, distancias, log, TiempoInicio, TiempoFin, gendata.maxEvaluaciones, ev)
+            elif ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
                 break;
-        
+
         if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
             break;
         
