@@ -38,6 +38,19 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
     log.registrarPoblacionInicial(poblacion)
     log.registrarGeneracion(poblacion,1, numGeneracion)
 
+    # --- FUNCIÓN AUXILIAR PARA GESTIONAR EVALUACIONES ---
+    def registrar_evaluacion():
+        nonlocal ev # Permite modificar la variable 'ev' de la función padre
+        ev += 1
+        
+        # 1. Chequeo de Tabú
+        if ev % tabuData.evaluaciones == 0:
+            poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
+        
+        # 2. Chequeo de Parada (devuelve True si hay que parar)
+        return ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin
+    # ----------------------------------------------------
+
     while(ev < gendata.maxEvaluaciones and time.time() < TiempoFin):
         # -- SELECCIÓN --
         pobl_tmp = poblacion.seleccion(gendata.kBest)
@@ -49,7 +62,11 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
             idv2 = pobl_tmp[i+1]
 
             # -- CRUCE --
-            if random.randint(0, 100) < gendata.prcCruce: # Cae dentro de la probabilidad de cruce, los cruzamos                
+            cruce = random.randint(0, 100) < gendata.prcCruce
+            mutacion1 = random.randint(0, 100) < gendata.prcMutacion
+            mutacion2 = random.randint(0, 100) < gendata.prcMutacion
+
+            if cruce: # Cae dentro de la probabilidad de cruce, los cruzamos                
                 h1, h2 = Individuo.cruce(idv1, idv2, gendata.cruce)
                 log.registrarCruce(i, i+1)
 
@@ -57,35 +74,26 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
                 idv2 = pobl_tmp[i+1] = h2
 
             # -- MUTACIÓN INDIVIDUO 1 --
-            if random.randint(0, 100) < gendata.prcMutacion:
-                if idv1.getCosto: ev+=1 # Si tiene coste es porque no se ha cruzado, contabiliza el fact() de dentro de mutar()
-                idv1.mutar(flujos, distancias)
+            if mutacion1:
+                idv1.mutar(flujos, distancias) # Si no tiene costo (no cruzado) se evalua dentro.
                 log.registrarMutacion(i)
             # -- MUTACIÓN INDIVIDUO 2 --
-            if random.randint(0, 100) < gendata.prcMutacion:
-                if idv2.getCosto: ev+=1 # Si tiene coste es porque no se ha cruzado
+            if mutacion1:
                 idv2.mutar(flujos, distancias)
                 log.registrarMutacion(i+1)
         
             # -- EVALUACIÓN --
-
-            if not idv1.getCosto: 
+            if not idv2.getCosto: # Si no tiene costo es porque es un hijo, por lo que evaluamos
                 pobl_tmp[i].setCosto(flujos, distancias)
-                ev+=1 # Si no tiene costo es porque es un hijo, por lo que evaluamos
-
-            if ev % tabuData.evaluaciones == 0 : # Si ha llegado a las evaluaciones, buscamos con la tabu sobre el élite
-                poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
-            if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin: # Si ha llegado al límite de ev, nos salimos
-                break;
             
             if not idv2.getCosto: 
                 pobl_tmp[i+1].setCosto(flujos, distancias)
-                ev+=1
 
-            if ev % tabuData.evaluaciones == 0:
-                poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
-            if ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin:
-                break;
+            if cruce or mutacion1:
+                if registrar_evaluacion(): break # Si al registrar se ha pasado el máximo paramos
+            
+            if cruce or mutacion2:
+                if registrar_evaluacion(): break          
         
         log.finalizarSeleccion()
         log.registrarReemplazo(pobl_tmp)
