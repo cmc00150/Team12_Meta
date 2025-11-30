@@ -74,15 +74,17 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
             # -- MUTACIÓN INDIVIDUO 1 --
             if random.randint(0, 100) < gendata.prcMutacion:
                 idv1.mutar(flujos, distancias) # Si tiene costo (no se ha cruzado) se evalua dentro.
+                log.registrarMutacion(i)
+
                 if not cruzar: # Como se ha evaluado en mutar sumamos
                     if registrar_evaluacion(): break # Si al registrar se ha pasado el máximo paramos
-                log.registrarMutacion(i)
             # -- MUTACIÓN INDIVIDUO 2 --
             if random.randint(0, 100) < gendata.prcMutacion:
                 idv2.mutar(flujos, distancias)
+                log.registrarMutacion(i+1)
+
                 if not cruzar:
                     if registrar_evaluacion(): break
-                log.registrarMutacion(i+1)
         
             # -- EVALUACIÓN --
             if cruzar: # Si se ha cruzado, entonces no tiene costo y no se ha evaluado en mutar
