@@ -22,7 +22,7 @@ class TabuData:
     evaluaciones: int
     iteracionesBL: int
 
-def evolutivo_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, log: Log, maxSegundos: int):
+def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, log: Log, maxSegundos: int):
 
     TiempoInicio = time.time()
     TiempoFin = TiempoInicio + maxSegundos
