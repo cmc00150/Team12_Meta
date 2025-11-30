@@ -83,9 +83,6 @@ class Poblacion:
         self.__elites.add((deepcopy(ind), idx))
         
     
-    def getMejor(self) -> Individuo:
-        raise NotImplementedError("Método getMejor no implementado en la clase Población")
-
     @property
     def getIndividuos(self) -> list[Individuo]:
         return self._individuos

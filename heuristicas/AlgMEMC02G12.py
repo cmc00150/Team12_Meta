@@ -36,7 +36,7 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
     flujos = data.flujos
     distancias = data.distancias
     log.registrarPoblacionInicial(poblacion)
-    log.registrarGeneracion(poblacion,1, numGeneracion)
+    log.registrarGeneracion(poblacion,1, ev)
 
     # --- FUNCIÓN AUXILIAR PARA GESTIONAR EVALUACIONES ---
     def registrar_evaluacion():
@@ -44,11 +44,11 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
         ev += 1
         
         # 1. Chequeo de Tabú
-        if ev % tabuData.evaluaciones == 0:
-            poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
+        #if ev % tabuData.evaluaciones == 0:
+         #   poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
         
         # 2. Chequeo de Parada (devuelve True si hay que parar)
-        return ev >= gendata.maxEvaluaciones or time.time() - TiempoInicio >= TiempoFin
+        return ev >= gendata.maxEvaluaciones or time.time() >= TiempoFin
     # ----------------------------------------------------
 
     while(ev < gendata.maxEvaluaciones and time.time() < TiempoFin):
