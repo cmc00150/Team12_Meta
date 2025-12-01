@@ -341,7 +341,7 @@ def crear_hoja_resumen(ws, nombre_configuracion, grupo_datos, carpeta_datos='Dat
             cell.border = thin_border
             cell.alignment = Alignment(horizontal='center', vertical='center')
 
-def generar_excel(carpeta_logs='Logs', carpeta_datos='Datos', archivo_salida='resumen.xlsx'):
+def generar_excel(carpeta_logs='logs', carpeta_datos='Datos', archivo_salida='resumen.xlsx'):
     """Genera el archivo Excel con todas las tablas resumen"""
     
     # Agrupar archivos
@@ -384,7 +384,7 @@ def generar_excel(carpeta_logs='Logs', carpeta_datos='Datos', archivo_salida='re
 # Ejecutar
 if __name__ == "__main__":
     generar_excel(
-        carpeta_logs='Logs',
-        carpeta_datos='Datos',
+        carpeta_logs='logs',
+        carpeta_datos='datos',
         archivo_salida='resumen_experimentos.xlsx'
     )
