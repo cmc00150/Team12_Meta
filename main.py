@@ -39,7 +39,7 @@ for ((ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites,
      kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, iteracionesBL, evaluaciones, tenencia) in combinaciones:
 
     random.seed(seed)
-    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxEvaluaciones, tenencia)
+    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxEvaluaciones, tenencia, iteracionesBL, evaluaciones)
     if(prcAleatorio <= 0):
         error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
 

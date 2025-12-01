@@ -27,7 +27,7 @@ class SimbolosLog(str, Enum):
         return format(self.value, spec)
 
 class Log():
-    def __init__(self, data, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxIteracionesTabu, tenencia):
+    def __init__(self, data, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxIteracionesTabu, tenencia, iteracionesBL, evaluacionesTabu):
         self._data = data
         self._seed = seed
         self._k = k
@@ -42,6 +42,8 @@ class Log():
         self._maxSegundos = maxSegundos
         self._numElites = numElites
         self._poblacion_previa = {}  # {idx: costo} para comparar
+        self._iteracionesBL = iteracionesBL
+        self._evaluacionesTabu = evaluacionesTabu
         # Acumuladores del ciclo actual
         self._poblacion_seleccionada = []
         self._parejas_cruce = []
@@ -237,7 +239,7 @@ class Log():
     def generaLogs(self):
         carpetaActual = Path(__file__).parent
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"memetico_generacional_{nombreDatos}_{self._seed}_{self._cruce}"
+        nombreArchivo = f"MEMGEN_{nombreDatos}_S{self._seed}_{self._cruce}_I{self._iteracionesBL}_E{self._evaluacionesTabu}"
         
         if self._numElites > 0:
             nombreArchivo += f"_E{self._numElites}"
