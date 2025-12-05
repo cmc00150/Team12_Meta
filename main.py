@@ -30,21 +30,21 @@ combinaciones = product(
     config.kWorst,
     config.maxEvaluaciones,
     config.maxSegundos,
-    config.iteracionesBL,
-    config.evaluaciones,
+    config.profundidadBT,
+    config.evaluaciones_BT,
     config.tenencia
 )
 
 for ((ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites, 
-     kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, iteracionesBL, evaluaciones, tenencia) in combinaciones:
+     kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, profundidadBT, evaluaciones_BT, tenencia) in combinaciones:
 
     random.seed(seed)
-    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxEvaluaciones, tenencia, iteracionesBL, evaluaciones)
+    log = Log(ruta_data, seed, k, prcAleatorio, tamPoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, profundidadBT, evaluaciones_BT, tenencia)
     if(prcAleatorio <= 0):
         error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
 
     genData = GenData(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst)
-    tabuData = TabuData(evaluaciones, iteracionesBL, tenencia)
+    tabuData = TabuData(profundidadBT, evaluaciones_BT, tenencia)
     memetico_generacional(genData, tabuData, data, log, maxSegundos)
     log.generaLogs()
 

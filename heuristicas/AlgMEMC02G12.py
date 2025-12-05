@@ -19,8 +19,8 @@ class GenData:
 
 @dataclass
 class TabuData:
-    evaluaciones: int
-    iteracionesBL: int
+    evaluacionesBT: int
+    profundidadBT: int
     tenencia: int
 
 def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, log: Log, maxSegundos: int):
@@ -44,8 +44,8 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
         ev += 1
         
         # 1. Chequeo de Tabú
-        #if ev % tabuData.evaluaciones == 0:
-         #   poblacion.busquedaTabu(flujos, distancias, tabuData.iteracionesBL, tabuData.tenencia, log)
+        #if ev % tabuData.evaluacionesBT == 0:
+            #poblacion.busquedaTabu(flujos, distancias, tabuData.profundidadBT, tabuData.tenencia, log)
         
         # 2. Chequeo de Parada (devuelve True si hay que parar)
         return ev >= gendata.maxEvaluaciones or time.time() >= TiempoFin

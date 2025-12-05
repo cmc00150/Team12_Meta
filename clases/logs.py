@@ -27,7 +27,7 @@ class SimbolosLog(str, Enum):
         return format(self.value, spec)
 
 class Log():
-    def __init__(self, data, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, maxIteracionesTabu, tenencia, iteracionesBL, evaluacionesTabu):
+    def __init__(self, data, seed, k, prcAleatorio, tampoblacion, numElites, kBest, prcCruce, cruce, prcMutacion, kWorst, maxEvaluaciones, maxSegundos, profundidadBT, evaluacionesBT, tenencia):
         self._data = data
         self._seed = seed
         self._k = k
@@ -42,14 +42,13 @@ class Log():
         self._maxSegundos = maxSegundos
         self._numElites = numElites
         self._poblacion_previa = {}  # {idx: costo} para comparar
-        self._iteracionesBL = iteracionesBL
-        self._evaluacionesTabu = evaluacionesTabu
+        self._evaluacionesTabu = evaluacionesBT
         # Acumuladores del ciclo actual
         self._poblacion_seleccionada = []
         self._parejas_cruce = []
         self._indices_mutados = set()
         # Parámetros BTABU
-        self._maxIteracionesTabu = maxIteracionesTabu
+        self._profundidadTabu = profundidadBT
         self._tenencia = tenencia
         
         self._lineas = []
@@ -69,7 +68,7 @@ class Log():
             self._lineas.append(f'Élites: {numElites} | k_worst: {kWorst} | Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
         else:
             self._lineas.append(f'k_worst: {kWorst} | Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
-        self._lineas.append(f'Max iter. tabú: {maxIteracionesTabu} | Tenencia: {tenencia}')
+        self._lineas.append(f'Profundidad BT: {profundidadBT} | Tenencia: {tenencia}')
         self._lineas.append('='*90)
         self._lineas.append('')
 
@@ -239,12 +238,8 @@ class Log():
     def generaLogs(self):
         carpetaActual = Path(__file__).parent
         nombreDatos = self._data.stem.split('\\')[-1]
-        nombreArchivo = f"MEMGEN_{nombreDatos}_S{self._seed}_{self._cruce}_I{self._iteracionesBL}_E{self._evaluacionesTabu}"
-        
-        if self._numElites > 0:
-            nombreArchivo += f"_E{self._numElites}"
-        
-        nombreArchivo += f"_kBest{self._kBest}.txt"
+        nombreArchivo = f"MEMGEN_{nombreDatos}_S{self._seed}_{self._cruce}_E{self._evaluacionesTabu}_P{self._profundidadTabu}.txt"
+
         ruta = carpetaActual.parent / 'logs' / nombreArchivo
 
         with open(ruta, 'w', encoding='utf-8') as arch:
