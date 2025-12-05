@@ -41,8 +41,10 @@ def extraer_info_log(archivo_log):
             match_tiempo = re.search(r'Tiempo:\s*([\d.]+)s', contenido)
             tiempo = float(match_tiempo.group(1)) if match_tiempo else None
         
-        # Extraer semilla (si existe en el nombre del archivo)
-        match_semilla = re.search(r'_(\d{8,})(?:_|\.txt)', str(archivo_log))
+        # Extraer semilla (si existe en el nombre del archivo).
+        # Soporta formatos como "_12255133" o "_S12255133" y variantes con '-' en lugar de '_'.
+        nombre_archivo = os.path.basename(str(archivo_log))
+        match_semilla = re.search(r'[_-]S?(\d{6,})(?:_|\.txt|$)', nombre_archivo, re.IGNORECASE)
         semilla = match_semilla.group(1) if match_semilla else None
         
         return {
@@ -57,101 +59,125 @@ def extraer_info_log(archivo_log):
 def agrupar_archivos_logs(carpeta_logs='Logs'):
     """Agrupa los archivos de log por tipo de algoritmo y archivo de datos"""
     grupos = {}
-    
     for archivo in Path(carpeta_logs).glob('*.txt'):
         nombre = archivo.stem
-        
-        # Parsear nombre: tipo_variante_archivoDatos_semilla_infoExtra
-        partes = nombre.split('_')
-        if len(partes) >= 3:
-            tipo = partes[0]  # evolutivo
-            variante = partes[1]  # generacional o estacionario
-            archivo_datos = partes[2]  # ford01, etc
-            
-            # Encontrar la semilla (número largo) y separar info_extra
-            semilla = None
-            indice_semilla = -1
-            info_extra_partes = []
-            
-            for i in range(3, len(partes)):
-                # Si es un número de 8+ dígitos, es la semilla
-                if partes[i].isdigit() and len(partes[i]) >= 8:
-                    semilla = partes[i]
-                    indice_semilla = i
-                    # Todo lo que viene después de la semilla es info_extra
-                    info_extra_partes = partes[i+1:]
+
+        # Separar por '_' o '-'
+        partes = re.split(r'[_-]', nombre)
+
+        # Buscar la parte que parece un nombre de instancia (ej. 'ford01' o 'ford01.sln')
+        data_idx = None
+        for i, p in enumerate(partes):
+            if re.match(r'^[A-Za-z]+\d+(?:\.sln)?$', p, re.IGNORECASE):
+                data_idx = i
+                break
+
+        # Si no hemos encontrado, buscar heurísticamente 'ford' dentro de una parte
+        if data_idx is None:
+            for i, p in enumerate(partes):
+                if 'ford' in p.lower():
+                    data_idx = i
                     break
-            
-            # Si no se encontró semilla, toda la info después del archivo es info_extra
-            if semilla is None:
-                info_extra_partes = partes[3:]
-            
-            info_extra = '_'.join(info_extra_partes) if info_extra_partes else ''
-            
-            # Crear clave de grupo (sin semilla)
+
+        # Fallback a la posición 2 si sigue sin detectarse
+        if data_idx is None and len(partes) >= 3:
+            data_idx = 2
+
+        if data_idx is None:
+            continue
+
+        archivo_datos = partes[data_idx]
+        # Normalizar: quitar extensión si la tiene
+        if archivo_datos.lower().endswith('.sln'):
+            archivo_datos = archivo_datos[:-4]
+
+        # Determinar tipo y variante (si la variante no coincide con el archivo_datos)
+        tipo = partes[0] if len(partes) > 0 else ''
+        variante = ''
+        if len(partes) > 1 and partes[1] != archivo_datos:
+            variante = partes[1]
+
+        # Separar semilla e info_extra a partir de lo que viene después del archivo_datos
+        semilla = None
+        info_extra_parts = []
+        for token in partes[data_idx+1:]:
+            token_digits = re.sub(r'^[Ss]', '', token)
+            if token_digits.isdigit() and len(token_digits) >= 6 and semilla is None:
+                semilla = token_digits
+                continue
+            info_extra_parts.append(token)
+
+        info_extra = '_'.join(info_extra_parts) if info_extra_parts else ''
+
+        # Construir clave de grupo (sin semilla)
+        if variante:
             clave = f"{tipo}_{variante}_{info_extra}" if info_extra else f"{tipo}_{variante}"
-            
-            if clave not in grupos:
-                grupos[clave] = {}
-            
-            if archivo_datos not in grupos[clave]:
-                grupos[clave][archivo_datos] = []
-            
-            grupos[clave][archivo_datos].append(str(archivo))
+        else:
+            clave = f"{tipo}_{info_extra}" if info_extra else tipo
+
+        if clave not in grupos:
+            grupos[clave] = {}
+
+        if archivo_datos not in grupos[clave]:
+            grupos[clave][archivo_datos] = []
+
+        grupos[clave][archivo_datos].append(str(archivo))
     
     return grupos
 
 def crear_hoja_resumen(ws, nombre_configuracion, grupo_datos, carpeta_datos='Datos'):
-    """Crea la tabla resumen en una hoja de Excel con fórmulas"""
-    
-    # Obtener archivos de datos únicos y ordenarlos
+    """Compatibilidad: ya no se crea una hoja por grupo.
+    Esta función mantiene la firma antigua llamando a la función
+    `crear_tabla_en_hoja` con `start_col=1` en una hoja ya existente.
+    """
+    crear_tabla_en_hoja(ws, 1, nombre_configuracion, grupo_datos, carpeta_datos, start_row=1)
+
+
+def crear_tabla_en_hoja(ws, start_col, nombre_configuracion, grupo_datos, carpeta_datos='Datos', start_row=1):
+    """Dibuja la tabla de resumen en la hoja `ws` empezando en la columna `start_col` y fila `start_row`.
+    Devuelve (num_columnas_ocupadas, num_filas_ocupadas).
+    """
     archivos_datos = sorted(grupo_datos.keys())
-    
-    # Calcular el número total de columnas necesarias
-    num_columnas_totales = len(archivos_datos) * 2 + 2  # 2 por archivo (Sol, Time) + 1 etiqueta + 1 semilla
-    
-    # Fila 1: Título de configuración
-    # Asegurarse de combinar suficientes celdas
-    ultima_col_titulo = max(8, num_columnas_totales)
-    ws.merge_cells(f'A1:{get_column_letter(ultima_col_titulo)}1')
-    cell_config = ws['A1']
+    num_columnas = len(archivos_datos) * 2 + 2  # 2 por archivo + etiqueta + semilla
+
+    ultima_col_titulo = max(8, num_columnas)
+    end_col = start_col + ultima_col_titulo - 1
+    # Escribir el valor en la celda superior izquierda antes de fusionar
+    cell_config = ws.cell(row=start_row, column=start_col)
     cell_config.value = nombre_configuracion.upper().replace('_', ' ')
     cell_config.font = Font(bold=True, size=14, color="FFFFFF")
     cell_config.alignment = Alignment(horizontal='center', vertical='center')
     cell_config.fill = PatternFill(start_color="3F9E5E", end_color="3F9E5E", fill_type="solid")
-    ws.row_dimensions[1].height = 25
-    
-    fila_actual = 2
-    
-    # Fila 2: Nombres de archivos (fusionadas)
-    col = 1
+    ws.merge_cells(start_row=start_row, start_column=start_col, end_row=start_row, end_column=end_col)
+
+    fila_actual = start_row + 1
+
+    # Fila 2: Nombres de archivos
+    col = start_col
     ws.cell(row=fila_actual, column=col).value = ''
     col += 1
-    
+
     for arch in archivos_datos:
         nombre_upper = arch.upper().replace('.SLN', '')
-        ws.merge_cells(start_row=fila_actual, start_column=col, 
-                      end_row=fila_actual, end_column=col+1)
+        ws.merge_cells(start_row=fila_actual, start_column=col, end_row=fila_actual, end_column=col+1)
         cell = ws.cell(row=fila_actual, column=col)
         cell.value = nombre_upper
         cell.font = Font(bold=True, size=12)
         cell.alignment = Alignment(horizontal='center', vertical='center')
         cell.fill = PatternFill(start_color="70C78D", end_color="70C78D", fill_type="solid")
         col += 2
-    
+
     ws.cell(row=fila_actual, column=col).value = ''
     fila_actual += 1
-    
+
     # Fila 3: Tamaño
-    col = 1
+    col = start_col
     ws.cell(row=fila_actual, column=col).value = 'GREEDY AL'
     ws.cell(row=fila_actual, column=col).font = Font(bold=True)
     col += 1
-    
+
     for arch_datos in archivos_datos:
         arch_sln = f"{arch_datos}.sln" if not arch_datos.endswith('.sln') else arch_datos
-        
-        # Obtener tamaño
         try:
             ruta = Path(carpeta_datos) / arch_sln
             with open(ruta, 'r') as f:
@@ -159,82 +185,75 @@ def crear_hoja_resumen(ws, nombre_configuracion, grupo_datos, carpeta_datos='Dat
                 tamaño = int(primera_linea.split()[0])
         except:
             tamaño = '?'
-        
+
         ws.cell(row=fila_actual, column=col).value = 'Tamaño'
         ws.cell(row=fila_actual, column=col+1).value = tamaño
         col += 2
-    
+
     ws.cell(row=fila_actual, column=col).value = ''
     fila_actual += 1
-    
-    # Fila 4: Mínimo global
-    col = 1
+
+    # Fila 4: Minimo global
+    col = start_col
     ws.cell(row=fila_actual, column=col).value = ''
     col += 1
-    
+
     for arch_datos in archivos_datos:
         arch_sln = f"{arch_datos}.sln" if not arch_datos.endswith('.sln') else arch_datos
         costo_optimo = leer_costo_optimo(arch_sln, carpeta_datos)
-        
+
         ws.cell(row=fila_actual, column=col).value = 'Minimo global'
         ws.cell(row=fila_actual, column=col+1).value = costo_optimo if costo_optimo else '?'
         col += 2
-    
+
     ws.cell(row=fila_actual, column=col).value = ''
     fila_actual += 1
-    
-    # Fila vacía
-    fila_actual += 1
-    
-    # Fila de encabezados
-    col = 1
+    fila_actual += 1  # fila vacía
+
+    # Encabezados
+    col = start_col
     ws.cell(row=fila_actual, column=col).value = ''
     col += 1
-    
+
     for _ in archivos_datos:
         cell_sol = ws.cell(row=fila_actual, column=col)
         cell_sol.value = 'Sol'
         cell_sol.font = Font(bold=True, italic=True)
         cell_sol.fill = PatternFill(start_color="A8D5BA", end_color="A8D5BA", fill_type="solid")
-        
+
         cell_time = ws.cell(row=fila_actual, column=col+1)
         cell_time.value = 'Time'
         cell_time.font = Font(bold=True, italic=True)
         cell_time.fill = PatternFill(start_color="A8D5BA", end_color="A8D5BA", fill_type="solid")
         col += 2
-    
+
     ws.cell(row=fila_actual, column=col).value = 'Semilla'
     ws.cell(row=fila_actual, column=col).font = Font(bold=True)
     ws.cell(row=fila_actual, column=col).fill = PatternFill(start_color="A8D5BA", end_color="A8D5BA", fill_type="solid")
-    
+
     fila_encabezado = fila_actual
     fila_actual += 1
-    
+
     # Recopilar datos y ordenar por semilla
     datos_por_archivo = {}
     for arch_datos in archivos_datos:
         datos_por_archivo[arch_datos] = []
-        
         for log_file in grupo_datos[arch_datos]:
             info = extraer_info_log(log_file)
             if info:
                 datos_por_archivo[arch_datos].append(info)
-        
-        # Ordenar por semilla para mantener consistencia
         datos_por_archivo[arch_datos].sort(key=lambda x: x['semilla'] or '')
-    
-    max_ejecuciones = max(len(datos) for datos in datos_por_archivo.values())
-    
-    # Filas de ejecuciones con datos reales
-    primera_fila_datos = fila_actual
+
+    max_ejecuciones = max((len(datos) for datos in datos_por_archivo.values()), default=0)
+
+    # Filas de ejecuciones
     for i in range(max_ejecuciones):
-        col = 1
+        col = start_col
         ws.cell(row=fila_actual, column=col).value = f'Ejecución {i+1}'
         ws.cell(row=fila_actual, column=col).font = Font(bold=True)
         col += 1
-        
+
         semilla_fila = None
-        
         for arch_datos in archivos_datos:
             datos = datos_por_archivo[arch_datos]
             if i < len(datos):
@@ -243,21 +262,20 @@ def crear_hoja_resumen(ws, nombre_configuracion, grupo_datos, carpeta_datos='Dat
                 if semilla_fila is None:
                     semilla_fila = datos[i]['semilla']
             col += 2
-        
+
         ws.cell(row=fila_actual, column=col).value = semilla_fila if semilla_fila else ''
         fila_actual += 1
-    
-    ultima_fila_datos = fila_actual - 1
-    
-    # Fila de desviación típica - calcular directamente en Python
-    col = 1
+
+    ultima_fila = fila_actual - 1
+
+    # Desviación típica
+    col = start_col
     ws.cell(row=fila_actual, column=col).value = 'Desv. típica'
     ws.cell(row=fila_actual, column=col).font = Font(bold=True, italic=True)
     ws.cell(row=fila_actual, column=col).fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
     col += 1
-    
+
     for idx_archivo, arch_datos in enumerate(archivos_datos):
-        # Calcular desviación típica de errores relativos en Python
         datos = datos_por_archivo[arch_datos]
         if datos:
             arch_sln = f"{arch_datos}.sln" if not arch_datos.endswith('.sln') else arch_datos
@@ -274,27 +292,22 @@ def crear_hoja_resumen(ws, nombre_configuracion, grupo_datos, carpeta_datos='Dat
                 ws.cell(row=fila_actual, column=col).value = ''
         else:
             ws.cell(row=fila_actual, column=col).value = ''
-        
+
         ws.cell(row=fila_actual, column=col).fill = PatternFill(start_color="FFF2CC", end_color="FFF2CC", fill_type="solid")
-        
-        # Columna de Time: vacía
         ws.cell(row=fila_actual, column=col+1).value = ''
-        
         col += 2
-    
-    ws.cell(row=fila_actual, column=col).value = ''
-    fila_desv_tipica = fila_actual
+
+    fila_desv = fila_actual
     fila_actual += 1
-    
-    # Fila de desviación de error - calcular directamente en Python
-    col = 1
+
+    # Desviación de error
+    col = start_col
     ws.cell(row=fila_actual, column=col).value = 'Desviación de error'
     ws.cell(row=fila_actual, column=col).font = Font(bold=True, italic=True)
     ws.cell(row=fila_actual, column=col).fill = PatternFill(start_color="A8D5BA", end_color="A8D5BA", fill_type="solid")
     col += 1
-    
+
     for idx_archivo, arch_datos in enumerate(archivos_datos):
-        # Calcular promedio de errores relativos en Python
         datos = datos_por_archivo[arch_datos]
         if datos:
             arch_sln = f"{arch_datos}.sln" if not arch_datos.endswith('.sln') else arch_datos
@@ -311,35 +324,28 @@ def crear_hoja_resumen(ws, nombre_configuracion, grupo_datos, carpeta_datos='Dat
                 ws.cell(row=fila_actual, column=col).value = ''
         else:
             ws.cell(row=fila_actual, column=col).value = ''
-        
+
         ws.cell(row=fila_actual, column=col).fill = PatternFill(start_color="A8D5BA", end_color="A8D5BA", fill_type="solid")
-        
-        # Columna Time: vacía
         ws.cell(row=fila_actual, column=col+1).value = ''
-        
         col += 2
-    
+
     ws.cell(row=fila_actual, column=col).value = ''
-    
-    # Ajustar anchos de columna
-    ws.column_dimensions['A'].width = 18
-    for i in range(2, len(archivos_datos) * 2 + 2):
+
+    # Ajustar anchos de columna del bloque
+    ws.column_dimensions[get_column_letter(start_col)].width = 18
+    for i in range(start_col+1, start_col + len(archivos_datos) * 2 + 2):
         ws.column_dimensions[get_column_letter(i)].width = 12
-    ws.column_dimensions[get_column_letter(len(archivos_datos) * 2 + 2)].width = 15
-    
-    # Aplicar bordes
-    thin_border = Border(
-        left=Side(style='thin'),
-        right=Side(style='thin'),
-        top=Side(style='thin'),
-        bottom=Side(style='thin')
-    )
-    
-    for row in ws.iter_rows(min_row=2, max_row=fila_actual, 
-                           min_col=1, max_col=len(archivos_datos)*2+2):
+    ws.column_dimensions[get_column_letter(start_col + len(archivos_datos) * 2 + 1)].width = 15
+
+    # Aplicar bordes al bloque
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+    for row in ws.iter_rows(min_row=start_row+1, max_row=fila_actual, min_col=start_col, max_col=start_col + len(archivos_datos)*2 + 1):
         for cell in row:
             cell.border = thin_border
             cell.alignment = Alignment(horizontal='center', vertical='center')
+
+    num_filas_usadas = fila_actual - start_row
+    return ultima_col_titulo, num_filas_usadas
 
 def generar_excel(carpeta_logs='logs', carpeta_datos='Datos', archivo_salida='resumen.xlsx'):
     """Genera el archivo Excel con todas las tablas resumen"""
@@ -351,33 +357,60 @@ def generar_excel(carpeta_logs='logs', carpeta_datos='Datos', archivo_salida='re
         print("No se encontraron archivos de log para procesar.")
         return
     
-    # Crear workbook
+    # Crear workbook con una sola hoja 'Resumen'
     wb = Workbook()
-    wb.remove(wb.active)  # Remover hoja por defecto
-    
-    # Crear una hoja por cada grupo
+    # Usar la hoja creada por defecto y nombrarla 'Resumen'
+    ws = wb.active
+    ws.title = 'Resumen'
+
+    # Agrupar las configuraciones por parámetro E extraído del nombre del log
+    e_groups: dict[str, list[tuple[str, dict]]] = {}
     for nombre_grupo, datos_grupo in grupos.items():
-        # Crear hoja con nombre apropiado (limitado a 31 caracteres para Excel)
-        # Reemplazar caracteres problemáticos
-        nombre_hoja = nombre_grupo[:31].replace('/', '_').replace('\\', '_').replace('*', '_').replace('?', '_').replace('[', '_').replace(']', '_').replace(':', '_')
-        
-        # Asegurar que el nombre sea único
-        nombre_base = nombre_hoja
-        contador = 1
-        while nombre_hoja in [sheet.title for sheet in wb.worksheets]:
-            nombre_hoja = f"{nombre_base[:28]}_{contador}"
-            contador += 1
-        
-        ws = wb.create_sheet(title=nombre_hoja)
-        
-        # Crear tabla resumen con fórmulas
-        crear_hoja_resumen(ws, nombre_grupo, datos_grupo, carpeta_datos)
+        # Tomar el primer fichero de los archivos de datos disponibles para detectar 'E'
+        primer_log = None
+        for lst in datos_grupo.values():
+            if lst:
+                primer_log = lst[0]
+                break
+
+        e_val = 'NOE'
+        if primer_log:
+            m = re.search(r'[Ee](\d+)', os.path.basename(primer_log))
+            if m:
+                e_val = m.group(1)
+
+        e_groups.setdefault(e_val, []).append((nombre_grupo, datos_grupo))
+
+    # Ordenar claves E numéricas primero
+    def e_sort_key(k):
+        try:
+            return (0, int(k))
+        except:
+            return (1, k)
+
+    current_col = 1
+    gap_between_blocks = 3
+    gap_between_tables = 2
+    # Recorrer por orden de E
+    for e_key in sorted(e_groups.keys(), key=e_sort_key):
+        grupos_e = e_groups[e_key]
+        # Apilar tablas verticalmente dentro del mismo bloque de columnas para este E
+        current_row = 1
+        max_used_cols = 0
+        for nombre_grupo, datos_grupo in grupos_e:
+            used_cols, used_rows = crear_tabla_en_hoja(ws, current_col, nombre_grupo, datos_grupo, carpeta_datos, start_row=current_row)
+            current_row += used_rows + gap_between_tables
+            if used_cols > max_used_cols:
+                max_used_cols = used_cols
+
+        # Avanzar a la siguiente zona de columnas después de apilar todas las tablas de este E
+        current_col += max_used_cols + gap_between_blocks
     
     # Guardar archivo
     try:
         wb.save(archivo_salida)
         print(f"✓ Excel generado exitosamente: {archivo_salida}")
-        print(f"✓ Se crearon {len(grupos)} hojas de configuración")
+        print(f"✓ Se generaron {len(grupos)} tablas agrupadas en la hoja 'Resumen'")
     except Exception as e:
         print(f"✗ Error al guardar el archivo: {e}")
 
