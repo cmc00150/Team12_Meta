@@ -40,7 +40,7 @@ def busqueda_tabu(flujos: list[list[int]], distancias: list[list[int]], solInici
     factible = [0] * len(solActual)                            # Inicializamos el vector de factibles
     n_factibles=len(solActual)                                 # Número de unidades factibles
 
-    while it <= maxIteraciones:
+    while it < maxIteraciones:
       if factible[i] == 0:                                    # Si i tiene posibilidad de mejora buscamos con explorar_vecinos()
         mejor_local = ()
         mejora_local = maxsize

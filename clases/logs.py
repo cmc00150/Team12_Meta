@@ -246,7 +246,27 @@ class Log():
             arch.write('\n'.join(self._lineas))
 
     def registraCambioBTabu(self, posi, posj, nuevasol, nuevoCoste, mejorCoste, iteracion):
-        self._lineas.append(f'\tIteración {iteracion}: cambia el par ({nuevasol[posi]+1},{nuevasol[posj]+1})\n')
-        self._lineas.append(f'\tAsignación: {[elem+1 for elem in nuevasol]}\n'      )
-        self._lineas.append(f'\tCosto: {nuevoCoste}\n')
-        self._lineas.append(f'\tMejor costo global: {mejorCoste}\n\n')
+        """Registra un cambio realizado por la búsqueda tabú con formato consistente."""
+        self._lineas.append('')
+        self._lineas.append(f'  {SimbolosLog.ESTADISTICAS} BTABÚ - Iteración {iteracion}:')
+        self._lineas.append('   '+'.' * 90)
+
+        # Valores intercambiados (se muestran 1-based como en el resto del log)
+        val_i = nuevasol[posi] + 1
+        val_j = nuevasol[posj] + 1
+        self._lineas.append(f'     → Cambio: par ({val_i},{val_j}) en posiciones ({posi},{posj})')
+
+        # Asignación completa (lista 1-based)
+        asignacion = ' '.join(str(x + 1) for x in nuevasol)
+        self._lineas.append(f'     → Asignación: {asignacion}')
+
+        # Costes con formato numérico consistente
+        self._lineas.append(f'     → Costo: {nuevoCoste:.0f}')
+        self._lineas.append(f'     → Mejor costo global: {mejorCoste:.0f}')
+        self._lineas.append('   '+'.' * 90)
+
+    def registraEntradaBTabu(self, ev):
+        """Registra en el log que se ha añadido una entrada a la lista tabú."""
+        self._lineas.append('')
+        self._lineas.append(f'{SimbolosLog.ESTADISTICAS} BTABÚ - Entrada en evaluación {ev}')
+        self._lineas.append('-' * 90)

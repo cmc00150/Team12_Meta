@@ -45,6 +45,7 @@ def memetico_generacional(gendata: GenData, tabuData: TabuData,data: Extractor, 
         
         # 1. Chequeo de Tabú
         if ev % tabuData.evaluacionesBT == 0:
+            log.registraEntradaBTabu(ev)
             poblacion.busquedaTabu(flujos, distancias, tabuData.profundidadBT, tabuData.tenencia, log)
         
         # 2. Chequeo de Parada (devuelve True si hay que parar)
