@@ -44,7 +44,7 @@ for ((ruta_data, data), seed, k, prcAleatorio, tamPoblacion, numElites,
         error('El porcentaje de generación de individuos mediante aleatorizado debe ser mayor a 0')
 
     genData = GenData(numElites, tamPoblacion, prcAleatorio, prcCruce, prcMutacion, cruce, maxEvaluaciones, k, kBest, kWorst)
-    tabuData = TabuData(profundidadBT, evaluaciones_BT, tenencia)
+    tabuData = TabuData(evaluaciones_BT, profundidadBT, tenencia)
     memetico_generacional(genData, tabuData, data, log, maxSegundos)
     log.generaLogs()
 
