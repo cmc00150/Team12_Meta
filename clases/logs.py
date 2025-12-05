@@ -68,7 +68,7 @@ class Log():
             self._lineas.append(f'Élites: {numElites} | k_worst: {kWorst} | Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
         else:
             self._lineas.append(f'k_worst: {kWorst} | Max eval: {maxEvaluaciones} | Max seg: {maxSegundos}')
-        self._lineas.append(f'Profundidad BT: {profundidadBT} | Tenencia: {tenencia}')
+        self._lineas.append(f'Evaluaciones BT: {evaluacionesBT} Profundidad BT: {profundidadBT} | Tenencia: {tenencia}')
         self._lineas.append('='*90)
         self._lineas.append('')
 
